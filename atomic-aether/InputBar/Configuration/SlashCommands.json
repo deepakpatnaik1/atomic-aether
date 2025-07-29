@@ -1,0 +1,9 @@
+{
+  "commands": [
+    {
+      "trigger": "/journal",
+      "expandToLines": 34,
+      "description": "Expand input for journal entry"
+    }
+  ]
+}

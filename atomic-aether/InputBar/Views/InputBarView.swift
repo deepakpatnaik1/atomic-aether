@@ -12,6 +12,7 @@ import SwiftUI
 
 struct InputBarView: View {
     @StateObject private var appearanceService = InputBarAppearanceService()
+    @StateObject private var slashCommandDetector = SlashCommandDetector()
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     @State private var onSubmit: (() -> Void)?
@@ -77,10 +78,16 @@ struct InputBarView: View {
         .background(
             glassmorphicBackground(appearance: appearance)
         )
+        .preferredColorScheme(.dark)
     }
     
     @ViewBuilder
     private func textEditor(appearance: InputBarAppearance) -> some View {
+        // Calculate height based on slash command
+        let maxLines = slashCommandDetector.isExpanded && slashCommandDetector.activeCommand?.expandToLines != nil
+            ? slashCommandDetector.activeCommand!.expandToLines!
+            : appearance.multiline.maxLines
+        
         TextEditor(text: $text)
             .font(.system(size: appearance.textField.fontSize))
             .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
@@ -88,13 +95,27 @@ struct InputBarView: View {
             .background(Color.clear)
             .focused($isTextFieldFocused)
             .frame(
-                minHeight: appearance.multiline.lineHeight,
-                maxHeight: appearance.multiline.lineHeight * Double(appearance.multiline.maxLines)
+                minHeight: slashCommandDetector.isExpanded 
+                    ? appearance.multiline.lineHeight * Double(maxLines)
+                    : appearance.multiline.lineHeight,
+                maxHeight: appearance.multiline.lineHeight * Double(maxLines)
             )
             .fixedSize(horizontal: false, vertical: true)
-            .scrollIndicators(.hidden, axes: .vertical)
             .onAppear {
                 isTextFieldFocused = true
+            }
+            .onChange(of: text) { oldValue, newValue in
+                if slashCommandDetector.handleTextChange(newValue) {
+                    // Clear text when command is detected
+                    text = ""
+                }
+            }
+            .onKeyPress(.escape) {
+                if slashCommandDetector.shouldAllowCollapse(text: text) {
+                    slashCommandDetector.collapse()
+                    return .handled
+                }
+                return .ignored
             }
             .onSubmit {
                 handleSubmit()
@@ -111,6 +132,19 @@ struct InputBarView: View {
             .frame(minHeight: appearance.dimensions.textFieldMinHeight)
             .onAppear {
                 isTextFieldFocused = true
+            }
+            .onChange(of: text) { oldValue, newValue in
+                if slashCommandDetector.handleTextChange(newValue) {
+                    // Clear text when command is detected
+                    text = ""
+                }
+            }
+            .onKeyPress(.escape) {
+                if slashCommandDetector.shouldAllowCollapse(text: text) {
+                    slashCommandDetector.collapse()
+                    return .handled
+                }
+                return .ignored
             }
             .onSubmit {
                 handleSubmit()
