@@ -11,8 +11,10 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Spacer()
+            
+            // Input Bar
+            InputBarView()
         }
-        .padding()
     }
 }
 

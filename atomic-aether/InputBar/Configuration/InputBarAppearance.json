@@ -1,0 +1,62 @@
+{
+  "dimensions": {
+    "width": 700,
+    "defaultHeight": 104,
+    "bottomMargin": 16,
+    "textFieldMinHeight": 22,
+    "cornerRadius": 12
+  },
+  "padding": {
+    "uniform": 22,
+    "horizontal": 20
+  },
+  "glassmorphic": {
+    "backgroundOpacity": 0.85,
+    "borderTopOpacity": 0.3,
+    "borderBottomOpacity": 0.1,
+    "blurRadius": 20
+  },
+  "shadows": {
+    "outer": {
+      "color": "black",
+      "opacity": 0.4,
+      "radius": 12,
+      "x": 0,
+      "y": 4
+    },
+    "inner": {
+      "color": "white",
+      "opacity": 0.08,
+      "radius": 8,
+      "x": 0,
+      "y": -2
+    }
+  },
+  "textField": {
+    "placeholder": "Type a message...",
+    "placeholderOpacity": 0.5,
+    "textColor": "white",
+    "fontSize": 14,
+    "fontFamily": "System"
+  },
+  "controls": {
+    "spacing": 12,
+    "plusButton": {
+      "iconName": "plus",
+      "size": 16,
+      "opacity": 0.7
+    },
+    "modelPicker": {
+      "text": "Claude 3.5 Sonnet",
+      "fontSize": 12,
+      "opacity": 0.7
+    },
+    "greenIndicator": {
+      "size": 8,
+      "color": "green",
+      "glowRadius1": 4,
+      "glowRadius2": 8,
+      "glowOpacity": 0.5
+    }
+  }
+}
