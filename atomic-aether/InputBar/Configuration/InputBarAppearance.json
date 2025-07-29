@@ -33,11 +33,14 @@
     }
   },
   "textField": {
-    "placeholder": "Type a message...",
-    "placeholderOpacity": 0.5,
     "textColor": "white",
     "fontSize": 14,
     "fontFamily": "System"
+  },
+  "multiline": {
+    "enabled": true,
+    "maxLines": 34,
+    "lineHeight": 22
   },
   "controls": {
     "spacing": 12,

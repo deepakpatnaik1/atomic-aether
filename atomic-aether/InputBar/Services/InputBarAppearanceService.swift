@@ -66,11 +66,14 @@ class InputBarAppearanceService: ObservableObject {
                 inner: .init(color: "white", opacity: 0.08, radius: 8, x: 0, y: -2)
             ),
             textField: .init(
-                placeholder: "Type a message...",
-                placeholderOpacity: 0.5,
                 textColor: "white",
                 fontSize: 14,
                 fontFamily: "System"
+            ),
+            multiline: .init(
+                enabled: true,
+                maxLines: 10,
+                lineHeight: 22
             ),
             controls: .init(
                 spacing: 12,

@@ -14,6 +14,7 @@ struct InputBarView: View {
     @StateObject private var appearanceService = InputBarAppearanceService()
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
+    @State private var onSubmit: (() -> Void)?
     
     var body: some View {
         if let appearance = appearanceService.appearance {
@@ -35,20 +36,12 @@ struct InputBarView: View {
     @ViewBuilder
     private func inputBar(appearance: InputBarAppearance) -> some View {
         VStack(spacing: appearance.padding.uniform) {
-            // Text field
-            TextField(appearance.textField.placeholder, text: $text)
-                .textFieldStyle(.plain)
-                .font(.system(size: appearance.textField.fontSize))
-                .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
-                .focused($isTextFieldFocused)
-                .placeholder(when: text.isEmpty) {
-                    Text(appearance.textField.placeholder)
-                        .foregroundColor(.white.opacity(appearance.textField.placeholderOpacity))
-                }
-                .frame(minHeight: appearance.dimensions.textFieldMinHeight)
-                .onAppear {
-                    isTextFieldFocused = true
-                }
+            // Text editor for multiline support
+            if appearance.multiline.enabled {
+                textEditor(appearance: appearance)
+            } else {
+                textField(appearance: appearance)
+            }
             
             // Controls row
             HStack(spacing: appearance.controls.spacing) {
@@ -81,10 +74,56 @@ struct InputBarView: View {
         }
         .padding(.vertical, appearance.padding.uniform)
         .padding(.horizontal, appearance.padding.horizontal)
-        .frame(height: appearance.dimensions.defaultHeight)
         .background(
             glassmorphicBackground(appearance: appearance)
         )
+    }
+    
+    @ViewBuilder
+    private func textEditor(appearance: InputBarAppearance) -> some View {
+        TextEditor(text: $text)
+            .font(.system(size: appearance.textField.fontSize))
+            .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+            .focused($isTextFieldFocused)
+            .frame(
+                minHeight: appearance.multiline.lineHeight,
+                maxHeight: appearance.multiline.lineHeight * Double(appearance.multiline.maxLines)
+            )
+            .fixedSize(horizontal: false, vertical: true)
+            .scrollIndicators(.hidden, axes: .vertical)
+            .onAppear {
+                isTextFieldFocused = true
+            }
+            .onSubmit {
+                handleSubmit()
+            }
+    }
+    
+    @ViewBuilder
+    private func textField(appearance: InputBarAppearance) -> some View {
+        TextField("", text: $text)
+            .textFieldStyle(.plain)
+            .font(.system(size: appearance.textField.fontSize))
+            .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
+            .focused($isTextFieldFocused)
+            .frame(minHeight: appearance.dimensions.textFieldMinHeight)
+            .onAppear {
+                isTextFieldFocused = true
+            }
+            .onSubmit {
+                handleSubmit()
+            }
+    }
+    
+    private func handleSubmit() {
+        // For now, just clear the text
+        // In real app, this would send the message
+        if !text.isEmpty {
+            print("Submitted: \(text)")
+            text = ""
+        }
     }
     
     @ViewBuilder
@@ -122,15 +161,3 @@ struct InputBarView: View {
     }
 }
 
-// MARK: - View Extensions
-extension View {
-    func placeholder<Content: View>(
-        when shouldShow: Bool,
-        @ViewBuilder placeholder: () -> Content
-    ) -> some View {
-        ZStack(alignment: .leading) {
-            placeholder().opacity(shouldShow ? 1 : 0)
-            self
-        }
-    }
-}

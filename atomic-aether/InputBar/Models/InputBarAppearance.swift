@@ -17,6 +17,7 @@ struct InputBarAppearance: Codable {
     let glassmorphic: Glassmorphic
     let shadows: Shadows
     let textField: TextField
+    let multiline: Multiline
     let controls: Controls
     
     struct Dimensions: Codable {
@@ -53,11 +54,15 @@ struct InputBarAppearance: Codable {
     }
     
     struct TextField: Codable {
-        let placeholder: String
-        let placeholderOpacity: Double
         let textColor: String
         let fontSize: Double
         let fontFamily: String
+    }
+    
+    struct Multiline: Codable {
+        let enabled: Bool
+        let maxLines: Int
+        let lineHeight: Double
     }
     
     struct Controls: Codable {
