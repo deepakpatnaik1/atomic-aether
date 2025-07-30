@@ -10,16 +10,14 @@
 //  - Publish events without knowing subscribers
 //  - Subscribe to events without knowing publishers
 //  - Type-safe event handling with Combine
+//  - No singleton - injected via environment
 //
 
 import Foundation
 import Combine
 
 @MainActor
-final class EventBus: ObservableObject {
-    
-    // MARK: - Singleton
-    static let shared = EventBus()
+final class EventBus: EventBusProtocol, ObservableObject {
     
     // MARK: - Event Publishers
     private let eventSubject = PassthroughSubject<AetherEvent, Never>()
@@ -64,8 +62,8 @@ final class EventBus: ObservableObject {
             }
     }
     
-    // MARK: - Private Init
-    private init() {}
+    // MARK: - Init
+    init() {}
 }
 
 // MARK: - Convenience Extensions

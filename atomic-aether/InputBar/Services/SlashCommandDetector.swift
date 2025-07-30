@@ -5,53 +5,52 @@
 //  Service to detect and manage slash commands
 //
 //  ATOM 4: /journal Slash Command - Command detection service
+//  ATOM 6: ConfigBus - Loads commands from configuration
+//  ATOM 5: EventBus - Publishes command events
 //
 //  Atomic LEGO: Single responsibility - detect commands
 //  Tracks state for height restoration
 //
 
 import SwiftUI
+import Combine
 
+@MainActor
 class SlashCommandDetector: ObservableObject {
     @Published var activeCommand: SlashCommand?
     @Published var isExpanded = false
     
     private var commands: [SlashCommand] = []
+    private var configBus: ConfigBus?
+    private var eventBus: EventBus?
+    private var cancellable: AnyCancellable?
     
     init() {
-        loadCommands()
+        // Commands will be loaded via setupWithBuses
     }
     
-    private func loadCommands() {
-        // Look for JSON file in bundle
-        guard let url = Bundle.main.url(forResource: "SlashCommands", withExtension: "json") else {
-            print("⚠️ SlashCommands.json not found - using fallback")
-            commands = [
-                SlashCommand(
-                    trigger: "/journal",
-                    expandToLines: 34,
-                    description: "Expand input for journal entry"
-                )
-            ]
-            return
+    /// Setup with ConfigBus and EventBus
+    func setupWithBuses(_ configBus: ConfigBus, _ eventBus: EventBus) {
+        self.configBus = configBus
+        self.eventBus = eventBus
+        
+        // Load commands from ConfigBus
+        if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
+            commands = config.commands
+            print("✅ Loaded \(commands.count) slash commands from ConfigBus")
+        } else {
+            print("❌ FATAL: SlashCommands.json missing from bundle")
+            commands = []
         }
         
-        do {
-            let data = try Data(contentsOf: url)
-            let config = try JSONDecoder().decode(SlashCommandConfiguration.self, from: data)
-            commands = config.commands
-            print("✅ Loaded \(commands.count) slash commands")
-        } catch {
-            print("❌ Failed to load SlashCommands.json: \(error)")
-            // Use fallback
-            commands = [
-                SlashCommand(
-                    trigger: "/journal",
-                    expandToLines: 34,
-                    description: "Expand input for journal entry"
-                )
-            ]
-        }
+        // Watch for config changes
+        cancellable = configBus.objectWillChange
+            .sink { [weak self] _ in
+                if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
+                    self?.commands = config.commands
+                    print("🔄 Reloaded \(config.commands.count) slash commands")
+                }
+            }
     }
     
     func detectCommand(in text: String) -> SlashCommand? {
@@ -67,6 +66,14 @@ class SlashCommandDetector: ObservableObject {
     func handleTextChange(_ text: String) -> Bool {
         let detectedCommand = detectCommand(in: text)
         var shouldClearText = false
+        
+        // Publish event if command detected
+        if let command = detectedCommand {
+            eventBus?.publish(InputEvent.slashCommandEntered(
+                command: command.trigger,
+                source: "SlashCommandDetector"
+            ))
+        }
         
         // Dispatch to avoid "Publishing changes from within view updates" warning
         DispatchQueue.main.async { [weak self] in

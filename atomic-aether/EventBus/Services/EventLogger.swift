@@ -21,9 +21,9 @@ final class EventLogger: ObservableObject {
     
     // MARK: - Properties
     
-    private let logger = Logger(subsystem: "com.atomic-aether.eventbus", category: "events")
+    private let logger = Logger(subsystem: "\(Bundle.main.bundleIdentifier ?? "com.unknown").eventbus", category: "events")
     private var subscriptions = Set<AnyCancellable>()
-    private let eventBus = EventBus.shared
+    private let eventBus: any EventBusProtocol
     
     @Published var isLoggingEnabled: Bool = true
     @Published var logLevel: LogLevel = .info
@@ -60,7 +60,8 @@ final class EventLogger: ObservableObject {
     
     // MARK: - Initialization
     
-    init() {
+    init(eventBus: any EventBusProtocol) {
+        self.eventBus = eventBus
         setupEventLogging()
     }
     

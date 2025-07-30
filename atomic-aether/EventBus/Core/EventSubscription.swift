@@ -42,8 +42,12 @@ final class EventSubscriptions {
 /// Type-safe builder for event subscriptions
 @MainActor
 struct EventSubscriptionBuilder {
-    private let eventBus = EventBus.shared
+    private let eventBus: any EventBusProtocol
     private let subscriptions = EventSubscriptions()
+    
+    init(eventBus: any EventBusProtocol) {
+        self.eventBus = eventBus
+    }
     
     /// Subscribe to an event type
     @discardableResult
@@ -63,11 +67,12 @@ struct EventSubscriptionBuilder {
         where predicate: @escaping (T) -> Bool,
         perform handler: @escaping (T) -> Void
     ) -> EventSubscriptionBuilder {
-        let cancellable = eventBus.subscribe(
-            to: eventType,
-            where: predicate,
-            handler: handler
-        )
+        let cancellable = eventBus.events
+            .compactMap { $0 as? T }
+            .filter(predicate)
+            .sink { event in
+                handler(event)
+            }
         subscriptions.store(cancellable)
         return self
     }
@@ -84,8 +89,11 @@ extension ObservableObject where Self: AnyObject {
     
     /// Create event subscriptions with automatic lifecycle management
     @MainActor
-    func setupEventSubscriptions(_ builder: (EventSubscriptionBuilder) -> EventSubscriptionBuilder) -> EventSubscriptions {
-        let subscriptionBuilder = EventSubscriptionBuilder()
+    func setupEventSubscriptions(
+        eventBus: any EventBusProtocol,
+        _ builder: (EventSubscriptionBuilder) -> EventSubscriptionBuilder
+    ) -> EventSubscriptions {
+        let subscriptionBuilder = EventSubscriptionBuilder(eventBus: eventBus)
         return builder(subscriptionBuilder).build()
     }
 }

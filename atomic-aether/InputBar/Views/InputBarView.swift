@@ -17,24 +17,28 @@ import SwiftUI
 struct InputBarView: View {
     @StateObject private var appearanceService = InputBarAppearanceService()
     @StateObject private var slashCommandDetector = SlashCommandDetector()
+    @EnvironmentObject var configBus: ConfigBus
+    @EnvironmentObject var eventBus: EventBus
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     @State private var onSubmit: (() -> Void)?
     
     var body: some View {
-        if let appearance = appearanceService.appearance {
-            inputBar(appearance: appearance)
-                .frame(width: appearance.dimensions.width)
-                .padding(.bottom, appearance.dimensions.bottomMargin)
-        } else if let error = appearanceService.loadError {
-            // Error state
-            Text("Error loading appearance: \(error)")
-                .foregroundColor(.red)
-                .padding()
-        } else {
-            // Loading state
-            ProgressView()
-                .padding()
+        Group {
+            if let appearance = appearanceService.appearance {
+                inputBar(appearance: appearance)
+                    .frame(width: appearance.dimensions.width)
+                    .padding(.bottom, appearance.dimensions.bottomMargin)
+            } else {
+                // Loading state - appearance will be loaded in onAppear
+                ProgressView()
+                    .padding()
+            }
+        }
+        .onAppear {
+            // Setup services with buses
+            appearanceService.setupWithConfigBus(configBus)
+            slashCommandDetector.setupWithBuses(configBus, eventBus)
         }
     }
     
