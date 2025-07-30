@@ -19,6 +19,9 @@ struct atomic_aetherApp: App {
     // ATOM 6: ConfigBus - Configuration management
     @StateObject private var configBus = ConfigBus()
     
+    // ATOM 7: Environment Configuration
+    @StateObject private var envLoader = EnvLoader()
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -37,6 +40,11 @@ struct atomic_aetherApp: App {
             .environmentObject(eventBus)
             .environmentObject(configBus)
             .environmentObject(eventLogger)
+            .environmentObject(envLoader)
+            .onAppear {
+                // Load environment variables
+                envLoader.load()
+            }
         }
     }
 }
