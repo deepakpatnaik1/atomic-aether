@@ -92,9 +92,7 @@ struct InputBarView: View {
     @ViewBuilder
     private func textEditor(appearance: InputBarAppearance) -> some View {
         // Calculate height based on slash command
-        let maxLines = slashCommandDetector.isExpanded && slashCommandDetector.activeCommand?.expandToLines != nil
-            ? slashCommandDetector.activeCommand!.expandToLines!
-            : appearance.multiline.maxLines
+        let maxLines = slashCommandDetector.activeCommand?.expandToLines ?? appearance.multiline.maxLines
         
         TextEditor(text: $text)
             .font(.system(size: appearance.textField.fontSize))

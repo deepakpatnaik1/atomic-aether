@@ -1,0 +1,11 @@
+{
+  "width": 700,
+  "padding": 20,
+  "messageSpacing": 4,
+  "speakerLabel": {
+    "fontSize": 13,
+    "borderWidth": 2,
+    "gradientLineHeight": 1,
+    "gradientLinePadding": 112
+  }
+}

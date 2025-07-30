@@ -83,7 +83,7 @@ class SlashCommandDetector: ObservableObject {
                 // Activate expansion
                 self.activeCommand = command
                 self.isExpanded = true
-            } else if self.activeCommand != nil && !text.starts(with: self.activeCommand!.trigger) {
+            } else if let activeCommand = self.activeCommand, !text.starts(with: activeCommand.trigger) {
                 // Text changed, no longer just the command
                 // Keep expanded but ready for manual clear
                 self.isExpanded = true
