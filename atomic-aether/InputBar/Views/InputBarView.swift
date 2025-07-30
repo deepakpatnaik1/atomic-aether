@@ -4,6 +4,10 @@
 //
 //  Pure visual input bar component with uniform padding
 //
+//  ATOM 2: Input Bar UI - Glassmorphic input bar with uniform padding
+//  ATOM 3: Multiline Text Support - TextEditor with natural growth
+//  ATOM 4: /journal Slash Command - Command detection and expansion
+//
 //  Atomic LEGO: UI-only, no behavior
 //  Just appearance as defined in configuration
 //

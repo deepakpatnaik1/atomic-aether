@@ -4,6 +4,8 @@
 //
 //  Created by Deepak Patnaik on 29.07.25.
 //
+//  ATOM 1: Black Background - Basic app structure with dark theme
+//
 
 import SwiftUI
 

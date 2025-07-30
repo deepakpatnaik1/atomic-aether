@@ -4,6 +4,8 @@
 //
 //  Service to load input bar appearance configuration
 //
+//  ATOM 2: Input Bar UI - Configuration loading service
+//
 //  Atomic LEGO: Loads appearance from JSON
 //  Simple service, no complex logic
 //

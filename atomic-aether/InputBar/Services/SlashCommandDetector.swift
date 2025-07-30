@@ -4,6 +4,8 @@
 //
 //  Service to detect and manage slash commands
 //
+//  ATOM 4: /journal Slash Command - Command detection service
+//
 //  Atomic LEGO: Single responsibility - detect commands
 //  Tracks state for height restoration
 //

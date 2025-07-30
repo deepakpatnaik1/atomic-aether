@@ -4,6 +4,9 @@
 //
 //  Pure data model for input bar visual appearance
 //
+//  ATOM 2: Input Bar UI - Configuration model for glassmorphic input bar
+//  ATOM 3: Multiline Text Support - Added multiline configuration
+//
 //  Atomic LEGO: Model for input bar styling
 //  No logic, just data structure matching JSON
 //

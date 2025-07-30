@@ -4,6 +4,8 @@
 //
 //  Model for slash command configuration
 //
+//  ATOM 4: /journal Slash Command - Command data model
+//
 //  Atomic LEGO: Pure data model for slash commands
 //  Matches JSON structure for easy configuration
 //
