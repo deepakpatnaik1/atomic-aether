@@ -1,0 +1,7 @@
+{
+  "submitKey": "return",
+  "submitModifiers": [],
+  "newlineKey": "return",
+  "newlineModifiers": ["shift", "option"],
+  "enabled": true
+}

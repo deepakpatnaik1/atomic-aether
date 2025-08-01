@@ -129,6 +129,22 @@ final class EventLogger: ObservableObject {
             return "Model defaults changed"
         case let modelEvent as ModelOverrideClearedEvent:
             return "Model override cleared: \(modelEvent.isAnthropic ? "Anthropic" : "Non-Anthropic")"
+        // ConversationFlow events
+        case let event as ConversationStartedEvent:
+            return "Conversation started with \(event.persona) using \(event.model)"
+        case let event as ConversationMessageSentEvent:
+            return "Message sent to \(event.persona): \(event.content.prefix(50))..."
+        case let event as ConversationResponseReceivedEvent:
+            return "Response received from \(event.persona)"
+        case let event as ConversationStreamingEvent:
+            return "Streaming response (\(event.contentLength) chars)"
+        case let event as ConversationStreamCompletedEvent:
+            return "Stream completed (\(event.success ? "success" : "failed"))"
+        case let event as ConversationErrorEvent:
+            return "Conversation error: \(event.error)"
+        // LLM events
+        case let event as LLMEvent:
+            return formatLLMEvent(event)
         default:
             return "Unknown event"
         }
@@ -226,6 +242,22 @@ final class EventLogger: ObservableObject {
             return "State cleared"
         default:
             return "State event"
+        }
+    }
+    
+    private func formatLLMEvent(_ event: LLMEvent) -> String {
+        switch event {
+        case .requestStarted(let model, let messageCount, _):
+            return "LLM request started: \(model) with \(messageCount) messages"
+        case .tokenReceived(let token, let model, _):
+            return "Token received from \(model): \(token.prefix(20))..."
+        case .responseCompleted(let model, let totalTokens, let duration, _):
+            let tokenInfo = totalTokens.map { " (\($0) tokens)" } ?? ""
+            return "Response completed: \(model)\(tokenInfo) in \(String(format: "%.2f", duration))s"
+        case .errorOccurred(let error, let model, _):
+            return "LLM error from \(model): \(error)"
+        case .streamingToggled(let enabled, _):
+            return "Streaming \(enabled ? "enabled" : "disabled")"
         }
     }
     
