@@ -35,6 +35,9 @@ struct atomic_aetherApp: App {
     // ATOM 11: ErrorBus - Centralized error handling
     @StateObject private var errorBus: ErrorBus
     
+    // ATOM 12: Model State Management
+    @StateObject private var modelStateService: ModelStateService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -52,19 +55,31 @@ struct atomic_aetherApp: App {
         _configBus = StateObject(wrappedValue: configBus)
         
         // Create StateBus with EventBus
-        _stateBus = StateObject(wrappedValue: StateBus(eventBus: eventBus))
+        let stateBus = StateBus(eventBus: eventBus)
+        _stateBus = StateObject(wrappedValue: stateBus)
         
         // Create ErrorBus with dependencies
-        _errorBus = StateObject(wrappedValue: ErrorBus(
+        let errorBus = ErrorBus(
             configBus: configBus,
             eventBus: eventBus
-        ))
+        )
+        _errorBus = StateObject(wrappedValue: errorBus)
         
         // Create LLMRouter with the same envLoader instance
-        _llmRouter = StateObject(wrappedValue: LLMRouter(
+        let llmRouter = LLMRouter(
             envLoader: envLoader,
             configBus: configBus,
             eventBus: eventBus
+        )
+        _llmRouter = StateObject(wrappedValue: llmRouter)
+        
+        // Create ModelStateService with all dependencies
+        _modelStateService = StateObject(wrappedValue: ModelStateService(
+            configBus: configBus,
+            stateBus: stateBus,
+            eventBus: eventBus,
+            errorBus: errorBus,
+            llmRouter: llmRouter
         ))
     }
     
@@ -83,6 +98,7 @@ struct atomic_aetherApp: App {
             .environmentObject(personaService)
             .environmentObject(stateBus)
             .environmentObject(errorBus)
+            .environmentObject(modelStateService)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
