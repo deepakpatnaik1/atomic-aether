@@ -115,6 +115,20 @@ final class EventLogger: ObservableObject {
             return formatConversationEvent(conversationEvent)
         case let navigationEvent as NavigationEvent:
             return formatNavigationEvent(navigationEvent)
+        case let stateEvent as StateEventType:
+            return formatStateEvent(stateEvent)
+        case let personaEvent as PersonaSwitchedEvent:
+            return "Persona switched: \(personaEvent.fromPersona) → \(personaEvent.toPersona)"
+        case let personaEvent as PersonaMessageProcessedEvent:
+            return "Persona message: \(personaEvent.persona) - '\(personaEvent.cleanedMessage.prefix(50))...'"
+        case let personaEvent as InvalidPersonaEvent:
+            return "Invalid persona: \(personaEvent.attemptedPersona)"
+        case let modelEvent as ModelSelectedEvent:
+            return "Model selected: \(modelEvent.model)"
+        case is ModelDefaultsChangedEvent:
+            return "Model defaults changed"
+        case let modelEvent as ModelOverrideClearedEvent:
+            return "Model override cleared: \(modelEvent.isAnthropic ? "Anthropic" : "Non-Anthropic")"
         default:
             return "Unknown event"
         }
@@ -201,6 +215,17 @@ final class EventLogger: ObservableObject {
             return "View appeared: \(view)"
         case .viewDisappeared(let view, _):
             return "View disappeared: \(view)"
+        }
+    }
+    
+    private func formatStateEvent(_ event: StateEventType) -> String {
+        switch event {
+        case let changed as StateChangedEvent:
+            return "State changed: \(changed.key)"
+        case is StateClearedEvent:
+            return "State cleared"
+        default:
+            return "State event"
         }
     }
     

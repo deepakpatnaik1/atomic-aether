@@ -57,7 +57,7 @@ final class StateBus: ObservableObject {
         objectWillChange.send()
         
         // Publish event for other atoms
-        eventBus.publish(StateEvents.changed(
+        eventBus.publish(StateChangedEvent(
             key: key.name,
             oldValue: oldValue,
             newValue: value
@@ -83,7 +83,7 @@ final class StateBus: ObservableObject {
         lock.unlock()
         
         objectWillChange.send()
-        eventBus.publish(StateEvents.cleared)
+        eventBus.publish(StateClearedEvent())
     }
     
     // MARK: - Convenience Methods

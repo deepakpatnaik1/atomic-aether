@@ -19,22 +19,27 @@ protocol StateEventType: AetherEvent {}
 
 // MARK: - State Events
 
-enum StateEvents: StateEventType {
-    case changed(key: String, oldValue: Any?, newValue: Any?)
-    case cleared
-    
-    // MARK: - AetherEvent Conformance
-    
-    var source: String {
-        return "StateBus"
-    }
+struct StateChangedEvent: StateEventType {
+    let key: String
+    let oldValue: Any?
+    let newValue: Any?
+    let source: String = "StateBus"
 }
 
-// MARK: - Convenience Extensions
+struct StateClearedEvent: StateEventType {
+    let source: String = "StateBus"
+}
 
-extension StateEvents {
-    /// Create a simple change event without old value
-    static func changed(key: String) -> StateEvents {
-        return .changed(key: key, oldValue: nil, newValue: nil)
+// MARK: - Convenience Namespace
+
+enum StateEvents {
+    /// Create a changed event
+    static func changed(key: String, oldValue: Any? = nil, newValue: Any? = nil) -> StateChangedEvent {
+        return StateChangedEvent(key: key, oldValue: oldValue, newValue: newValue)
+    }
+    
+    /// Create a cleared event
+    static var cleared: StateClearedEvent {
+        return StateClearedEvent()
     }
 }
