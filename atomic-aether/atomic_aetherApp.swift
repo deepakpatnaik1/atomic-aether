@@ -29,6 +29,9 @@ struct atomic_aetherApp: App {
     @StateObject private var messageStore = MessageStore()
     @StateObject private var personaService = PersonaService()
     
+    // ATOM 10: StateBus - Shared state management
+    @StateObject private var stateBus: StateBus
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -44,6 +47,9 @@ struct atomic_aetherApp: App {
         // Store envLoader as StateObject
         _envLoader = StateObject(wrappedValue: envLoader)
         _configBus = StateObject(wrappedValue: configBus)
+        
+        // Create StateBus with EventBus
+        _stateBus = StateObject(wrappedValue: StateBus(eventBus: eventBus))
         
         // Create LLMRouter with the same envLoader instance
         _llmRouter = StateObject(wrappedValue: LLMRouter(
@@ -66,6 +72,7 @@ struct atomic_aetherApp: App {
             .environmentObject(llmRouter)
             .environmentObject(messageStore)
             .environmentObject(personaService)
+            .environmentObject(stateBus)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
