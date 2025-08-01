@@ -19,6 +19,16 @@ struct ContentView: View {
     
     var body: some View {
         VStack(spacing: 0) {
+            // Top bar with persona indicator
+            HStack {
+                PersonaIndicator()
+                    .padding(.leading)
+                
+                Spacer()
+            }
+            .padding(.vertical, 8)
+            .background(themeService.current.backgroundColor.opacity(0.8))
+            
             // Scrollback
             ScrollbackView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -38,6 +38,9 @@ struct atomic_aetherApp: App {
     // ATOM 12: Model State Management
     @StateObject private var modelStateService: ModelStateService
     
+    // ATOM 13: Persona System
+    @StateObject private var personaStateService: PersonaStateService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -74,12 +77,22 @@ struct atomic_aetherApp: App {
         _llmRouter = StateObject(wrappedValue: llmRouter)
         
         // Create ModelStateService with all dependencies
-        _modelStateService = StateObject(wrappedValue: ModelStateService(
+        let modelStateService = ModelStateService(
             configBus: configBus,
             stateBus: stateBus,
             eventBus: eventBus,
             errorBus: errorBus,
             llmRouter: llmRouter
+        )
+        _modelStateService = StateObject(wrappedValue: modelStateService)
+        
+        // Create PersonaStateService with all dependencies
+        _personaStateService = StateObject(wrappedValue: PersonaStateService(
+            configBus: configBus,
+            stateBus: stateBus,
+            eventBus: eventBus,
+            errorBus: errorBus,
+            modelStateService: modelStateService
         ))
     }
     
@@ -99,6 +112,7 @@ struct atomic_aetherApp: App {
             .environmentObject(stateBus)
             .environmentObject(errorBus)
             .environmentObject(modelStateService)
+            .environmentObject(personaStateService)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
@@ -112,6 +126,12 @@ struct atomic_aetherApp: App {
                 // Setup LLM services immediately after environment is loaded
                 // The environment loading is synchronous, so it's ready now
                 llmRouter.setupServices()
+                
+                // Setup ModelStateService after view is ready
+                modelStateService.setup()
+                
+                // Setup PersonaStateService after view is ready
+                personaStateService.setup()
             }
         }
     }

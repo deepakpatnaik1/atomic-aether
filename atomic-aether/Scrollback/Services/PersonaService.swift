@@ -36,7 +36,23 @@ class PersonaService: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     private func loadPersonas() {
-        if let config = configBus?.load("Personas", as: PersonasConfiguration.self) {
+        // Try new format first
+        if let config = configBus?.load("Personas", as: PersonaSystemConfiguration.self) {
+            // Convert to legacy format for compatibility
+            var legacyPersonas: [String: Persona] = [:]
+            for (id, definition) in config.personas {
+                legacyPersonas[id] = Persona(
+                    displayName: definition.displayName,
+                    accentColor: Persona.ColorComponents(
+                        red: definition.accentColor.red,
+                        green: definition.accentColor.green,
+                        blue: definition.accentColor.blue
+                    )
+                )
+            }
+            self.personas = legacyPersonas
+        } else if let config = configBus?.load("Personas", as: PersonasConfiguration.self) {
+            // Fallback to legacy format
             self.personas = config.personas
         }
     }

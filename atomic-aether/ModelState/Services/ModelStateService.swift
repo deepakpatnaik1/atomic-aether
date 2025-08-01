@@ -35,7 +35,7 @@ final class ModelStateService: ObservableObject {
     private let errorBus: ErrorBus
     private let llmRouter: LLMRouter
     
-    private var configuration: ModelStateConfiguration
+    private var configuration: ModelStateConfiguration = .default
     
     // MARK: - Computed Properties
     
@@ -72,29 +72,25 @@ final class ModelStateService: ObservableObject {
         self.errorBus = errorBus
         self.llmRouter = llmRouter
         
-        // Load configuration
-        self.configuration = configBus.load("ModelState", as: ModelStateConfiguration.self) ?? .default
-        
-        // Set defaults from configuration
-        self.currentDefaultAnthropicModel = configuration.defaultAnthropicModel
-        self.currentDefaultNonAnthropicModel = configuration.defaultNonAnthropicModel
-        
-        // Restore overrides from StateBus
-        let storedAnthropic = stateBus.get(.currentAnthropicModel) ?? ""
-        self.currentAnthropicModel = storedAnthropic.isEmpty ? nil : storedAnthropic
-        
-        let storedNonAnthropic = stateBus.get(.currentNonAnthropicModel) ?? ""
-        self.currentNonAnthropicModel = storedNonAnthropic.isEmpty ? nil : storedNonAnthropic
-        
-        // Validate restored models
-        validateRestoredModels()
-        
-        // Note: lastSelectedModel will be used by UI in future atoms
-        // For now, we just check if it exists for debugging
-        _ = stateBus.get(.lastSelectedModel)
+        // Initialize with safe defaults - DO NOT load config or set values here
+        self.currentDefaultAnthropicModel = "anthropic:claude-sonnet-4-20250514"
+        self.currentDefaultNonAnthropicModel = "openai:gpt-4.1-mini-2025-04-14"
     }
     
     // MARK: - Public Methods
+    
+    /// Setup method to be called after view initialization
+    func setup() {
+        // Load configuration
+        if let loadedConfig = configBus.load("ModelState", as: ModelStateConfiguration.self) {
+            self.configuration = loadedConfig
+            self.currentDefaultAnthropicModel = loadedConfig.defaultAnthropicModel
+            self.currentDefaultNonAnthropicModel = loadedConfig.defaultNonAnthropicModel
+        }
+        
+        // Restore persisted state
+        restorePersistedState()
+    }
     
     /// Select a model (determines if it's Anthropic or non-Anthropic)
     func selectModel(_ model: String) {
@@ -173,6 +169,22 @@ final class ModelStateService: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
+    private func restorePersistedState() {
+        // Restore overrides from StateBus
+        let storedAnthropic = stateBus.get(.currentAnthropicModel) ?? ""
+        self.currentAnthropicModel = storedAnthropic.isEmpty ? nil : storedAnthropic
+        
+        let storedNonAnthropic = stateBus.get(.currentNonAnthropicModel) ?? ""
+        self.currentNonAnthropicModel = storedNonAnthropic.isEmpty ? nil : storedNonAnthropic
+        
+        // Validate restored models
+        validateRestoredModels()
+        
+        // Note: lastSelectedModel will be used by UI in future atoms
+        // For now, we just check if it exists for debugging
+        _ = stateBus.get(.lastSelectedModel)
+    }
     
     private func validateRestoredModels() {
         // Validate Anthropic override
