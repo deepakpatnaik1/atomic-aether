@@ -17,12 +17,12 @@ import SwiftUI
 struct InputBarView: View {
     @StateObject private var appearanceService = InputBarAppearanceService()
     @StateObject private var slashCommandDetector = SlashCommandDetector()
+    @StateObject private var keyboardService = KeyboardService()
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var eventBus: EventBus
     @EnvironmentObject var conversationOrchestrator: ConversationOrchestrator
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
-    @State private var onSubmit: (() -> Void)?
     
     var body: some View {
         Group {
@@ -40,6 +40,7 @@ struct InputBarView: View {
             // Setup services with buses
             appearanceService.setupWithConfigBus(configBus)
             slashCommandDetector.setupWithBuses(configBus, eventBus)
+            keyboardService.setupWithConfigBus(configBus)
         }
     }
     
@@ -130,9 +131,7 @@ struct InputBarView: View {
                 }
                 return .ignored
             }
-            .onSubmit {
-                handleSubmit()
-            }
+            .smartReturnKey(keyboardService: keyboardService, onSubmit: handleSubmit)
     }
     
     @ViewBuilder
@@ -159,9 +158,7 @@ struct InputBarView: View {
                 }
                 return .ignored
             }
-            .onSubmit {
-                handleSubmit()
-            }
+            .smartReturnKey(keyboardService: keyboardService, onSubmit: handleSubmit)
     }
     
     private func handleSubmit() {

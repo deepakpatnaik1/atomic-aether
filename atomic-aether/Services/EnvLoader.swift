@@ -9,6 +9,11 @@
 //  Atomic LEGO: Single responsibility - read .env file
 //  No dependencies, no hardcoding, easy to remove
 //
+//  Loading priority:
+//  1. Xcode scheme environment variables (for development)
+//  2. Bundle resources (for distribution - no permissions needed)
+//  3. App container Documents (user-provided fallback)
+//
 
 import Foundation
 import SwiftUI
@@ -24,15 +29,17 @@ class EnvLoader: ObservableObject {
             return
         }
         
-        // Strategy 2: Try .env file from project directory
-        let projectPath = URL(fileURLWithPath: "/Users/buda-air/Documents/code/atomic-aether/.env")
-        if loadEnvFromPath(projectPath) {
-            return
-        }
-        
-        // Strategy 3: Try bundle resources (for packaged apps)
+        // Strategy 2: Try bundle resources (packaged with app)
         if let bundleURL = Bundle.main.url(forResource: ".env", withExtension: nil) {
             if loadEnvFromPath(bundleURL) {
+                return
+            }
+        }
+        
+        // Strategy 3: Try app's container Documents (if user placed it there)
+        let containerDocs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+        if let docsURL = containerDocs?.appendingPathComponent(".env") {
+            if loadEnvFromPath(docsURL) {
                 return
             }
         }
