@@ -88,6 +88,12 @@ struct InputBarView: View {
             glassmorphicBackground(appearance: appearance)
         )
         .preferredColorScheme(.dark)
+        .background(
+            // Invisible button for Cmd+Enter shortcut
+            Button("") { handleSubmit() }
+                .keyboardShortcut(.return, modifiers: .command)
+                .opacity(0)
+        )
     }
     
     @ViewBuilder
