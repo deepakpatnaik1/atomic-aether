@@ -15,6 +15,7 @@ struct ContentView: View {
     @EnvironmentObject var themeService: ThemeService
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var messageStore: MessageStore
+    @EnvironmentObject var errorBus: ErrorBus
     
     var body: some View {
         VStack(spacing: 0) {
@@ -25,6 +26,7 @@ struct ContentView: View {
             // Input Bar
             InputBarView()
         }
+        .errorToast() // ATOM 11: ErrorBus toast overlay
         .onAppear {
             // Setup services with ConfigBus
             themeService.setupWithConfigBus(configBus)

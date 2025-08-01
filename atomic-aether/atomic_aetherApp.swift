@@ -32,6 +32,9 @@ struct atomic_aetherApp: App {
     // ATOM 10: StateBus - Shared state management
     @StateObject private var stateBus: StateBus
     
+    // ATOM 11: ErrorBus - Centralized error handling
+    @StateObject private var errorBus: ErrorBus
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -50,6 +53,12 @@ struct atomic_aetherApp: App {
         
         // Create StateBus with EventBus
         _stateBus = StateObject(wrappedValue: StateBus(eventBus: eventBus))
+        
+        // Create ErrorBus with dependencies
+        _errorBus = StateObject(wrappedValue: ErrorBus(
+            configBus: configBus,
+            eventBus: eventBus
+        ))
         
         // Create LLMRouter with the same envLoader instance
         _llmRouter = StateObject(wrappedValue: LLMRouter(
@@ -73,12 +82,16 @@ struct atomic_aetherApp: App {
             .environmentObject(messageStore)
             .environmentObject(personaService)
             .environmentObject(stateBus)
+            .environmentObject(errorBus)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
                 
                 // Setup services with ConfigBus
                 personaService.setupWithConfigBus(configBus)
+                
+                // Setup ErrorBus configuration
+                errorBus.setupConfiguration()
                 
                 // Setup LLM services immediately after environment is loaded
                 // The environment loading is synchronous, so it's ready now
