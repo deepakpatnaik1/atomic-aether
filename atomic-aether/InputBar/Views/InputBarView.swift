@@ -19,6 +19,7 @@ struct InputBarView: View {
     @StateObject private var slashCommandDetector = SlashCommandDetector()
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var eventBus: EventBus
+    @EnvironmentObject var conversationOrchestrator: ConversationOrchestrator
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     @State private var onSubmit: (() -> Void)?
@@ -158,11 +159,15 @@ struct InputBarView: View {
     }
     
     private func handleSubmit() {
-        // For now, just clear the text
-        // In real app, this would send the message
-        if !text.isEmpty {
-            print("Submitted: \(text)")
-            text = ""
+        guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard !conversationOrchestrator.isProcessing else { return }
+        
+        let message = text
+        text = "" // Clear immediately for responsiveness
+        
+        // Process message asynchronously
+        Task {
+            await conversationOrchestrator.processMessage(message)
         }
     }
     

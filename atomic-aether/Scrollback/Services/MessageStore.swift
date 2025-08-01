@@ -29,6 +29,21 @@ class MessageStore: ObservableObject {
         }
     }
     
+    /// Update message content and streaming state
+    func updateMessage(_ id: UUID, content: String, isStreaming: Bool) {
+        if let index = messages.firstIndex(where: { $0.id == id }) {
+            var updatedMessage = messages[index]
+            updatedMessage.content = content
+            updatedMessage.isStreaming = isStreaming
+            messages[index] = updatedMessage
+        }
+    }
+    
+    /// Get a message by ID
+    func message(by id: UUID) -> Message? {
+        messages.first(where: { $0.id == id })
+    }
+    
     /// Clear all messages
     func clearMessages() {
         messages.removeAll()

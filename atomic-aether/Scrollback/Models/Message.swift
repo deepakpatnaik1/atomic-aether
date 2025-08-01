@@ -15,9 +15,9 @@ import Foundation
 struct Message: Identifiable, Equatable {
     let id = UUID()
     let speaker: String        // "boss" or "system" (will map to personas)
-    let content: String
+    var content: String
     let timestamp: Date
-    let isStreaming: Bool
+    var isStreaming: Bool
     let modelUsed: String?     // Which LLM model was used (e.g., "openai:gpt-4o")
     
     init(

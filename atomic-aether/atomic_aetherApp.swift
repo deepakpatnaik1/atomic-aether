@@ -26,7 +26,7 @@ struct atomic_aetherApp: App {
     @StateObject private var llmRouter: LLMRouter
     
     // ATOM 9: Scrollback Message Area
-    @StateObject private var messageStore = MessageStore()
+    @StateObject private var messageStore: MessageStore
     @StateObject private var personaService = PersonaService()
     
     // ATOM 10: StateBus - Shared state management
@@ -41,6 +41,9 @@ struct atomic_aetherApp: App {
     // ATOM 13: Persona System
     @StateObject private var personaStateService: PersonaStateService
     
+    // ATOM 15: Conversation Flow
+    @StateObject private var conversationOrchestrator: ConversationOrchestrator
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -52,10 +55,12 @@ struct atomic_aetherApp: App {
         // Create shared instances
         let envLoader = EnvLoader()
         let configBus = ConfigBus()
+        let messageStore = MessageStore()
         
         // Store envLoader as StateObject
         _envLoader = StateObject(wrappedValue: envLoader)
         _configBus = StateObject(wrappedValue: configBus)
+        _messageStore = StateObject(wrappedValue: messageStore)
         
         // Create StateBus with EventBus
         let stateBus = StateBus(eventBus: eventBus)
@@ -87,12 +92,23 @@ struct atomic_aetherApp: App {
         _modelStateService = StateObject(wrappedValue: modelStateService)
         
         // Create PersonaStateService with all dependencies
-        _personaStateService = StateObject(wrappedValue: PersonaStateService(
+        let personaStateService = PersonaStateService(
             configBus: configBus,
             stateBus: stateBus,
             eventBus: eventBus,
             errorBus: errorBus,
             modelStateService: modelStateService
+        )
+        _personaStateService = StateObject(wrappedValue: personaStateService)
+        
+        // Create ConversationOrchestrator with all dependencies
+        _conversationOrchestrator = StateObject(wrappedValue: ConversationOrchestrator(
+            configBus: configBus,
+            eventBus: eventBus,
+            errorBus: errorBus,
+            personaStateService: personaStateService,
+            llmRouter: llmRouter,
+            messageStore: messageStore
         ))
     }
     
@@ -113,6 +129,7 @@ struct atomic_aetherApp: App {
             .environmentObject(errorBus)
             .environmentObject(modelStateService)
             .environmentObject(personaStateService)
+            .environmentObject(conversationOrchestrator)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
@@ -132,6 +149,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup PersonaStateService after view is ready
                 personaStateService.setup()
+                
+                // Setup ConversationOrchestrator after view is ready
+                conversationOrchestrator.setup()
             }
         }
     }

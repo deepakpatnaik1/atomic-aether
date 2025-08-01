@@ -1,0 +1,9 @@
+{
+  "maxContextMessages": 20,
+  "includeSystemPrompt": true,
+  "streamingEnabled": true,
+  "typingIndicatorDelay": 0.5,
+  "errorRetryAttempts": 2,
+  "requestTimeout": 30.0,
+  "preserveFormatting": true
+}
