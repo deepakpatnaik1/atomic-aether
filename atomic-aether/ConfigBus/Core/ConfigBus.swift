@@ -33,7 +33,7 @@ final class ConfigBus: ObservableObject {
         
         // Load from bundle
         guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
-            print("❌ Config not found: \(name).json")
+            // Config file not found
             return nil
         }
         
@@ -47,7 +47,7 @@ final class ConfigBus: ObservableObject {
             
             return config
         } catch {
-            print("❌ Failed to load \(name).json: \(error)")
+            // Failed to decode config
             return nil
         }
     }
@@ -92,9 +92,9 @@ final class ConfigBus: ObservableObject {
             let config = try JSONDecoder().decode(type, from: data)
             configs[name] = config
             objectWillChange.send()
-            print("🔄 Reloaded: \(name).json")
+            // Config reloaded successfully
         } catch {
-            print("❌ Reload failed for \(name).json: \(error)")
+            // Reload failed - silent failure
         }
     }
     

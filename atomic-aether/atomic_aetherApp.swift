@@ -20,7 +20,7 @@ struct atomic_aetherApp: App {
     @StateObject private var configBus = ConfigBus()
     
     // ATOM 7: Environment Configuration
-    @StateObject private var envLoader = EnvLoader()
+    @StateObject private var envLoader: EnvLoader
     
     // ATOM 8: LLM Services
     @StateObject private var llmRouter: LLMRouter
@@ -37,11 +37,15 @@ struct atomic_aetherApp: App {
         // Create EventLogger with EventBus
         _eventLogger = StateObject(wrappedValue: EventLogger(eventBus: eventBus))
         
-        // Create core services needed by LLMRouter
+        // Create shared instances
         let envLoader = EnvLoader()
         let configBus = ConfigBus()
         
-        // Create LLMRouter with dependencies
+        // Store envLoader as StateObject
+        _envLoader = StateObject(wrappedValue: envLoader)
+        _configBus = StateObject(wrappedValue: configBus)
+        
+        // Create LLMRouter with the same envLoader instance
         _llmRouter = StateObject(wrappedValue: LLMRouter(
             envLoader: envLoader,
             configBus: configBus,
@@ -66,11 +70,12 @@ struct atomic_aetherApp: App {
                 // Load environment variables
                 envLoader.load()
                 
-                // Setup LLM services after environment is loaded
-                Task {
-                    try? await Task.sleep(nanoseconds: 100_000_000) // Small delay for env loading
-                    llmRouter.setupServices()
-                }
+                // Setup services with ConfigBus
+                personaService.setupWithConfigBus(configBus)
+                
+                // Setup LLM services immediately after environment is loaded
+                // The environment loading is synchronous, so it's ready now
+                llmRouter.setupServices()
             }
         }
     }

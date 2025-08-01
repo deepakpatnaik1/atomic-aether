@@ -29,13 +29,12 @@ class LLMRouter: ObservableObject, LLMService {
         self.configBus = configBus
         self.eventBus = eventBus
         
-        setupServices()
+        // Don't setup services here - wait for environment to load
     }
     
     func setupServices() {
         // Load configuration
         guard let config = configBus.load("LLMProviders", as: LLMConfiguration.self) else {
-            print("❌ Failed to load LLM configuration")
             return
         }
         
@@ -43,7 +42,6 @@ class LLMRouter: ObservableObject, LLMService {
         
         // Get API keys
         guard let environment = envLoader.environment else {
-            print("❌ Environment not loaded")
             return
         }
         
@@ -93,13 +91,6 @@ class LLMRouter: ObservableObject, LLMService {
         }
         
         isConfigured = !services.isEmpty
-        
-        if isConfigured {
-            print("✅ LLM Router configured with providers: \(services.keys.map { $0.rawValue })")
-            print("📋 Available models: \(availableModels)")
-        } else {
-            print("❌ No LLM services configured - check API keys")
-        }
     }
     
     func supportsModel(_ model: String) -> Bool {

@@ -37,9 +37,8 @@ class SlashCommandDetector: ObservableObject {
         // Load commands from ConfigBus
         if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
             commands = config.commands
-            print("✅ Loaded \(commands.count) slash commands from ConfigBus")
+            // Commands loaded successfully
         } else {
-            print("❌ FATAL: SlashCommands.json missing from bundle")
             commands = []
         }
         
@@ -48,7 +47,7 @@ class SlashCommandDetector: ObservableObject {
             .sink { [weak self] _ in
                 if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
                     self?.commands = config.commands
-                    print("🔄 Reloaded \(config.commands.count) slash commands")
+                    // Commands reloaded
                 }
             }
     }
@@ -101,16 +100,16 @@ class SlashCommandDetector: ObservableObject {
     func shouldAllowCollapse(text: String) -> Bool {
         // Allow collapse if we have an active command and text is empty (command was cleared)
         guard activeCommand != nil else { 
-            print("❌ No active command")
+            // No active command
             return false 
         }
         let shouldCollapse = text.isEmpty && isExpanded
-        print("🔍 Checking collapse: text='\(text)', isExpanded=\(isExpanded), allow=\(shouldCollapse)")
+        // Check collapse conditions
         return shouldCollapse
     }
     
     func collapse() {
-        print("✅ Collapsing input bar")
+        // Collapse input bar
         // Dispatch to avoid "Publishing changes from within view updates" warning
         DispatchQueue.main.async { [weak self] in
             self?.activeCommand = nil

@@ -43,3 +43,7 @@ fastlane/test_output
 *.xcworkspace
 !default.xcworkspace
 iOSInjectionProject/
+
+# Xcode Scheme files (they contain environment variables/secrets)
+*.xcscheme
+!default.xcscheme

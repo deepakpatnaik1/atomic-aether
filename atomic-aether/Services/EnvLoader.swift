@@ -17,28 +17,63 @@ import SwiftUI
 class EnvLoader: ObservableObject {
     @Published var environment: Environment?
     
-    /// Load environment variables from .env file
+    /// Load environment variables from .env file or process environment
     func load() {
-        // Try project root first (for development)
-        let projectRoot = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-        let envPath = projectRoot.appendingPathComponent(".env")
+        // Strategy 1: Try process environment variables (Xcode scheme)
+        if loadFromProcessEnvironment() {
+            return
+        }
         
-        do {
-            let envContent = try String(contentsOf: envPath, encoding: .utf8)
-            parseEnvironment(from: envContent)
-            print("✅ Loaded environment from .env")
-        } catch {
-            print("❌ Failed to load .env file: \(error)")
-            // Try bundle path as fallback
-            if let bundlePath = Bundle.main.path(forResource: ".env", ofType: nil) {
-                do {
-                    let envContent = try String(contentsOfFile: bundlePath, encoding: .utf8)
-                    parseEnvironment(from: envContent)
-                    print("✅ Loaded environment from bundle")
-                } catch {
-                    print("❌ Failed to load .env from bundle: \(error)")
-                }
+        // Strategy 2: Try .env file from project directory
+        let projectPath = URL(fileURLWithPath: "/Users/buda-air/Documents/code/atomic-aether/.env")
+        if loadEnvFromPath(projectPath) {
+            return
+        }
+        
+        // Strategy 3: Try bundle resources (for packaged apps)
+        if let bundleURL = Bundle.main.url(forResource: ".env", withExtension: nil) {
+            if loadEnvFromPath(bundleURL) {
+                return
             }
+        }
+        
+        // Only print error if no environment found
+        print("❌ No environment variables found. See ENVIRONMENT_SETUP.md for configuration instructions.")
+    }
+    
+    /// Load from process environment (Xcode scheme variables)
+    private func loadFromProcessEnvironment() -> Bool {
+        let processInfo = ProcessInfo.processInfo
+        let env = processInfo.environment
+        
+        let openAIKey = env["OPENAI_API_KEY"]
+        let anthropicKey = env["ANTHROPIC_API_KEY"]
+        let fireworksKey = env["FIREWORKS_API_KEY"]
+        
+        // Check if we have at least one key
+        if openAIKey != nil || anthropicKey != nil || fireworksKey != nil {
+            environment = Environment(
+                openAIKey: openAIKey,
+                anthropicKey: anthropicKey,
+                fireworksKey: fireworksKey
+            )
+            
+            // Silent success - no logging needed
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    private func loadEnvFromPath(_ path: URL) -> Bool {
+        do {
+            let envContent = try String(contentsOf: path, encoding: .utf8)
+            parseEnvironment(from: envContent)
+            return true
+        } catch {
+            // Silent failure - it's expected during search
+            return false
         }
     }
     
@@ -84,12 +119,6 @@ class EnvLoader: ObservableObject {
             fireworksKey: fireworksKey
         )
         
-        // Log what we found (without exposing keys)
-        if let env = environment {
-            print("🔑 API Keys loaded:")
-            if env.openAIKey != nil { print("  - OpenAI: ✅") }
-            if env.anthropicKey != nil { print("  - Anthropic: ✅") }
-            if env.fireworksKey != nil { print("  - Fireworks: ✅") }
-        }
+        // Silent success - no logging needed
     }
 }
