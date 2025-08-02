@@ -1,0 +1,15 @@
+{
+  "groupByProvider": true,
+  "showProviderHeaders": true,
+  "showCheckmark": true,
+  "providerIcons": {
+    "anthropic": "brain.head.profile",
+    "openai": "cpu",
+    "fireworks": "flame",
+    "groq": "bolt",
+    "cohere": "text.bubble",
+    "mistral": "wind"
+  },
+  "providerOrder": ["anthropic", "openai", "fireworks"],
+  "allowDynamicModels": false
+}

@@ -94,8 +94,9 @@ final class ModelStateService: ObservableObject {
     
     /// Select a model (determines if it's Anthropic or non-Anthropic)
     func selectModel(_ model: String) {
-        // Validate model exists
-        guard llmRouter.supportsModel(model) else {
+        // Validate model exists - trust availableModels from llmRouter
+        let allAvailable = llmRouter.availableModels
+        guard allAvailable.contains(model) || configuration.isValidModel(model) else {
             errorBus.report(
                 message: "Invalid model: \(model)",
                 from: "ModelStateService",

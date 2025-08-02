@@ -130,6 +130,23 @@ class EnvLoader: ObservableObject {
     
     /// Load from Keychain
     private func loadFromKeychain() -> Bool {
+        // Try batch retrieval first (single authentication)
+        if let allKeys = KeychainService.retrieveAll() {
+            let openAIKey = allKeys[.openAIKey]
+            let anthropicKey = allKeys[.anthropicKey]
+            let fireworksKey = allKeys[.fireworksKey]
+            
+            if openAIKey != nil || anthropicKey != nil || fireworksKey != nil {
+                environment = Environment(
+                    openAIKey: openAIKey,
+                    anthropicKey: anthropicKey,
+                    fireworksKey: fireworksKey
+                )
+                return true
+            }
+        }
+        
+        // Fallback to individual retrieval (backward compatibility)
         let openAIKey = KeychainService.retrieve(key: .openAIKey)
         let anthropicKey = KeychainService.retrieve(key: .anthropicKey)
         let fireworksKey = KeychainService.retrieve(key: .fireworksKey)
@@ -141,6 +158,14 @@ class EnvLoader: ObservableObject {
                 anthropicKey: anthropicKey,
                 fireworksKey: fireworksKey
             )
+            
+            // Migrate to batch storage for next time
+            var keysToSave: [KeychainService.KeychainKey: String] = [:]
+            if let key = openAIKey { keysToSave[.openAIKey] = key }
+            if let key = anthropicKey { keysToSave[.anthropicKey] = key }
+            if let key = fireworksKey { keysToSave[.fireworksKey] = key }
+            _ = KeychainService.saveAll(keysToSave)
+            
             return true
         }
         
@@ -151,15 +176,14 @@ class EnvLoader: ObservableObject {
     private func migrateToKeychain() {
         guard let env = environment else { return }
         
-        if let key = env.openAIKey {
-            _ = KeychainService.save(key: .openAIKey, value: key)
-        }
-        if let key = env.anthropicKey {
-            _ = KeychainService.save(key: .anthropicKey, value: key)
-        }
-        if let key = env.fireworksKey {
-            _ = KeychainService.save(key: .fireworksKey, value: key)
-        }
+        // Collect all keys
+        var keysToSave: [KeychainService.KeychainKey: String] = [:]
+        if let key = env.openAIKey { keysToSave[.openAIKey] = key }
+        if let key = env.anthropicKey { keysToSave[.anthropicKey] = key }
+        if let key = env.fireworksKey { keysToSave[.fireworksKey] = key }
+        
+        // Save all at once (single authentication prompt)
+        _ = KeychainService.saveAll(keysToSave)
         
         // Silent migration - keys saved to Keychain
     }

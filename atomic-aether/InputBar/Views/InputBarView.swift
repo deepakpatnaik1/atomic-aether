@@ -22,6 +22,8 @@ struct InputBarView: View {
     @EnvironmentObject var eventBus: EventBus
     @EnvironmentObject var conversationOrchestrator: ConversationOrchestrator
     @EnvironmentObject var modelDisplayService: ModelDisplayService
+    @EnvironmentObject var modelPickerService: ModelPickerService
+    @EnvironmentObject var personaStateService: PersonaStateService
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     
@@ -61,7 +63,8 @@ struct InputBarView: View {
                     .font(.system(size: appearance.controls.plusButton.size, weight: .medium))
                     .foregroundColor(.white.opacity(appearance.controls.plusButton.opacity))
                 
-                ModelIndicatorView(
+                ModelPickerView(
+                    modelPickerService: modelPickerService,
                     modelDisplayService: modelDisplayService,
                     fontSize: appearance.controls.modelPicker.fontSize,
                     opacity: appearance.controls.modelPicker.opacity
@@ -125,6 +128,9 @@ struct InputBarView: View {
                 if slashCommandDetector.handleTextChange(newValue) {
                     // Clear text when command is detected
                     text = ""
+                } else {
+                    // Check if first word is a persona name for real-time switching
+                    checkForPersonaSwitch(newValue)
                 }
             }
             .onKeyPress(.escape) {
@@ -152,6 +158,9 @@ struct InputBarView: View {
                 if slashCommandDetector.handleTextChange(newValue) {
                     // Clear text when command is detected
                     text = ""
+                } else {
+                    // Check if first word is a persona name for real-time switching
+                    checkForPersonaSwitch(newValue)
                 }
             }
             .onKeyPress(.escape) {
@@ -174,6 +183,22 @@ struct InputBarView: View {
         // Process message asynchronously
         Task {
             await conversationOrchestrator.processMessage(message)
+        }
+    }
+    
+    private func checkForPersonaSwitch(_ text: String) {
+        // Extract first word
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        let words = trimmed.split(separator: " ", maxSplits: 1)
+        
+        if let firstWord = words.first {
+            let potentialPersona = String(firstWord).lowercased()
+            
+            // Check if it's a valid persona
+            if personaStateService.configuration.isValidPersona(potentialPersona) {
+                // Switch persona immediately for UI update
+                personaStateService.switchToPersona(potentialPersona)
+            }
         }
     }
     

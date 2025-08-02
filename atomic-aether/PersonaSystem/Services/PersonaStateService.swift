@@ -147,6 +147,7 @@ final class PersonaStateService: ObservableObject {
         
         if persona.isAnthropic {
             // Switching to Claude
+            currentAnthropicPersona = personaId
             currentPersona = personaId
         } else {
             // Switching to non-Anthropic persona

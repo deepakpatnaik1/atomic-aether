@@ -48,6 +48,9 @@ struct atomic_aetherApp: App {
     // ATOM 18: Dynamic Model Display
     @StateObject private var modelDisplayService: ModelDisplayService
     
+    // ATOM 19: Interactive Model Picker
+    @StateObject private var modelPickerService: ModelPickerService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -116,9 +119,19 @@ struct atomic_aetherApp: App {
         ))
         
         // Create ModelDisplayService with dependencies
-        _modelDisplayService = StateObject(wrappedValue: ModelDisplayService(
+        let modelDisplayService = ModelDisplayService(
             configBus: configBus,
-            stateBus: stateBus,
+            eventBus: eventBus,
+            modelStateService: modelStateService,
+            personaStateService: personaStateService
+        )
+        _modelDisplayService = StateObject(wrappedValue: modelDisplayService)
+        
+        // Create ModelPickerService with dependencies
+        _modelPickerService = StateObject(wrappedValue: ModelPickerService(
+            configBus: configBus,
+            modelStateService: modelStateService,
+            modelDisplayService: modelDisplayService,
             personaStateService: personaStateService
         ))
     }
@@ -142,6 +155,7 @@ struct atomic_aetherApp: App {
             .environmentObject(personaStateService)
             .environmentObject(conversationOrchestrator)
             .environmentObject(modelDisplayService)
+            .environmentObject(modelPickerService)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
@@ -167,6 +181,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup ModelDisplayService after view is ready
                 modelDisplayService.setup()
+                
+                // Setup ModelPickerService after view is ready
+                modelPickerService.setup()
             }
         }
         .commands {
