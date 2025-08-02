@@ -45,6 +45,9 @@ struct atomic_aetherApp: App {
     // ATOM 15: Conversation Flow
     @StateObject private var conversationOrchestrator: ConversationOrchestrator
     
+    // ATOM 18: Dynamic Model Display
+    @StateObject private var modelDisplayService: ModelDisplayService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -111,6 +114,12 @@ struct atomic_aetherApp: App {
             llmRouter: llmRouter,
             messageStore: messageStore
         ))
+        
+        // Create ModelDisplayService with dependencies
+        _modelDisplayService = StateObject(wrappedValue: ModelDisplayService(
+            configBus: configBus,
+            personaStateService: personaStateService
+        ))
     }
     
     var body: some Scene {
@@ -131,6 +140,7 @@ struct atomic_aetherApp: App {
             .environmentObject(modelStateService)
             .environmentObject(personaStateService)
             .environmentObject(conversationOrchestrator)
+            .environmentObject(modelDisplayService)
             .onAppear {
                 // Load environment variables
                 envLoader.load()
@@ -153,6 +163,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup ConversationOrchestrator after view is ready
                 conversationOrchestrator.setup()
+                
+                // Setup ModelDisplayService after view is ready
+                modelDisplayService.setup()
             }
         }
         .commands {

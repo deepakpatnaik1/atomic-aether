@@ -1,0 +1,11 @@
+{
+  "modelDisplayNames": {
+    "anthropic:claude-sonnet-4-20250514": "Claude Sonnet 4",
+    "anthropic:claude-opus-4-20250514": "Claude Opus 4",
+    "openai:gpt-4.1-mini-2025-04-14": "GPT 4.1 mini",
+    "openai:gpt-4o": "GPT 4o",
+    "fireworks:accounts/fireworks/models/llama4-maverick-instruct-basic": "Llama 4 Maverick"
+  },
+  "showProvider": false,
+  "providerSeparator": " "
+}

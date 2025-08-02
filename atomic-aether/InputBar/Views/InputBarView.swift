@@ -21,6 +21,7 @@ struct InputBarView: View {
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var eventBus: EventBus
     @EnvironmentObject var conversationOrchestrator: ConversationOrchestrator
+    @EnvironmentObject var modelDisplayService: ModelDisplayService
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     
@@ -60,9 +61,11 @@ struct InputBarView: View {
                     .font(.system(size: appearance.controls.plusButton.size, weight: .medium))
                     .foregroundColor(.white.opacity(appearance.controls.plusButton.opacity))
                 
-                Text(appearance.controls.modelPicker.text)
-                    .font(.system(size: appearance.controls.modelPicker.fontSize))
-                    .foregroundColor(.white.opacity(appearance.controls.modelPicker.opacity))
+                ModelIndicatorView(
+                    modelDisplayService: modelDisplayService,
+                    fontSize: appearance.controls.modelPicker.fontSize,
+                    opacity: appearance.controls.modelPicker.opacity
+                )
                 
                 Spacer()
                 

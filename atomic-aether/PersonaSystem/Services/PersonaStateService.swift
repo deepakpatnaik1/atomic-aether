@@ -103,45 +103,32 @@ final class PersonaStateService: ObservableObject {
     
     /// Process a message and extract persona if present
     func processMessage(_ message: String) -> (persona: String, content: String) {
-        // Check for persona trigger pattern
-        if let regex = configuration.triggerRegex,
-           let match = regex.firstMatch(in: message, range: NSRange(message.startIndex..., in: message)) {
+        // Simple first-word detection
+        let trimmed = message.trimmingCharacters(in: .whitespaces)
+        let words = trimmed.split(separator: " ", maxSplits: 1)
+        
+        if let firstWord = words.first {
+            let potentialPersona = String(firstWord).lowercased()
             
-            // Extract persona name and content
-            let personaRange = Range(match.range(at: 1), in: message)!
-            let contentRange = Range(match.range(at: 2), in: message)!
-            
-            let personaName = String(message[personaRange]).lowercased()
-            let content = String(message[contentRange])
-            
-            // Validate and switch persona
-            if configuration.isValidPersona(personaName) {
-                switchToPersona(personaName)
+            // Check if first word is a valid persona
+            if configuration.isValidPersona(potentialPersona) {
+                switchToPersona(potentialPersona)
                 
-                // Publish event
+                // Get remaining message after first word
+                let content = words.count > 1 ? String(words[1]) : ""
+                
+                // Publish event (keeping existing event structure)
                 eventBus.publish(PersonaMessageProcessedEvent(
-                    persona: personaName,
+                    persona: potentialPersona,
                     original: message,
                     cleaned: content
                 ))
                 
-                return (personaName, content)
-            } else {
-                // Invalid persona
-                errorBus.report(
-                    message: "Unknown persona: \(personaName)",
-                    from: "PersonaStateService",
-                    severity: .warning
-                )
-                
-                eventBus.publish(InvalidPersonaEvent(
-                    attempted: personaName,
-                    message: message
-                ))
+                return (potentialPersona, content)
             }
         }
         
-        // No persona trigger, use current
+        // No persona in first word, use current persona
         return (currentPersona, message)
     }
     
