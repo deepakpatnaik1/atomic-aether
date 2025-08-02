@@ -60,8 +60,22 @@ final class ModelDisplayService: ObservableObject {
     // MARK: - Private Methods
     
     private func setupObservers() {
-        // Observe persona state changes (which include model changes)
-        personaStateService.$currentPersona
+        // Observe configuration changes
+        personaStateService.$configuration
+            .sink { [weak self] _ in
+                self?.updateModelDisplay()
+            }
+            .store(in: &cancellables)
+        
+        // Observe Anthropic persona changes
+        personaStateService.$currentAnthropicPersona
+            .sink { [weak self] _ in
+                self?.updateModelDisplay()
+            }
+            .store(in: &cancellables)
+        
+        // Observe non-Anthropic persona changes
+        personaStateService.$currentNonAnthropicPersona
             .sink { [weak self] _ in
                 self?.updateModelDisplay()
             }
