@@ -118,6 +118,7 @@ struct atomic_aetherApp: App {
         // Create ModelDisplayService with dependencies
         _modelDisplayService = StateObject(wrappedValue: ModelDisplayService(
             configBus: configBus,
+            stateBus: stateBus,
             personaStateService: personaStateService
         ))
     }

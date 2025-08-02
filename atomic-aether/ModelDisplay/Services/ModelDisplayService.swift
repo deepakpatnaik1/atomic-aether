@@ -25,6 +25,7 @@ final class ModelDisplayService: ObservableObject {
     // MARK: - Dependencies
     
     private let configBus: ConfigBus
+    private let stateBus: StateBus
     private let personaStateService: PersonaStateService
     private var cancellables = Set<AnyCancellable>()
     
@@ -32,9 +33,11 @@ final class ModelDisplayService: ObservableObject {
     
     init(
         configBus: ConfigBus,
+        stateBus: StateBus,
         personaStateService: PersonaStateService
     ) {
         self.configBus = configBus
+        self.stateBus = stateBus
         self.personaStateService = personaStateService
         
         // Initialize with default configuration
@@ -60,22 +63,8 @@ final class ModelDisplayService: ObservableObject {
     // MARK: - Private Methods
     
     private func setupObservers() {
-        // Observe configuration changes
-        personaStateService.$configuration
-            .sink { [weak self] _ in
-                self?.updateModelDisplay()
-            }
-            .store(in: &cancellables)
-        
-        // Observe Anthropic persona changes
-        personaStateService.$currentAnthropicPersona
-            .sink { [weak self] _ in
-                self?.updateModelDisplay()
-            }
-            .store(in: &cancellables)
-        
-        // Observe non-Anthropic persona changes
-        personaStateService.$currentNonAnthropicPersona
+        // Observe StateBus currentPersona changes
+        stateBus.publisher(for: .currentPersona)
             .sink { [weak self] _ in
                 self?.updateModelDisplay()
             }
