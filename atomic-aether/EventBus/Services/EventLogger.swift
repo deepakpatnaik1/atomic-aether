@@ -25,7 +25,7 @@ final class EventLogger: ObservableObject {
     private var subscriptions = Set<AnyCancellable>()
     private let eventBus: any EventBusProtocol
     
-    @Published var isLoggingEnabled: Bool = true
+    @Published var isLoggingEnabled: Bool = false
     @Published var logLevel: LogLevel = .info
     @Published var eventHistory: [LoggedEvent] = []
     

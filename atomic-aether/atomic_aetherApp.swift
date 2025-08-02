@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKit
 
 @main
 struct atomic_aetherApp: App {
@@ -154,5 +155,33 @@ struct atomic_aetherApp: App {
                 conversationOrchestrator.setup()
             }
         }
+        .commands {
+            // Add Settings menu
+            CommandGroup(after: .appSettings) {
+                Button("API Keys...") {
+                    openAPIKeySetup()
+                }
+                .keyboardShortcut(",", modifiers: [.command, .shift])
+            }
+        }
+    }
+    
+    private func openAPIKeySetup() {
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 400),
+            styleMask: [.titled, .closable, .miniaturizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "API Key Setup"
+        window.center()
+        window.isReleasedWhenClosed = false
+        
+        let hostingView = NSHostingView(
+            rootView: APIKeySetupView()
+                .environmentObject(envLoader)
+        )
+        window.contentView = hostingView
+        window.makeKeyAndOrderFront(nil)
     }
 }

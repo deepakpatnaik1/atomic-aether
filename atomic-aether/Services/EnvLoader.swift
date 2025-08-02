@@ -10,9 +10,9 @@
 //  No dependencies, no hardcoding, easy to remove
 //
 //  Loading priority:
-//  1. Xcode scheme environment variables (for development)
-//  2. Bundle resources (for distribution - no permissions needed)
-//  3. App container Documents (user-provided fallback)
+//  1. macOS Keychain (secure, no file access needed)
+//  2. Xcode scheme environment variables (for development)
+//  3. .env file fallback (first-time setup - auto-migrates to Keychain)
 //
 
 import Foundation
@@ -22,30 +22,29 @@ import SwiftUI
 class EnvLoader: ObservableObject {
     @Published var environment: Environment?
     
-    /// Load environment variables from .env file or process environment
+    /// Load environment variables from Keychain or fallback sources
     func load() {
-        // Strategy 1: Try process environment variables (Xcode scheme)
+        // Strategy 1: Try Keychain first (most secure)
+        if loadFromKeychain() {
+            return
+        }
+        
+        // Strategy 2: Try process environment variables (Xcode scheme)
         if loadFromProcessEnvironment() {
             return
         }
         
-        // Strategy 2: Try bundle resources (packaged with app)
-        if let bundleURL = Bundle.main.url(forResource: ".env", withExtension: nil) {
-            if loadEnvFromPath(bundleURL) {
-                return
-            }
-        }
-        
-        // Strategy 3: Try app's container Documents (if user placed it there)
-        let containerDocs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
-        if let docsURL = containerDocs?.appendingPathComponent(".env") {
-            if loadEnvFromPath(docsURL) {
-                return
-            }
+        // Strategy 3: Try .env file for initial setup
+        // First check root project directory
+        let projectPath = URL(fileURLWithPath: "/Users/buda-air/Documents/code/atomic-aether/.env")
+        if loadEnvFromPath(projectPath) {
+            // If found, migrate to Keychain for future use
+            migrateToKeychain()
+            return
         }
         
         // Only print error if no environment found
-        print("❌ No environment variables found. See ENVIRONMENT_SETUP.md for configuration instructions.")
+        print("❌ No API keys found. Please set up your API keys in the app.")
     }
     
     /// Load from process environment (Xcode scheme variables)
@@ -127,5 +126,41 @@ class EnvLoader: ObservableObject {
         )
         
         // Silent success - no logging needed
+    }
+    
+    /// Load from Keychain
+    private func loadFromKeychain() -> Bool {
+        let openAIKey = KeychainService.retrieve(key: .openAIKey)
+        let anthropicKey = KeychainService.retrieve(key: .anthropicKey)
+        let fireworksKey = KeychainService.retrieve(key: .fireworksKey)
+        
+        // Check if we have at least one key
+        if openAIKey != nil || anthropicKey != nil || fireworksKey != nil {
+            environment = Environment(
+                openAIKey: openAIKey,
+                anthropicKey: anthropicKey,
+                fireworksKey: fireworksKey
+            )
+            return true
+        }
+        
+        return false
+    }
+    
+    /// Migrate current environment to Keychain
+    private func migrateToKeychain() {
+        guard let env = environment else { return }
+        
+        if let key = env.openAIKey {
+            _ = KeychainService.save(key: .openAIKey, value: key)
+        }
+        if let key = env.anthropicKey {
+            _ = KeychainService.save(key: .anthropicKey, value: key)
+        }
+        if let key = env.fireworksKey {
+            _ = KeychainService.save(key: .fireworksKey, value: key)
+        }
+        
+        // Silent migration - keys saved to Keychain
     }
 }
