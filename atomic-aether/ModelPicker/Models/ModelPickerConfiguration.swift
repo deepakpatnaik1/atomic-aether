@@ -25,6 +25,13 @@ struct ModelPickerConfiguration: Codable {
     // Interaction settings
     let allowDynamicModels: Bool
     
+    // UI settings
+    let chevronSizeRatio: Double
+    
+    // Default labels
+    let allModelsLabel: String
+    let unknownProviderLabel: String
+    
     // MARK: - Helper Methods
     
     /// Get icon for provider
@@ -58,6 +65,9 @@ struct ModelPickerConfiguration: Codable {
             "mistral": "wind"
         ],
         providerOrder: ["anthropic", "openai", "fireworks"],
-        allowDynamicModels: false
+        allowDynamicModels: false,
+        chevronSizeRatio: 0.7,
+        allModelsLabel: "All Models",
+        unknownProviderLabel: "unknown"
     )
 }

@@ -4,6 +4,8 @@
 //
 //  Model for theme colors and styling
 //  
+//  ATOM 19: Theme System - Theme data model
+//
 //  Atomic LEGO: Pure data model with no logic
 //
 

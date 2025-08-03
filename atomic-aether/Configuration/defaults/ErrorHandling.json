@@ -4,10 +4,9 @@
   "autoDismissWarnings": true,
   "warningDismissDelay": 3.0,
   "maxErrorHistory": 50,
-  "logLevel": "warning",
   "showErrorCodes": false,
-  "enableErrorLogging": true,
   "toastPosition": "top",
   "toastWidth": 400,
-  "animationDuration": 0.3
+  "animationDuration": 0.3,
+  "errorDomain": "AetherError"
 }

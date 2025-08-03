@@ -18,7 +18,8 @@ class KeychainService {
     
     // MARK: - Constants
     
-    private static let serviceName = "com.buda-air.atomic-aether"
+    private static let serviceName = Bundle.main.bundleIdentifier ?? "com.atomic-aether"
+    private static let batchKeyName = "API_KEYS_BATCH"
     private static let accessGroup: String? = nil // Use default access group
     
     // MARK: - Key Names
@@ -27,15 +28,8 @@ class KeychainService {
         case openAIKey = "OPENAI_API_KEY"
         case anthropicKey = "ANTHROPIC_API_KEY"
         case fireworksKey = "FIREWORKS_API_KEY"
-        
-        var displayName: String {
-            switch self {
-            case .openAIKey: return "OpenAI API Key"
-            case .anthropicKey: return "Anthropic API Key"
-            case .fireworksKey: return "Fireworks API Key"
-            }
-        }
     }
+    
     
     // MARK: - Public Methods
     
@@ -152,7 +146,7 @@ class KeychainService {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: "API_KEYS_BATCH",
+            kSecAttrAccount as String: batchKeyName,
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
         ]
@@ -180,7 +174,7 @@ class KeychainService {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: serviceName,
-            kSecAttrAccount as String: "API_KEYS_BATCH",
+            kSecAttrAccount as String: batchKeyName,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]

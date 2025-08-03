@@ -4,7 +4,7 @@
 //
 //  StateKey definitions for model state
 //
-//  ATOM 12: Model State Management - State Keys
+//  ATOM 17: Model State - State Keys
 //
 //  Atomic LEGO: Type-safe keys for StateBus storage
 //  Enables persistence of model selections

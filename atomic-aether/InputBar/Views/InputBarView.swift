@@ -108,32 +108,37 @@ struct InputBarView: View {
         // Calculate height based on slash command
         let maxLines = slashCommandDetector.activeCommand?.expandToLines ?? appearance.multiline.maxLines
         
-        TextEditor(text: $text)
-            .font(.system(size: appearance.textField.fontSize))
-            .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
-            .scrollContentBackground(.hidden)
-            .background(Color.clear)
-            .focused($isTextFieldFocused)
-            .frame(
-                minHeight: slashCommandDetector.isExpanded 
-                    ? appearance.multiline.lineHeight * Double(maxLines)
-                    : appearance.multiline.lineHeight,
-                maxHeight: appearance.multiline.lineHeight * Double(maxLines)
-            )
-            .fixedSize(horizontal: false, vertical: true)
-            .onAppear {
-                isTextFieldFocused = true
-            }
-            .onChange(of: text) { oldValue, newValue in
-                if slashCommandDetector.handleTextChange(newValue) {
-                    // Clear text when command is detected
-                    text = ""
-                } else {
-                    // Check if first word is a persona name for real-time switching
-                    checkForPersonaSwitch(newValue)
+        ZStack(alignment: .topLeading) {
+            TextEditor(text: $text)
+                .font(.system(size: appearance.textField.fontSize))
+                .foregroundColor(InputBarAppearance.color(from: appearance.textField.textColor))
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .focused($isTextFieldFocused)
+                .frame(
+                    minHeight: slashCommandDetector.isExpanded 
+                        ? appearance.multiline.lineHeight * Double(maxLines)
+                        : appearance.multiline.lineHeight,
+                    maxHeight: appearance.multiline.lineHeight * Double(maxLines)
+                )
+                .fixedSize(horizontal: false, vertical: true)
+                .onAppear {
+                    isTextFieldFocused = true
                 }
+            
+        }
+        .onChange(of: text) { oldValue, newValue in
+                // Detect slash commands for expansion
+                let shouldClear = slashCommandDetector.handleTextChange(newValue)
+                if shouldClear {
+                    // Clear text after command detection
+                    text = ""
+                }
+                // Check if first word is a persona name for real-time switching
+                checkForPersonaSwitch(newValue)
             }
             .onKeyPress(.escape) {
+                // Check collapse conditions
                 if slashCommandDetector.shouldAllowCollapse(text: text) {
                     slashCommandDetector.collapse()
                     return .handled
@@ -155,15 +160,17 @@ struct InputBarView: View {
                 isTextFieldFocused = true
             }
             .onChange(of: text) { oldValue, newValue in
-                if slashCommandDetector.handleTextChange(newValue) {
-                    // Clear text when command is detected
+                // Detect slash commands for expansion
+                let shouldClear = slashCommandDetector.handleTextChange(newValue)
+                if shouldClear {
+                    // Clear text after command detection
                     text = ""
-                } else {
-                    // Check if first word is a persona name for real-time switching
-                    checkForPersonaSwitch(newValue)
                 }
+                // Check if first word is a persona name for real-time switching
+                checkForPersonaSwitch(newValue)
             }
             .onKeyPress(.escape) {
+                // Check collapse conditions
                 if slashCommandDetector.shouldAllowCollapse(text: text) {
                     slashCommandDetector.collapse()
                     return .handled

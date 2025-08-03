@@ -73,6 +73,7 @@ class LLMRouter: ObservableObject, LLMService {
             for modelKey in anthropicConfig.models.keys {
                 availableModels.append("anthropic:\(modelKey)")
             }
+        } else {
         }
         
         // Setup Fireworks service
@@ -105,7 +106,6 @@ class LLMRouter: ObservableObject, LLMService {
         guard let provider = LLMProvider.from(modelString: request.model) else {
             throw LLMError.invalidModel("Invalid model format: \(request.model)")
         }
-        
         guard let service = services[provider] else {
             throw LLMError.apiKeyMissing
         }

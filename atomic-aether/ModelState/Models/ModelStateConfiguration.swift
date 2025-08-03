@@ -4,7 +4,7 @@
 //
 //  Configuration for model state defaults
 //
-//  ATOM 12: Model State Management - Configuration
+//  ATOM 17: Model State - Configuration
 //
 //  Atomic LEGO: Configuration structure for model defaults
 //  Loaded from ModelState.json via ConfigBus
@@ -17,21 +17,25 @@ struct ModelStateConfiguration: Codable {
     let defaultNonAnthropicModel: String
     var anthropicModels: [String]
     var nonAnthropicModels: [String]
+    let maxHistorySize: Int
+    let anthropicProviderPrefix: String
+    let debugView: DebugViewConfiguration
+    
+    struct DebugViewConfiguration: Codable {
+        let width: Double
+        let height: Double
+    }
     
     // MARK: - Default Configuration
     
     static let `default` = ModelStateConfiguration(
-        defaultAnthropicModel: "anthropic:claude-sonnet-4-20250514",
-        defaultNonAnthropicModel: "openai:gpt-4.1-mini-2025-04-14",
-        anthropicModels: [
-            "anthropic:claude-sonnet-4-20250514",
-            "anthropic:claude-opus-4-20250514"
-        ],
-        nonAnthropicModels: [
-            "openai:gpt-4.1-mini-2025-04-14",
-            "openai:gpt-4o",
-            "fireworks:accounts/fireworks/models/llama4-maverick-instruct-basic"
-        ]
+        defaultAnthropicModel: "",
+        defaultNonAnthropicModel: "",
+        anthropicModels: [],
+        nonAnthropicModels: [],
+        maxHistorySize: 50,
+        anthropicProviderPrefix: "anthropic:",
+        debugView: DebugViewConfiguration(width: 400, height: 600)
     )
     
     // MARK: - Helper Methods

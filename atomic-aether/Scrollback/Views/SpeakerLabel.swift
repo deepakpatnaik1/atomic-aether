@@ -27,12 +27,12 @@ struct SpeakerLabel: View {
             // Speaker name
             Text(displayName)
                 .font(.system(size: appearance.fontSize, weight: .medium))
-                .foregroundColor(.white.opacity(0.85))
+                .foregroundColor(.white.opacity(appearance.nameOpacity))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 3)
                 .background(
                     RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.white.opacity(0.05))
+                        .fill(Color.white.opacity(appearance.backgroundOpacity))
                 )
             
             // Horizontal gradient line (starts from right, tapers to left)
@@ -40,9 +40,9 @@ struct SpeakerLabel: View {
                 .fill(
                     LinearGradient(
                         colors: [
-                            accentColor.opacity(0.0),
-                            accentColor.opacity(0.3),
-                            accentColor.opacity(0.6)
+                            accentColor.opacity(appearance.gradientStartOpacity),
+                            accentColor.opacity(appearance.gradientMidOpacity),
+                            accentColor.opacity(appearance.gradientEndOpacity)
                         ],
                         startPoint: .leading,
                         endPoint: .trailing

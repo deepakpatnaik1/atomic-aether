@@ -25,7 +25,23 @@ struct ScrollbackView: View {
             fontSize: 13,
             borderWidth: 2,
             gradientLineHeight: 1,
-            gradientLinePadding: 112
+            gradientLinePadding: 112,
+            nameOpacity: 0.85,
+            backgroundOpacity: 0.05,
+            gradientStartOpacity: 0.0,
+            gradientMidOpacity: 0.3,
+            gradientEndOpacity: 0.6
+        ),
+        message: ScrollbackAppearance.MessageAppearance(
+            fontSize: 15,
+            contentOpacity: 0.9,
+            topPadding: 8,
+            bottomPadding: 4,
+            leadingPadding: 8,
+            contentLeadingPadding: 16,
+            lastMessageBottomPadding: 16,
+            progressIndicatorScale: 0.5,
+            progressIndicatorPadding: 4
         )
     )
     
@@ -48,14 +64,6 @@ struct ScrollbackView: View {
             }
             .frame(width: appearance.width)
             .scrollIndicators(.hidden)
-            .onChange(of: messageStore.messages) {
-                // Auto-scroll to bottom when new messages arrive
-                withAnimation(.easeOut(duration: 0.3)) {
-                    if let lastMessage = messageStore.messages.last {
-                        proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                    }
-                }
-            }
         }
         .onAppear {
             setupWithConfigBus()

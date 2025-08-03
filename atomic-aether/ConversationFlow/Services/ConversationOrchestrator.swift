@@ -100,8 +100,8 @@ final class ConversationOrchestrator: ObservableObject {
             
             // 3. Add user message to store
             let userMessage = Message(
-                speaker: "boss",
-                content: text
+                speaker: configuration.userSpeakerName,
+                content: cleanedMessage
             )
             messageStore.addMessage(userMessage)
             
@@ -127,7 +127,11 @@ final class ConversationOrchestrator: ObservableObject {
                 streamingEnabled: configuration.streamingEnabled
             )
             
-            // 6. Create placeholder response message
+            // 6. Send to LLM first (before creating placeholder)
+            let llmRequest = request.toLLMRequest()
+            let stream = try await llmRouter.sendMessage(llmRequest)
+            
+            // 7. Create placeholder response message (only after successful API call)
             let responseMessage = Message(
                 speaker: persona,
                 content: "",
@@ -135,10 +139,6 @@ final class ConversationOrchestrator: ObservableObject {
                 modelUsed: request.model
             )
             messageStore.addMessage(responseMessage)
-            
-            // 7. Send to LLM
-            let llmRequest = request.toLLMRequest()
-            let stream = try await llmRouter.sendMessage(llmRequest)
             
             // 8. Process response stream
             if configuration.streamingEnabled {
@@ -179,6 +179,7 @@ final class ConversationOrchestrator: ObservableObject {
             
         } catch {
             self.error = error
+            
             errorBus.report(
                 error,
                 from: "ConversationOrchestrator",
@@ -205,6 +206,6 @@ final class ConversationOrchestrator: ObservableObject {
     
     /// Check if conversation is active
     var hasActiveConversation: Bool {
-        currentContext?.isActive ?? false
+        currentContext?.isActive(timeoutSeconds: configuration.sessionActiveTimeoutSeconds) ?? false
     }
 }

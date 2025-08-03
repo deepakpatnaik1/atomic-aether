@@ -4,7 +4,7 @@
 //
 //  Service to load environment variables from .env file
 //
-//  ATOM 7: Environment Configuration - .env file loader
+//  ATOM 20: Environment Loader - .env file loader
 //
 //  Atomic LEGO: Single responsibility - read .env file
 //  No dependencies, no hardcoding, easy to remove
@@ -22,6 +22,21 @@ import SwiftUI
 class EnvLoader: ObservableObject {
     @Published var environment: Environment?
     
+    private var configuration: EnvLoaderConfiguration = .default
+    private var configBus: ConfigBus?
+    private var errorBus: ErrorBus?
+    
+    /// Setup with ConfigBus and ErrorBus
+    func setup(configBus: ConfigBus, errorBus: ErrorBus) {
+        self.configBus = configBus
+        self.errorBus = errorBus
+        
+        // Load configuration
+        if let config = configBus.load("EnvLoader", as: EnvLoaderConfiguration.self) {
+            self.configuration = config
+        }
+    }
+    
     /// Load environment variables from Keychain or fallback sources
     func load() {
         // Strategy 1: Try Keychain first (most secure)
@@ -35,16 +50,21 @@ class EnvLoader: ObservableObject {
         }
         
         // Strategy 3: Try .env file for initial setup
-        // First check root project directory
-        let projectPath = URL(fileURLWithPath: "/Users/buda-air/Documents/code/atomic-aether/.env")
-        if loadEnvFromPath(projectPath) {
-            // If found, migrate to Keychain for future use
-            migrateToKeychain()
-            return
+        if !configuration.envFilePath.isEmpty {
+            let projectPath = URL(fileURLWithPath: configuration.envFilePath)
+            if loadEnvFromPath(projectPath) {
+                // If found, migrate to Keychain for future use
+                migrateToKeychain()
+                return
+            }
         }
         
-        // Only print error if no environment found
-        print("❌ No API keys found. Please set up your API keys in the app.")
+        // Report error if no environment found
+        errorBus?.report(
+            message: configuration.errorMessages.noKeysFound,
+            from: "EnvLoader",
+            severity: .warning
+        )
     }
     
     /// Load from process environment (Xcode scheme variables)
@@ -52,9 +72,9 @@ class EnvLoader: ObservableObject {
         let processInfo = ProcessInfo.processInfo
         let env = processInfo.environment
         
-        let openAIKey = env["OPENAI_API_KEY"]
-        let anthropicKey = env["ANTHROPIC_API_KEY"]
-        let fireworksKey = env["FIREWORKS_API_KEY"]
+        let openAIKey = env[configuration.apiKeyNames.openAI]
+        let anthropicKey = env[configuration.apiKeyNames.anthropic]
+        let fireworksKey = env[configuration.apiKeyNames.fireworks]
         
         // Check if we have at least one key
         if openAIKey != nil || anthropicKey != nil || fireworksKey != nil {
@@ -93,7 +113,7 @@ class EnvLoader: ObservableObject {
         for line in lines {
             // Skip empty lines and comments
             let trimmedLine = line.trimmingCharacters(in: .whitespaces)
-            if trimmedLine.isEmpty || trimmedLine.hasPrefix("#") {
+            if trimmedLine.isEmpty || trimmedLine.hasPrefix(configuration.parsing.commentPrefix) {
                 continue
             }
             
@@ -103,14 +123,14 @@ class EnvLoader: ObservableObject {
             
             let key = String(parts[0]).trimmingCharacters(in: .whitespaces)
             let value = String(parts[1]).trimmingCharacters(in: .whitespaces)
-                .trimmingCharacters(in: CharacterSet(charactersIn: "\"'")) // Remove quotes
+                .trimmingCharacters(in: CharacterSet(charactersIn: configuration.parsing.quoteCharacters)) // Remove quotes
             
             switch key {
-            case "OPENAI_API_KEY":
+            case configuration.apiKeyNames.openAI:
                 openAIKey = value
-            case "ANTHROPIC_API_KEY":
+            case configuration.apiKeyNames.anthropic:
                 anthropicKey = value
-            case "FIREWORKS_API_KEY":
+            case configuration.apiKeyNames.fireworks:
                 fireworksKey = value
             default:
                 // Ignore unknown keys

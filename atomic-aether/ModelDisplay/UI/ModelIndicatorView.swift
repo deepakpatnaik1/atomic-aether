@@ -4,7 +4,7 @@
 //
 //  Reusable model indicator component
 //
-//  ATOM 18: Dynamic Model Display - UI Component
+//  ATOM 16: Model Display - UI Component
 //
 //  Atomic LEGO: Pure UI component that displays current model
 //  Gets data from ModelDisplayService

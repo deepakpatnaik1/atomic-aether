@@ -38,8 +38,8 @@ struct ConversationContext {
         Date().timeIntervalSince(startTime)
     }
     
-    var isActive: Bool {
-        // Consider session active if last activity within 30 minutes
-        Date().timeIntervalSince(lastActivity) < 1800
+    func isActive(timeoutSeconds: Double) -> Bool {
+        // Consider session active if last activity within timeout
+        Date().timeIntervalSince(lastActivity) < timeoutSeconds
     }
 }

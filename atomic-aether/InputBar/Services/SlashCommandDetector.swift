@@ -23,7 +23,7 @@ class SlashCommandDetector: ObservableObject {
     private var commands: [SlashCommand] = []
     private var configBus: ConfigBus?
     private var eventBus: EventBus?
-    private var cancellable: AnyCancellable?
+    private var cancellables = Set<AnyCancellable>()
     
     init() {
         // Commands will be loaded via setupWithBuses
@@ -43,13 +43,14 @@ class SlashCommandDetector: ObservableObject {
         }
         
         // Watch for config changes
-        cancellable = configBus.objectWillChange
+        configBus.objectWillChange
             .sink { [weak self] _ in
                 if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
                     self?.commands = config.commands
                     // Commands reloaded
                 }
             }
+            .store(in: &cancellables)
     }
     
     func detectCommand(in text: String) -> SlashCommand? {

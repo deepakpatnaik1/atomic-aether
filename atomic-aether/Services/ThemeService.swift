@@ -4,8 +4,7 @@
 //
 //  Service that provides the current theme
 //  
-//  ATOM 1: Dark Theme - Now configuration-driven via ConfigBus
-//  ATOM 6: ConfigBus - Loads theme from DesignTokens.json
+//  ATOM 19: Theme System - Configuration-driven theming via ConfigBus
 //
 //  Atomic LEGO: Service that reads from configuration
 //  Can be deleted without affecting other atoms
@@ -22,11 +21,12 @@ class ThemeService: ObservableObject {
     private var cancellable: AnyCancellable?
     
     init() {
-        // Default theme (fallback if config fails)
+        // Default theme from DesignTokens.default
+        let defaultTokens = DesignTokens.default
         self.current = Theme(
-            backgroundColor: Color(red: 0.0, green: 0.0, blue: 0.0),
-            primaryTextColor: Color(red: 1.0, green: 1.0, blue: 1.0),
-            secondaryTextColor: Color(red: 0.7, green: 0.7, blue: 0.7)
+            backgroundColor: defaultTokens.colors.background.primary.color,
+            primaryTextColor: defaultTokens.colors.text.primary.color,
+            secondaryTextColor: defaultTokens.colors.text.secondary.color
         )
     }
     

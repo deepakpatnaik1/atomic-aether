@@ -19,13 +19,23 @@ struct KeyboardConfiguration: Codable {
     let newlineModifiers: [String]
     let enabled: Bool
     
+    // UI Display strings
+    let submitKeyDisplay: String
+    let shiftKeyDisplay: String
+    let optionKeyDisplay: String
+    let noShortcutDisplay: String
+    
     // Default configuration
     static let `default` = KeyboardConfiguration(
         submitKey: "return",
         submitModifiers: [],
         newlineKey: "return",
         newlineModifiers: ["shift", "option"],
-        enabled: true
+        enabled: true,
+        submitKeyDisplay: "Enter",
+        shiftKeyDisplay: "Shift+Enter",
+        optionKeyDisplay: "Option+Enter",
+        noShortcutDisplay: "N/A"
     )
     
     // Check if a modifier is required for newline

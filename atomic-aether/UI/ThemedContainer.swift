@@ -4,6 +4,8 @@
 //
 //  Container that applies theme to its content
 //  
+//  ATOM 19: Theme System - UI container component
+//
 //  Atomic LEGO: UI component that uses ThemeService
 //  Delete this and content still renders (just without theme)
 //

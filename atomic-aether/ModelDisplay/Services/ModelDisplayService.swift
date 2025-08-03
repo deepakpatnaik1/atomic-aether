@@ -4,7 +4,7 @@
 //
 //  Service to track and format current model display
 //
-//  ATOM 18: Dynamic Model Display - Service
+//  ATOM 16: Model Display - Service
 //
 //  Atomic LEGO: Observes PersonaStateService for model changes
 //  Provides formatted display names for UI

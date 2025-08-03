@@ -12,12 +12,15 @@
 
 import Foundation
 
+// Use typealias to disambiguate Message types
+typealias ChatMessage = Message
+
 struct ConversationRequest {
     let userMessage: String
     let persona: String
     let systemPrompt: String
     let model: String
-    let conversationHistory: [Message]
+    let conversationHistory: [ChatMessage]
     let maxTokens: Int?
     let temperature: Double?
     let streamingEnabled: Bool
@@ -29,14 +32,14 @@ struct ConversationRequest {
         // Add system prompt
         if !systemPrompt.isEmpty {
             messages.append(LLMRequest.Message(
-                role: "system",
+                role: .system,
                 content: systemPrompt
             ))
         }
         
         // Add conversation history
         for message in conversationHistory {
-            let role = message.speaker == "boss" ? "user" : "assistant"
+            let role: MessageRole = message.speaker == persona ? .assistant : .user
             messages.append(LLMRequest.Message(
                 role: role,
                 content: message.content
@@ -45,7 +48,7 @@ struct ConversationRequest {
         
         // Add current user message
         messages.append(LLMRequest.Message(
-            role: "user",
+            role: .user,
             content: userMessage
         ))
         

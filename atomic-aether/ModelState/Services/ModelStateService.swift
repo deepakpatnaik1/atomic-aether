@@ -4,7 +4,7 @@
 //
 //  Manages model selection state with defaults and overrides
 //
-//  ATOM 12: Model State Management - Core Service
+//  ATOM 17: Model State - Core Service
 //
 //  Atomic LEGO: Central service for model state management
 //  - Tracks default models for Anthropic/non-Anthropic
@@ -35,7 +35,7 @@ final class ModelStateService: ObservableObject {
     private let errorBus: ErrorBus
     private let llmRouter: LLMRouter
     
-    private var configuration: ModelStateConfiguration = .default
+    @Published private(set) var configuration: ModelStateConfiguration = .default
     
     // MARK: - Computed Properties
     
@@ -72,9 +72,9 @@ final class ModelStateService: ObservableObject {
         self.errorBus = errorBus
         self.llmRouter = llmRouter
         
-        // Initialize with safe defaults - DO NOT load config or set values here
-        self.currentDefaultAnthropicModel = "anthropic:claude-sonnet-4-20250514"
-        self.currentDefaultNonAnthropicModel = "openai:gpt-4.1-mini-2025-04-14"
+        // Initialize with empty defaults - DO NOT load config or set values here
+        self.currentDefaultAnthropicModel = ""
+        self.currentDefaultNonAnthropicModel = ""
     }
     
     // MARK: - Public Methods
@@ -205,7 +205,7 @@ final class ModelStateService: ObservableObject {
     
     private func handleUnknownModel(_ model: String) {
         // Determine type by provider prefix
-        if model.hasPrefix("anthropic:") {
+        if model.hasPrefix(configuration.anthropicProviderPrefix) {
             configuration.anthropicModels.append(model)
             currentAnthropicModel = model
             stateBus.set(.currentAnthropicModel, value: model)
@@ -220,9 +220,9 @@ final class ModelStateService: ObservableObject {
         var history = stateBus.get(.modelSelectionHistory) ?? []
         history.append(model)
         
-        // Keep only last 50 selections
-        if history.count > 50 {
-            history = Array(history.suffix(50))
+        // Keep only last N selections based on configuration
+        if history.count > configuration.maxHistorySize {
+            history = Array(history.suffix(configuration.maxHistorySize))
         }
         
         stateBus.set(.modelSelectionHistory, value: history)

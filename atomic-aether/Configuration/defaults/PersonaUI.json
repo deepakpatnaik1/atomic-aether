@@ -1,0 +1,11 @@
+{
+  "labels": {
+    "customModelIndicator": "Custom",
+    "anthropicSection": "Anthropic",
+    "otherPersonasSection": "Other Personas"
+  },
+  "tooltips": {
+    "currentPersona": "Current persona: {persona}",
+    "talkingTo": "Talking to: {persona}"
+  }
+}

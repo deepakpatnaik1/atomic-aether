@@ -46,11 +46,11 @@ class AnthropicService: LLMService {
         
         // Build Anthropic-specific request body
         // Extract system message if present
-        let systemMessage = request.messages.first(where: { $0.role == "system" })?.content
-        let nonSystemMessages = request.messages.filter { $0.role != "system" }
+        let systemMessage = request.messages.first(where: { $0.role == .system })?.content
+        let nonSystemMessages = request.messages.filter { $0.role != .system }
         
         // Convert messages to Anthropic format
-        let messages = nonSystemMessages.map { ["role": $0.role, "content": $0.content] }
+        let messages = nonSystemMessages.map { ["role": $0.role.rawValue, "content": $0.content] }
         
         var body: [String: Any] = [
             "model": modelName,

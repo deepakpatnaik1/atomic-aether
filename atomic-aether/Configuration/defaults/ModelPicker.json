@@ -11,5 +11,8 @@
     "mistral": "wind"
   },
   "providerOrder": ["anthropic", "openai", "fireworks"],
-  "allowDynamicModels": false
+  "allowDynamicModels": false,
+  "chevronSizeRatio": 0.7,
+  "allModelsLabel": "All Models",
+  "unknownProviderLabel": "unknown"
 }

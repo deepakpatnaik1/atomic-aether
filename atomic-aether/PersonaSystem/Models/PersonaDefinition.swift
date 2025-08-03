@@ -61,28 +61,3 @@ struct ColorComponents: Codable {
     }
 }
 
-// MARK: - Default Personas
-
-extension PersonaDefinition {
-    /// Claude - the Anthropic AI assistant
-    static let claude = PersonaDefinition(
-        id: "claude",
-        displayName: "Claude",
-        isAnthropic: true,
-        systemPrompt: "You are Claude, an AI assistant created by Anthropic. You are helpful, harmless, and honest.",
-        accentColor: ColorComponents(red: 0.2, green: 0.6, blue: 1.0, alpha: 1.0),
-        voiceStyle: "helpful",
-        expertise: ["general", "technical", "analytical"]
-    )
-    
-    /// Default non-Anthropic persona
-    static let samara = PersonaDefinition(
-        id: "samara",
-        displayName: "Samara",
-        isAnthropic: false,
-        systemPrompt: "You are Samara, a creative and innovative thinker who helps with brainstorming and problem-solving.",
-        accentColor: ColorComponents(red: 0.8, green: 0.6, blue: 0.2, alpha: 1.0),
-        voiceStyle: "creative",
-        expertise: ["creativity", "innovation", "problem-solving"]
-    )
-}

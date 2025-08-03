@@ -7,5 +7,19 @@
     "fireworks:accounts/fireworks/models/llama4-maverick-instruct-basic": "Llama 4 Maverick"
   },
   "showProvider": false,
-  "providerSeparator": " "
+  "providerSeparator": " ",
+  "providerDisplayNames": {
+    "anthropic": "Claude",
+    "openai": "GPT",
+    "fireworks": "Fireworks"
+  },
+  "modelShortNames": {
+    "claude-sonnet-4-20250514": "Sonnet 4",
+    "claude-opus-4-20250514": "Opus 4",
+    "gpt-4.1-mini-2025-04-14": "4.1 mini",
+    "gpt-4o": "4o"
+  },
+  "modelPatternReplacements": {
+    "llama4-maverick": "Llama 4 Maverick"
+  }
 }

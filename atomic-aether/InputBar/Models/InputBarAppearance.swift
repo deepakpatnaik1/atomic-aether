@@ -105,7 +105,16 @@ extension InputBarAppearance {
         case "green": return .green
         case "blue": return .blue
         case "red": return .red
-        default: return .black
+        case "gray", "grey": return .gray
+        case "yellow": return .yellow
+        case "orange": return .orange
+        case "purple": return .purple
+        case "pink": return .pink
+        case "clear": return .clear
+        default: 
+            // For unknown colors, print warning and return clear
+            print("⚠️ Unknown color '\(string)' in configuration. Using clear.")
+            return .clear
         }
     }
 }

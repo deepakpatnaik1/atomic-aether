@@ -1,0 +1,5 @@
+{
+  "maxMessages": 1000,
+  "persistMessages": false,
+  "publishEvents": true
+}

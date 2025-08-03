@@ -45,7 +45,7 @@ class FireworksService: LLMService {
         ))
         
         // Build request body (OpenAI-compatible format)
-        let messages = request.messages.map { ["role": $0.role, "content": $0.content] }
+        let messages = request.messages.map { ["role": $0.role.rawValue, "content": $0.content] }
         var body: [String: Any] = [
             "model": modelName,
             "messages": messages,

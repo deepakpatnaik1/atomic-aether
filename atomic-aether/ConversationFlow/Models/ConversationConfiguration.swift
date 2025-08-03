@@ -20,6 +20,8 @@ struct ConversationConfiguration: Codable {
     let errorRetryAttempts: Int
     let requestTimeout: Double
     let preserveFormatting: Bool
+    let userSpeakerName: String
+    let sessionActiveTimeoutSeconds: Double
     
     // MARK: - Default Configuration
     
@@ -30,6 +32,8 @@ struct ConversationConfiguration: Codable {
         typingIndicatorDelay: 0.5,
         errorRetryAttempts: 2,
         requestTimeout: 30.0,
-        preserveFormatting: true
+        preserveFormatting: true,
+        userSpeakerName: "boss",
+        sessionActiveTimeoutSeconds: 1800
     )
 }

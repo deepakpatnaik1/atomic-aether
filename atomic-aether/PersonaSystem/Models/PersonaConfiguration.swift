@@ -52,10 +52,7 @@ struct PersonaSystemConfiguration: Codable {
     // MARK: - Default Configuration
     
     static let `default` = PersonaSystemConfiguration(
-        personas: [
-            "claude": .claude,
-            "samara": .samara
-        ],
+        personas: [:], // Will be loaded from JSON
         defaultNonAnthropicPersona: "samara",
         personaTriggerPattern: "^(\\w+),\\s*(.*)$"
     )

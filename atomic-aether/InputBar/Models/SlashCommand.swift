@@ -12,10 +12,17 @@
 
 import Foundation
 
-struct SlashCommand: Codable, Equatable {
+struct SlashCommand: Codable, Equatable, Identifiable {
     let trigger: String
     let expandToLines: Int?
-    let description: String
+    let description: String?
+    
+    var id: String { trigger }
+    
+    /// Display name without the leading slash
+    var name: String {
+        trigger.hasPrefix("/") ? String(trigger.dropFirst()) : trigger
+    }
 }
 
 struct SlashCommandConfiguration: Codable {

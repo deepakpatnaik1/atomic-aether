@@ -18,10 +18,28 @@ final class ConfigBus: ObservableObject {
     // MARK: - Properties
     
     private var fileMonitors: [String: DispatchSourceFileSystemObject] = [:]
-    private let queue = DispatchQueue(label: "\(Bundle.main.bundleIdentifier ?? "com.unknown").configbus")
+    private let queue: DispatchQueue
     
     // Publishers for each config
     @Published var configs: [String: Any] = [:]
+    
+    // MARK: - Initialization
+    
+    init() {
+        // Try to load ConfigBus config for queue label
+        let defaultIdentifier = "com.aether.configbus"
+        var queueLabel = Bundle.main.bundleIdentifier ?? defaultIdentifier
+        
+        // Try to load our own config (bootstrap loading)
+        if let url = Bundle.main.url(forResource: "ConfigBus", withExtension: "json"),
+           let data = try? Data(contentsOf: url),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let configuredDefault = json["defaultBundleIdentifier"] as? String {
+            queueLabel = Bundle.main.bundleIdentifier ?? configuredDefault
+        }
+        
+        self.queue = DispatchQueue(label: "\(queueLabel).configbus")
+    }
     
     // MARK: - Load Configuration
     

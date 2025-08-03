@@ -15,7 +15,6 @@ struct atomic_aetherApp: App {
     
     // ATOM 5: EventBus - The nervous system
     @StateObject private var eventBus: EventBus
-    @StateObject private var eventLogger: EventLogger
     
     // ATOM 6: ConfigBus - Configuration management
     @StateObject private var configBus = ConfigBus()
@@ -55,9 +54,6 @@ struct atomic_aetherApp: App {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
         _eventBus = StateObject(wrappedValue: eventBus)
-        
-        // Create EventLogger with EventBus
-        _eventLogger = StateObject(wrappedValue: EventLogger(eventBus: eventBus))
         
         // Create shared instances
         let envLoader = EnvLoader()
@@ -144,7 +140,6 @@ struct atomic_aetherApp: App {
             .environmentObject(themeService)
             .environmentObject(eventBus)
             .environmentObject(configBus)
-            .environmentObject(eventLogger)
             .environmentObject(envLoader)
             .environmentObject(llmRouter)
             .environmentObject(messageStore)
@@ -157,7 +152,8 @@ struct atomic_aetherApp: App {
             .environmentObject(modelDisplayService)
             .environmentObject(modelPickerService)
             .onAppear {
-                // Load environment variables
+                // Setup and load environment variables
+                envLoader.setup(configBus: configBus, errorBus: errorBus)
                 envLoader.load()
                 
                 // Setup services with ConfigBus
@@ -165,6 +161,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup ErrorBus configuration
                 errorBus.setupConfiguration()
+                
+                // Setup MessageStore
+                messageStore.setup(configBus: configBus, eventBus: eventBus)
                 
                 // Setup LLM services immediately after environment is loaded
                 // The environment loading is synchronous, so it's ready now

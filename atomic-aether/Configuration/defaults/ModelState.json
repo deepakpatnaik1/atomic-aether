@@ -9,5 +9,11 @@
     "openai:gpt-4.1-mini-2025-04-14",
     "openai:gpt-4o",
     "fireworks:accounts/fireworks/models/llama4-maverick-instruct-basic"
-  ]
+  ],
+  "maxHistorySize": 50,
+  "anthropicProviderPrefix": "anthropic:",
+  "debugView": {
+    "width": 400,
+    "height": 600
+  }
 }

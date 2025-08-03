@@ -4,7 +4,7 @@
 //
 //  Debug view for model state management
 //
-//  ATOM 12: Model State Management - Debug UI
+//  ATOM 17: Model State - Debug UI
 //
 //  Atomic LEGO: Optional debug view for testing
 //  Shows current model state and allows testing
@@ -123,6 +123,9 @@ struct ModelStateDebugView: View {
             Spacer()
         }
         .padding()
-        .frame(width: 400, height: 600)
+        .frame(
+            width: modelStateService.configuration.debugView.width,
+            height: modelStateService.configuration.debugView.height
+        )
     }
 }

@@ -17,11 +17,29 @@ struct ScrollbackAppearance: Codable {
     let padding: Double
     let messageSpacing: Double
     let speakerLabel: SpeakerLabelAppearance
+    let message: MessageAppearance
     
     struct SpeakerLabelAppearance: Codable {
         let fontSize: Double
         let borderWidth: Double
         let gradientLineHeight: Double
         let gradientLinePadding: Double
+        let nameOpacity: Double
+        let backgroundOpacity: Double
+        let gradientStartOpacity: Double
+        let gradientMidOpacity: Double
+        let gradientEndOpacity: Double
+    }
+    
+    struct MessageAppearance: Codable {
+        let fontSize: Double
+        let contentOpacity: Double
+        let topPadding: Double
+        let bottomPadding: Double
+        let leadingPadding: Double
+        let contentLeadingPadding: Double
+        let lastMessageBottomPadding: Double
+        let progressIndicatorScale: Double
+        let progressIndicatorPadding: Double
     }
 }

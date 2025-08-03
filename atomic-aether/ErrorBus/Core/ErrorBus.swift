@@ -68,11 +68,6 @@ final class ErrorBus: ObservableObject {
         errorHistory.append(context)
         trimHistory()
         
-        // Log if enabled
-        if config.enableErrorLogging {
-            logError(context)
-        }
-        
         // Publish event
         eventBus.publish(ErrorEvents.reported(
             error: error,
@@ -91,7 +86,7 @@ final class ErrorBus: ObservableObject {
         severity: ErrorSeverity = .error
     ) {
         let error = NSError(
-            domain: "AetherError",
+            domain: config.errorDomain,
             code: 0,
             userInfo: [NSLocalizedDescriptionKey: message]
         )
@@ -147,27 +142,6 @@ final class ErrorBus: ObservableObject {
     private func trimHistory() {
         if errorHistory.count > config.maxErrorHistory {
             errorHistory = Array(errorHistory.suffix(config.maxErrorHistory))
-        }
-    }
-    
-    private func logError(_ context: ErrorContext) {
-        let logMessage = "[\(context.severity.rawValue.uppercased())] \(context.source): \(context.message)"
-        
-        switch context.severity {
-        case .info:
-            if config.logLevel == "info" {
-                print("ℹ️ \(logMessage)")
-            }
-        case .warning:
-            if ["info", "warning"].contains(config.logLevel) {
-                print("⚠️ \(logMessage)")
-            }
-        case .error:
-            if ["info", "warning", "error"].contains(config.logLevel) {
-                print("❌ \(logMessage)")
-            }
-        case .critical:
-            print("🚨 \(logMessage)")
         }
     }
     

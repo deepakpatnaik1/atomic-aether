@@ -4,6 +4,31 @@
       "trigger": "/journal",
       "expandToLines": 34,
       "description": "Expand input for journal entry"
+    },
+    {
+      "trigger": "/note",
+      "expandToLines": 10,
+      "description": "Quick note with medium expansion"
+    },
+    {
+      "trigger": "/code",
+      "expandToLines": 20,
+      "description": "Code snippet with syntax highlighting"
+    },
+    {
+      "trigger": "/todo",
+      "expandToLines": 5,
+      "description": "Create a todo list"
+    },
+    {
+      "trigger": "/clear",
+      "expandToLines": null,
+      "description": "Clear the conversation"
+    },
+    {
+      "trigger": "/help",
+      "expandToLines": null,
+      "description": "Show available commands"
     }
   ]
 }

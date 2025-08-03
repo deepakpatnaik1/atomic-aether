@@ -25,9 +25,6 @@ final class StateBus: ObservableObject {
     /// Internal storage for state values
     private var storage: [String: Any] = [:]
     
-    /// Lock for thread-safe access (even though we're @MainActor)
-    private let lock = NSLock()
-    
     /// EventBus for publishing state changes
     private let eventBus: EventBus
     
@@ -41,17 +38,13 @@ final class StateBus: ObservableObject {
     
     /// Get a value from state
     func get<T>(_ key: StateKey<T>) -> T? {
-        lock.lock()
-        defer { lock.unlock() }
         return storage[key.name] as? T
     }
     
     /// Set a value in state
     func set<T>(_ key: StateKey<T>, value: T?) {
-        lock.lock()
         let oldValue = storage[key.name]
         storage[key.name] = value
-        lock.unlock()
         
         // Notify SwiftUI of change
         objectWillChange.send()
@@ -71,16 +64,12 @@ final class StateBus: ObservableObject {
     
     /// Check if a key exists
     func contains<T>(_ key: StateKey<T>) -> Bool {
-        lock.lock()
-        defer { lock.unlock() }
         return storage[key.name] != nil
     }
     
     /// Clear all state
     func clear() {
-        lock.lock()
         storage.removeAll()
-        lock.unlock()
         
         objectWillChange.send()
         eventBus.publish(StateClearedEvent())

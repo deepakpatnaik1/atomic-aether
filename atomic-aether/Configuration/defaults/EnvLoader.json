@@ -1,0 +1,15 @@
+{
+  "envFilePath": "/Users/buda-air/Documents/code/atomic-aether/.env",
+  "apiKeyNames": {
+    "openAI": "OPENAI_API_KEY",
+    "anthropic": "ANTHROPIC_API_KEY",
+    "fireworks": "FIREWORKS_API_KEY"
+  },
+  "parsing": {
+    "commentPrefix": "#",
+    "quoteCharacters": "\"'"
+  },
+  "errorMessages": {
+    "noKeysFound": "No API keys found. Please set up your API keys in the app."
+  }
+}

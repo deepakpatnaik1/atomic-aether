@@ -3,5 +3,9 @@
   "submitModifiers": [],
   "newlineKey": "return",
   "newlineModifiers": ["shift", "option"],
-  "enabled": true
+  "enabled": true,
+  "submitKeyDisplay": "Enter",
+  "shiftKeyDisplay": "Shift+Enter",
+  "optionKeyDisplay": "Option+Enter",
+  "noShortcutDisplay": "N/A"
 }

@@ -28,29 +28,29 @@ struct MessageRow: View {
                     accentColor: personaService.accentColor(for: message.speaker),
                     appearance: appearance.speakerLabel
                 )
-                .padding(.top, 8)
-                .padding(.bottom, 4)
-                .padding(.leading, 8)
+                .padding(.top, appearance.message.topPadding)
+                .padding(.bottom, appearance.message.bottomPadding)
+                .padding(.leading, appearance.message.leadingPadding)
             }
             
             // Message content
             HStack {
                 Text(message.content)
-                    .font(.system(size: 15))
-                    .foregroundColor(.white.opacity(0.9))
+                    .font(.system(size: appearance.message.fontSize))
+                    .foregroundColor(.white.opacity(appearance.message.contentOpacity))
                     .textSelection(.enabled)
                 
                 // Streaming indicator
                 if message.isStreaming {
                     ProgressView()
-                        .scaleEffect(0.5)
-                        .padding(.leading, 4)
+                        .scaleEffect(appearance.message.progressIndicatorScale)
+                        .padding(.leading, appearance.message.progressIndicatorPadding)
                 }
                 
                 Spacer()
             }
-            .padding(.leading, 16)
-            .padding(.bottom, isLastFromSpeaker ? 16 : appearance.messageSpacing)
+            .padding(.leading, appearance.message.contentLeadingPadding)
+            .padding(.bottom, isLastFromSpeaker ? appearance.message.lastMessageBottomPadding : appearance.messageSpacing)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }

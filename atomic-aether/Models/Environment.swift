@@ -4,7 +4,7 @@
 //
 //  Model for environment configuration
 //
-//  ATOM 7: Environment Configuration - API key storage
+//  ATOM 20: Environment Loader - API key storage
 //
 //  Atomic LEGO: Pure data model for environment variables
 //  No logic, just holds API keys loaded from .env

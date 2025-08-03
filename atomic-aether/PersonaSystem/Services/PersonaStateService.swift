@@ -114,17 +114,14 @@ final class PersonaStateService: ObservableObject {
             if configuration.isValidPersona(potentialPersona) {
                 switchToPersona(potentialPersona)
                 
-                // Get remaining message after first word
-                let content = words.count > 1 ? String(words[1]) : ""
-                
                 // Publish event (keeping existing event structure)
                 eventBus.publish(PersonaMessageProcessedEvent(
                     persona: potentialPersona,
                     original: message,
-                    cleaned: content
+                    cleaned: message
                 ))
                 
-                return (potentialPersona, content)
+                return (potentialPersona, message)
             }
         }
         
@@ -143,8 +140,6 @@ final class PersonaStateService: ObservableObject {
             return
         }
         
-        let previousPersona = currentPersona
-        
         if persona.isAnthropic {
             // Switching to Claude
             currentAnthropicPersona = personaId
@@ -158,9 +153,6 @@ final class PersonaStateService: ObservableObject {
         
         // Update conversation history
         updateConversationHistory(personaId)
-        
-        // Log the switch
-        print("Switched from \(previousPersona) to \(personaId)")
     }
     
     /// Get system prompt for current persona

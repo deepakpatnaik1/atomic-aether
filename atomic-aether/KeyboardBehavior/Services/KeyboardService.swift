@@ -48,18 +48,18 @@ class KeyboardService: ObservableObject {
     
     /// Get a user-friendly description of the keyboard shortcuts
     func shortcutDescription() -> (submit: String, newline: String) {
-        let submit = "Enter"
+        let submit = configuration.submitKeyDisplay
         
         var newlineOptions: [String] = []
         if configuration.hasShiftModifier() {
-            newlineOptions.append("Shift+Enter")
+            newlineOptions.append(configuration.shiftKeyDisplay)
         }
         if configuration.hasOptionModifier() {
-            newlineOptions.append("Option+Enter")
+            newlineOptions.append(configuration.optionKeyDisplay)
         }
         
         let newline = newlineOptions.joined(separator: " or ")
         
-        return (submit: submit, newline: newline.isEmpty ? "N/A" : newline)
+        return (submit: submit, newline: newline.isEmpty ? configuration.noShortcutDisplay : newline)
     }
 }

@@ -39,8 +39,8 @@ struct ModelPickerView: View {
                     .foregroundColor(.white.opacity(opacity))
                 
                 Image(systemName: "chevron.down")
-                    .font(.system(size: fontSize * 0.7))
-                    .foregroundColor(.white.opacity(opacity * 0.7))
+                    .font(.system(size: fontSize * modelPickerService.configuration.chevronSizeRatio))
+                    .foregroundColor(.white.opacity(opacity * modelPickerService.configuration.chevronSizeRatio))
             }
         }
         .menuStyle(.borderlessButton)

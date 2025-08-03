@@ -152,12 +152,12 @@ final class ModelPickerService: ObservableObject {
                 )
             }
             
-            modelGroups = [ModelGroup(provider: "All Models", models: items)]
+            modelGroups = [ModelGroup(provider: configuration.allModelsLabel, models: items)]
         }
     }
     
     private func extractProvider(from modelId: String) -> String {
         let components = modelId.split(separator: ":")
-        return components.first.map(String.init) ?? "unknown"
+        return components.first.map(String.init) ?? configuration.unknownProviderLabel
     }
 }

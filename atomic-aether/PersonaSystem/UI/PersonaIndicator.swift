@@ -16,8 +16,10 @@ struct PersonaIndicator: View {
     @EnvironmentObject var personaStateService: PersonaStateService
     @EnvironmentObject var modelStateService: ModelStateService
     @EnvironmentObject var themeService: ThemeService
+    @EnvironmentObject var configBus: ConfigBus
     
     @State private var isHovering = false
+    @State private var uiConfig: PersonaUIConfiguration = .default
     
     var body: some View {
         if let persona = personaStateService.currentPersonaDefinition {
@@ -38,7 +40,7 @@ struct PersonaIndicator: View {
                     if modelStateService.currentAnthropicModel != nil {
                         Text("•")
                             .foregroundColor(themeService.current.secondaryTextColor)
-                        Text("Custom")
+                        Text(uiConfig.labels.customModelIndicator)
                             .font(.caption2)
                             .foregroundColor(themeService.current.secondaryTextColor)
                     }
@@ -46,7 +48,7 @@ struct PersonaIndicator: View {
                     if modelStateService.currentNonAnthropicModel != nil {
                         Text("•")
                             .foregroundColor(themeService.current.secondaryTextColor)
-                        Text("Custom")
+                        Text(uiConfig.labels.customModelIndicator)
                             .font(.caption2)
                             .foregroundColor(themeService.current.secondaryTextColor)
                     }
@@ -68,7 +70,12 @@ struct PersonaIndicator: View {
                     isHovering = hovering
                 }
             }
-            .help("Current persona: \(persona.displayName)")
+            .help(uiConfig.currentPersonaTooltip(for: persona.displayName))
+            .onAppear {
+                if let config = configBus.load("PersonaUI", as: PersonaUIConfiguration.self) {
+                    uiConfig = config
+                }
+            }
         }
     }
 }
@@ -77,6 +84,9 @@ struct PersonaIndicator: View {
 
 struct PersonaIndicatorCompact: View {
     @EnvironmentObject var personaStateService: PersonaStateService
+    @EnvironmentObject var configBus: ConfigBus
+    
+    @State private var uiConfig: PersonaUIConfiguration = .default
     
     var body: some View {
         if let persona = personaStateService.currentPersonaDefinition {
@@ -89,7 +99,12 @@ struct PersonaIndicatorCompact: View {
                     .font(.caption2)
                     .fontWeight(.medium)
             }
-            .help("Talking to: \(persona.displayName)")
+            .help(uiConfig.talkingToTooltip(for: persona.displayName))
+            .onAppear {
+                if let config = configBus.load("PersonaUI", as: PersonaUIConfiguration.self) {
+                    uiConfig = config
+                }
+            }
         }
     }
 }
@@ -99,11 +114,14 @@ struct PersonaIndicatorCompact: View {
 struct PersonaSwitcher: View {
     @EnvironmentObject var personaStateService: PersonaStateService
     @EnvironmentObject var themeService: ThemeService
+    @EnvironmentObject var configBus: ConfigBus
+    
+    @State private var uiConfig: PersonaUIConfiguration = .default
     
     var body: some View {
         Menu {
             // Anthropic personas
-            Section("Anthropic") {
+            Section(uiConfig.labels.anthropicSection) {
                 ForEach(personaStateService.configuration.anthropicPersonas) { persona in
                     Button(action: {
                         personaStateService.switchToPersona(persona.id)
@@ -114,7 +132,7 @@ struct PersonaSwitcher: View {
             }
             
             // Non-Anthropic personas
-            Section("Other Personas") {
+            Section(uiConfig.labels.otherPersonasSection) {
                 ForEach(personaStateService.configuration.nonAnthropicPersonas) { persona in
                     Button(action: {
                         personaStateService.switchToPersona(persona.id)
@@ -129,6 +147,11 @@ struct PersonaSwitcher: View {
         }
         .menuStyle(.borderlessButton)
         .menuIndicator(.hidden)
+        .onAppear {
+            if let config = configBus.load("PersonaUI", as: PersonaUIConfiguration.self) {
+                uiConfig = config
+            }
+        }
     }
 }
 
