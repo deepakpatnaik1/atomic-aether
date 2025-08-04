@@ -84,29 +84,47 @@ final class ModelPickerService: ObservableObject {
     // MARK: - Private Methods
     
     private func setupObservers() {
+        // Observe persona changes - since currentPersona is computed, observe the service's objectWillChange
+        personaStateService.objectWillChange
+            .sink { [weak self] _ in
+                // Small delay to ensure state has updated
+                DispatchQueue.main.async {
+                    self?.updateModelGroups()
+                }
+            }
+            .store(in: &cancellables)
+        
         // Observe default model changes
         modelStateService.$currentDefaultAnthropicModel
             .sink { [weak self] _ in
-                self?.updateModelGroups()
+                DispatchQueue.main.async {
+                    self?.updateModelGroups()
+                }
             }
             .store(in: &cancellables)
         
         modelStateService.$currentDefaultNonAnthropicModel
             .sink { [weak self] _ in
-                self?.updateModelGroups()
+                DispatchQueue.main.async {
+                    self?.updateModelGroups()
+                }
             }
             .store(in: &cancellables)
         
         // Observe current model changes
         modelStateService.$currentAnthropicModel
             .sink { [weak self] _ in
-                self?.updateModelGroups()
+                DispatchQueue.main.async {
+                    self?.updateModelGroups()
+                }
             }
             .store(in: &cancellables)
         
         modelStateService.$currentNonAnthropicModel
             .sink { [weak self] _ in
-                self?.updateModelGroups()
+                DispatchQueue.main.async {
+                    self?.updateModelGroups()
+                }
             }
             .store(in: &cancellables)
     }

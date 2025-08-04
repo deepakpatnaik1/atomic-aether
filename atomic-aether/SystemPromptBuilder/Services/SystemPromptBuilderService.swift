@@ -128,9 +128,11 @@ class SystemPromptBuilderService: ObservableObject {
     
     private func getPersonaBasePrompt(_ personaId: String) -> String? {
         // Get the base system prompt from PersonaStateService
-        // First switch to the persona to ensure it's current
-        personaStateService?.switchToPersona(personaId)
-        return personaStateService?.systemPromptForCurrentPersona()
+        // No need to switch - just get the persona's system prompt directly
+        guard let persona = personaStateService?.configuration.persona(for: personaId) else {
+            return nil
+        }
+        return persona.systemPrompt
     }
     
     private func formatSection(_ name: String, content: String) -> String {

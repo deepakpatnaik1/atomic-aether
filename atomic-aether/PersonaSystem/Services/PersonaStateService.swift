@@ -143,13 +143,17 @@ final class PersonaStateService: ObservableObject {
         if persona.isAnthropic {
             // Switching to Claude
             currentAnthropicPersona = personaId
-            currentPersona = personaId
         } else {
             // Switching to non-Anthropic persona
             currentNonAnthropicPersona = personaId
             stateBus.set(.currentNonAnthropicPersona, value: personaId)
-            currentPersona = personaId
         }
+        
+        // Update current persona using setter to trigger events
+        currentPersona = personaId
+        
+        // Trigger UI updates
+        objectWillChange.send()
         
         // Update conversation history
         updateConversationHistory(personaId)
