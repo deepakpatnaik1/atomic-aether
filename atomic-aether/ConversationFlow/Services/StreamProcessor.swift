@@ -20,6 +20,7 @@ final class StreamProcessor {
     
     private let messageStore: MessageStore
     private let eventBus: EventBus
+    weak var responseParser: ResponseParserService?
     
     // MARK: - State
     
@@ -53,6 +54,9 @@ final class StreamProcessor {
                 case .content(let content):
                     accumulatedContent += content
                     chunkCount += 1
+                    
+                    // Send to response parser if available (Phase II)
+                    responseParser?.parseStreamingToken(content)
                     
                     // Update message with accumulated content
                     messageStore.updateMessage(
@@ -88,6 +92,9 @@ final class StreamProcessor {
                 content: accumulatedContent,
                 success: true
             )
+            
+            // Complete response parsing (Phase II)
+            responseParser?.completeResponse()
             
         } catch {
             // Handle stream error

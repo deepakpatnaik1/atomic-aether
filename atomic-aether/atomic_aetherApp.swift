@@ -50,6 +50,9 @@ struct atomic_aetherApp: App {
     // ATOM 19: Interactive Model Picker
     @StateObject private var modelPickerService: ModelPickerService
     
+    // ATOM 23: Response Parser (Phase II)
+    @StateObject private var responseParserService: ResponseParserService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -130,6 +133,9 @@ struct atomic_aetherApp: App {
             modelDisplayService: modelDisplayService,
             personaStateService: personaStateService
         ))
+        
+        // Create ResponseParserService (Phase II)
+        _responseParserService = StateObject(wrappedValue: ResponseParserService())
     }
     
     var body: some Scene {
@@ -151,6 +157,7 @@ struct atomic_aetherApp: App {
             .environmentObject(conversationOrchestrator)
             .environmentObject(modelDisplayService)
             .environmentObject(modelPickerService)
+            .environmentObject(responseParserService)
             .onAppear {
                 // Setup and load environment variables
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
@@ -183,6 +190,10 @@ struct atomic_aetherApp: App {
                 
                 // Setup ModelPickerService after view is ready
                 modelPickerService.setup()
+                
+                // Setup ResponseParserService (Phase II)
+                responseParserService.setup(configBus: configBus, eventBus: eventBus)
+                conversationOrchestrator.setResponseParser(responseParserService)
             }
         }
         .commands {

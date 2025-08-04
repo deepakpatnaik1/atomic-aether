@@ -34,6 +34,7 @@ final class ConversationOrchestrator: ObservableObject {
     
     private var configuration: ConversationConfiguration = .default
     private var streamProcessor: StreamProcessor?
+    private weak var responseParser: ResponseParserService?
     
     // MARK: - Initialization
     
@@ -69,6 +70,12 @@ final class ConversationOrchestrator: ObservableObject {
     }
     
     // MARK: - Public Methods
+    
+    /// Set the response parser for Phase II features
+    func setResponseParser(_ parser: ResponseParserService) {
+        self.responseParser = parser
+        self.streamProcessor?.responseParser = parser
+    }
     
     /// Process a user message through the conversation flow
     func processMessage(_ text: String) async {
