@@ -35,6 +35,7 @@ final class ConversationOrchestrator: ObservableObject {
     private var configuration: ConversationConfiguration = .default
     private var streamProcessor: StreamProcessor?
     private weak var responseParser: ResponseParserService?
+    private weak var systemPromptBuilder: SystemPromptBuilderService?
     
     // MARK: - Initialization
     
@@ -75,6 +76,11 @@ final class ConversationOrchestrator: ObservableObject {
     func setResponseParser(_ parser: ResponseParserService) {
         self.responseParser = parser
         self.streamProcessor?.responseParser = parser
+    }
+    
+    /// Set the system prompt builder for Phase II features
+    func setSystemPromptBuilder(_ builder: SystemPromptBuilderService) {
+        self.systemPromptBuilder = builder
     }
     
     /// Process a user message through the conversation flow
@@ -123,10 +129,13 @@ final class ConversationOrchestrator: ObservableObject {
             let history = messageStore.messages.suffix(configuration.maxContextMessages)
             
             // 5. Create conversation request
+            let systemPrompt = systemPromptBuilder?.buildSystemPrompt(personaId: persona) 
+                ?? personaStateService.systemPromptForCurrentPersona()
+            
             let request = ConversationRequest(
                 userMessage: cleanedMessage,
                 persona: persona,
-                systemPrompt: personaStateService.systemPromptForCurrentPersona(),
+                systemPrompt: systemPrompt,
                 model: personaStateService.modelForCurrentPersona(),
                 conversationHistory: Array(history.dropLast()), // Exclude the message we just added
                 maxTokens: nil,

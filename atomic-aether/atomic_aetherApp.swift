@@ -65,6 +65,9 @@ struct atomic_aetherApp: App {
     // ATOM 27: Persona Profile Service (Phase II)
     @StateObject private var personaProfileService: PersonaProfileService
     
+    // ATOM 28: System Prompt Builder (Phase II)
+    @StateObject private var systemPromptBuilder: SystemPromptBuilderService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -160,6 +163,9 @@ struct atomic_aetherApp: App {
         
         // Create PersonaProfileService (Phase II)
         _personaProfileService = StateObject(wrappedValue: PersonaProfileService())
+        
+        // Create SystemPromptBuilder (Phase II)
+        _systemPromptBuilder = StateObject(wrappedValue: SystemPromptBuilderService())
     }
     
     var body: some Scene {
@@ -186,6 +192,7 @@ struct atomic_aetherApp: App {
             .environmentObject(superJournalService)
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
+            .environmentObject(systemPromptBuilder)
             .onAppear {
                 // Setup and load environment variables
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
@@ -223,6 +230,9 @@ struct atomic_aetherApp: App {
                 responseParserService.setup(configBus: configBus, eventBus: eventBus)
                 conversationOrchestrator.setResponseParser(responseParserService)
                 
+                // Wire SystemPromptBuilder to ConversationOrchestrator (Phase II)
+                conversationOrchestrator.setSystemPromptBuilder(systemPromptBuilder)
+                
                 // Setup JournalService (Phase II)
                 journalService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
                 
@@ -234,6 +244,16 @@ struct atomic_aetherApp: App {
                 
                 // Setup PersonaProfileService (Phase II)
                 personaProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
+                
+                // Setup SystemPromptBuilder (Phase II)
+                systemPromptBuilder.setup(
+                    configBus: configBus,
+                    eventBus: eventBus,
+                    personaStateService: personaStateService,
+                    bossProfileService: bossProfileService,
+                    personaProfileService: personaProfileService,
+                    journalService: journalService
+                )
             }
         }
         .commands {
