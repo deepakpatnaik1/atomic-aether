@@ -53,6 +53,9 @@ struct atomic_aetherApp: App {
     // ATOM 23: Response Parser (Phase II)
     @StateObject private var responseParserService: ResponseParserService
     
+    // ATOM 24: Journal Service (Phase II)
+    @StateObject private var journalService: JournalService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -136,6 +139,9 @@ struct atomic_aetherApp: App {
         
         // Create ResponseParserService (Phase II)
         _responseParserService = StateObject(wrappedValue: ResponseParserService())
+        
+        // Create JournalService (Phase II)
+        _journalService = StateObject(wrappedValue: JournalService())
     }
     
     var body: some Scene {
@@ -158,6 +164,7 @@ struct atomic_aetherApp: App {
             .environmentObject(modelDisplayService)
             .environmentObject(modelPickerService)
             .environmentObject(responseParserService)
+            .environmentObject(journalService)
             .onAppear {
                 // Setup and load environment variables
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
@@ -194,6 +201,9 @@ struct atomic_aetherApp: App {
                 // Setup ResponseParserService (Phase II)
                 responseParserService.setup(configBus: configBus, eventBus: eventBus)
                 conversationOrchestrator.setResponseParser(responseParserService)
+                
+                // Setup JournalService (Phase II)
+                journalService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
             }
         }
         .commands {
