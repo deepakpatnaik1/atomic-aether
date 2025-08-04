@@ -62,6 +62,9 @@ struct atomic_aetherApp: App {
     // ATOM 26: Boss Profile Service (Phase II)
     @StateObject private var bossProfileService: BossProfileService
     
+    // ATOM 27: Persona Profile Service (Phase II)
+    @StateObject private var personaProfileService: PersonaProfileService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -154,6 +157,9 @@ struct atomic_aetherApp: App {
         
         // Create BossProfileService (Phase II)
         _bossProfileService = StateObject(wrappedValue: BossProfileService())
+        
+        // Create PersonaProfileService (Phase II)
+        _personaProfileService = StateObject(wrappedValue: PersonaProfileService())
     }
     
     var body: some Scene {
@@ -179,6 +185,7 @@ struct atomic_aetherApp: App {
             .environmentObject(journalService)
             .environmentObject(superJournalService)
             .environmentObject(bossProfileService)
+            .environmentObject(personaProfileService)
             .onAppear {
                 // Setup and load environment variables
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
@@ -224,6 +231,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup BossProfileService (Phase II)
                 bossProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
+                
+                // Setup PersonaProfileService (Phase II)
+                personaProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
             }
         }
         .commands {
