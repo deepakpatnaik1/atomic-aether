@@ -85,7 +85,7 @@ class JournalService: ObservableObject {
             eventBus?.publish(JournalEvent.entryAdded(entry))
         } catch {
             lastError = error
-            errorBus?.publish(error, severity: .medium)
+            errorBus?.report(error, from: "JournalService", severity: .error)
             eventBus?.publish(JournalEvent.journalError(error))
         }
     }
@@ -131,9 +131,10 @@ class JournalService: ObservableObject {
         defer { isLoading = false }
         
         guard let url = configuration.journalURL else {
-            errorBus?.publish(
-                AetherError.configuration("Invalid journal path"),
-                severity: .low
+            errorBus?.report(
+                message: "Invalid journal path configuration",
+                from: "JournalService",
+                severity: .warning
             )
             return
         }
@@ -158,13 +159,17 @@ class JournalService: ObservableObject {
             
         } catch {
             lastError = error
-            errorBus?.publish(error, severity: .medium)
+            errorBus?.report(error, from: "JournalService", severity: .error)
         }
     }
     
     private func appendToJournalFile(_ entry: JournalEntry) async throws {
         guard let url = configuration.journalURL else {
-            throw AetherError.configuration("Invalid journal path")
+            throw NSError(
+                domain: "JournalService",
+                code: 1,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid journal path configuration"]
+            )
         }
         
         // Create directory if needed
