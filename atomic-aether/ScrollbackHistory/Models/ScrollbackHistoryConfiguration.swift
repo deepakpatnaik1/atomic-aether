@@ -42,7 +42,7 @@ struct ScrollbackHistoryConfiguration: Codable {
         enabled: true,
         messagesPerBatch: 100,
         loadTriggerThreshold: 50,
-        superJournalPath: "~/Documents/aetherVault/superjournal/",
+        superJournalPath: "~/Documents/code/aetherVault/superjournal/",
         dateFormat: "yyyy-MM-dd-HH-mm-ss",
         showLoadingIndicator: true,
         loadingText: "Loading earlier messages...",

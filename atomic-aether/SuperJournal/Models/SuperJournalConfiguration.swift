@@ -22,7 +22,7 @@ struct SuperJournalConfiguration: Codable {
     let createPathIfMissing: Bool
     
     static let `default` = SuperJournalConfiguration(
-        savePath: "~/Documents/aetherVault/superjournal/",
+        savePath: "~/Documents/code/aetherVault/superjournal/",
         fileFormat: "yyyy-MM-dd_HH-mm-ss",
         maxMessagesPerFile: 2000,
         timezone: "Europe/Berlin",
