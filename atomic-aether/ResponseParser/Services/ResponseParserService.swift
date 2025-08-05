@@ -38,15 +38,18 @@ class ResponseParserService: ObservableObject {
     }
     
     func parseStreamingToken(_ token: String) {
+        // Don't accumulate or process anything until we see the first marker
+        if currentMode == .waitingForMarker {
+            currentBuffer += token
+            checkForSectionMarkers()
+            return
+        }
+        
+        // In parsing modes, we need to buffer to detect the next marker
         currentBuffer += token
         
         // Check for section transitions
         checkForSectionMarkers()
-        
-        // In normal mode, stream tokens immediately to display
-        if currentMode == .parsingNormal {
-            eventBus?.publish(ResponseParserEvent.normalToken(token))
-        }
         
         // Trim buffer if it gets too large
         if currentBuffer.count > configuration.bufferSize {
@@ -59,26 +62,62 @@ class ResponseParserService: ObservableObject {
         if let normalRange = currentBuffer.range(of: configuration.normalMarker) {
             if currentMode == .waitingForMarker {
                 currentMode = .parsingNormal
-                currentBuffer.removeSubrange(...normalRange.upperBound)
+                // Safely remove everything up to and including the marker
+                if normalRange.upperBound < currentBuffer.endIndex {
+                    currentBuffer = String(currentBuffer[normalRange.upperBound...])
+                } else {
+                    currentBuffer = ""
+                }
                 normalContent = ""
+                // Now stream any content that's in the buffer after the marker
+                streamBufferedContent()
             }
         }
         
         // Check for machine trim marker
         if let trimRange = currentBuffer.range(of: configuration.machineTrimMarker) {
             if currentMode == .parsingNormal {
-                // Save accumulated normal content
-                let beforeMarker = currentBuffer[..<trimRange.lowerBound]
-                normalContent += beforeMarker
+                // Save and publish any remaining normal content before the marker
+                let beforeMarker = String(currentBuffer[..<trimRange.lowerBound])
+                if !beforeMarker.isEmpty {
+                    eventBus?.publish(ResponseParserEvent.normalToken(beforeMarker))
+                    normalContent += beforeMarker
+                }
                 
                 // Transition to machine trim mode
                 currentMode = .parsingMachineTrim
-                currentBuffer.removeSubrange(...trimRange.upperBound)
+                // Safely remove everything up to and including the marker
+                if trimRange.upperBound < currentBuffer.endIndex {
+                    currentBuffer = String(currentBuffer[trimRange.upperBound...])
+                } else {
+                    currentBuffer = ""
+                }
                 machineTrimContent = ""
                 
                 // Publish complete normal response
                 let cleaned = normalContent.trimmingCharacters(in: .whitespacesAndNewlines)
                 eventBus?.publish(ResponseParserEvent.normalResponseComplete(content: cleaned))
+            }
+        } else if currentMode == .parsingNormal {
+            // No machine trim marker found yet, stream available content
+            streamBufferedContent()
+        }
+    }
+    
+    private func streamBufferedContent() {
+        guard currentMode == .parsingNormal else { return }
+        
+        // Keep some buffer to ensure we don't miss markers
+        let keepBack = max(configuration.normalMarker.count, configuration.machineTrimMarker.count)
+        
+        if currentBuffer.count > keepBack {
+            let streamEndIndex = currentBuffer.index(currentBuffer.endIndex, offsetBy: -keepBack)
+            let contentToStream = String(currentBuffer[..<streamEndIndex])
+            
+            if !contentToStream.isEmpty {
+                eventBus?.publish(ResponseParserEvent.normalToken(contentToStream))
+                normalContent += contentToStream
+                currentBuffer = String(currentBuffer[streamEndIndex...])
             }
         }
     }
@@ -96,8 +135,12 @@ class ResponseParserService: ObservableObject {
         // Handle any remaining content
         switch currentMode {
         case .parsingNormal:
+            // First publish any remaining buffer content
+            if !currentBuffer.isEmpty {
+                eventBus?.publish(ResponseParserEvent.normalToken(currentBuffer))
+                normalContent += currentBuffer
+            }
             // Complete normal response without machine trim
-            normalContent += currentBuffer
             let cleaned = normalContent.trimmingCharacters(in: .whitespacesAndNewlines)
             if !cleaned.isEmpty {
                 eventBus?.publish(ResponseParserEvent.normalResponseComplete(content: cleaned))

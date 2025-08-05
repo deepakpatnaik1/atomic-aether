@@ -68,6 +68,9 @@ struct atomic_aetherApp: App {
     // ATOM 28: System Prompt Builder (Phase II)
     @StateObject private var systemPromptBuilder: SystemPromptBuilderService
     
+    // ATOM 30: Machine Trim Instructions (Phase II)
+    @StateObject private var machineTrimInstructionsService: MachineTrimInstructionsService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -166,6 +169,9 @@ struct atomic_aetherApp: App {
         
         // Create SystemPromptBuilder (Phase II)
         _systemPromptBuilder = StateObject(wrappedValue: SystemPromptBuilderService())
+        
+        // Create MachineTrimInstructionsService (Phase II)
+        _machineTrimInstructionsService = StateObject(wrappedValue: MachineTrimInstructionsService())
     }
     
     var body: some Scene {
@@ -245,6 +251,14 @@ struct atomic_aetherApp: App {
                 // Setup PersonaProfileService (Phase II)
                 personaProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
                 
+                // Setup MachineTrimInstructionsService (Phase II)
+                machineTrimInstructionsService.setup(
+                    configBus: configBus,
+                    eventBus: eventBus,
+                    errorBus: errorBus,
+                    personaStateService: personaStateService
+                )
+                
                 // Setup SystemPromptBuilder (Phase II)
                 systemPromptBuilder.setup(
                     configBus: configBus,
@@ -252,7 +266,8 @@ struct atomic_aetherApp: App {
                     personaStateService: personaStateService,
                     bossProfileService: bossProfileService,
                     personaProfileService: personaProfileService,
-                    journalService: journalService
+                    journalService: journalService,
+                    machineTrimInstructionsService: machineTrimInstructionsService
                 )
             }
         }

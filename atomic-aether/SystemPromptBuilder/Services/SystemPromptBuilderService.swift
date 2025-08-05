@@ -28,6 +28,7 @@ class SystemPromptBuilderService: ObservableObject {
     private var bossProfileService: BossProfileService?
     private var personaProfileService: PersonaProfileService?
     private var journalService: JournalService?
+    private var machineTrimInstructionsService: MachineTrimInstructionsService?
     
     // MARK: - Setup
     func setup(
@@ -36,7 +37,8 @@ class SystemPromptBuilderService: ObservableObject {
         personaStateService: PersonaStateService,
         bossProfileService: BossProfileService,
         personaProfileService: PersonaProfileService,
-        journalService: JournalService
+        journalService: JournalService,
+        machineTrimInstructionsService: MachineTrimInstructionsService? = nil
     ) {
         self.configBus = configBus
         self.eventBus = eventBus
@@ -44,6 +46,7 @@ class SystemPromptBuilderService: ObservableObject {
         self.bossProfileService = bossProfileService
         self.personaProfileService = personaProfileService
         self.journalService = journalService
+        self.machineTrimInstructionsService = machineTrimInstructionsService
         
         loadConfiguration()
     }
@@ -111,6 +114,11 @@ class SystemPromptBuilderService: ObservableObject {
                 // Unknown section - skip
                 break
             }
+        }
+        
+        // Add machine trim instructions at the end (Phase II)
+        if let instructions = machineTrimInstructionsService?.getInstructions(for: personaId) {
+            sections.append(instructions)
         }
         
         let prompt = sections.joined(separator: configuration.sectionSeparator)
