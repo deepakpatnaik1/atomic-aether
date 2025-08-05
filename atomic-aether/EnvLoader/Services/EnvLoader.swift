@@ -41,22 +41,22 @@ class EnvLoader: ObservableObject {
     func load() {
         // Strategy 1: Try Keychain first (most secure)
         if loadFromKeychain() {
+            eventBus?.publish(EnvLoaderEvent.environmentLoaded(hasKeys: environment?.hasAnyKey ?? false))
             return
         }
         
         // Strategy 2: Try process environment variables (Xcode scheme)
         if loadFromProcessEnvironment() {
+            eventBus?.publish(EnvLoaderEvent.environmentLoaded(hasKeys: environment?.hasAnyKey ?? false))
             return
         }
         
         // Strategy 3: Try .env file for initial setup
-        if !configuration.envFilePath.isEmpty {
-            let projectPath = URL(fileURLWithPath: configuration.envFilePath)
-            if loadEnvFromPath(projectPath) {
-                // If found, migrate to Keychain for future use
-                migrateToKeychain()
-                return
-            }
+        if searchForEnvFile() {
+            // If found, migrate to Keychain for future use
+            migrateToKeychain()
+            eventBus?.publish(EnvLoaderEvent.environmentLoaded(hasKeys: environment?.hasAnyKey ?? false))
+            return
         }
         
         // Report error if no environment found
@@ -65,6 +65,7 @@ class EnvLoader: ObservableObject {
             from: "EnvLoader",
             severity: .warning
         )
+        eventBus?.publish(EnvLoaderEvent.loadingFailed(reason: configuration.errorMessages.noKeysFound))
     }
     
     /// Load from process environment (Xcode scheme variables)
@@ -87,6 +88,30 @@ class EnvLoader: ObservableObject {
             // Silent success - no logging needed
             
             return true
+        }
+        
+        return false
+    }
+    
+    /// Search for .env file in configured paths
+    private func searchForEnvFile() -> Bool {
+        let fileManager = FileManager.default
+        let currentDirectory = fileManager.currentDirectoryPath
+        
+        for searchPath in configuration.searchPaths {
+            let fullPath: String
+            if searchPath == "." {
+                fullPath = currentDirectory
+            } else {
+                fullPath = (currentDirectory as NSString).appendingPathComponent(searchPath)
+            }
+            
+            let envPath = (fullPath as NSString).appendingPathComponent(configuration.envFileName)
+            let envURL = URL(fileURLWithPath: envPath)
+            
+            if loadEnvFromPath(envURL) {
+                return true
+            }
         }
         
         return false
@@ -206,5 +231,6 @@ class EnvLoader: ObservableObject {
         _ = KeychainService.saveAll(keysToSave)
         
         // Silent migration - keys saved to Keychain
+        eventBus?.publish(EnvLoaderEvent.keychainMigrationCompleted)
     }
 }

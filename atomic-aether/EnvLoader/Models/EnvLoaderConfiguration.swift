@@ -13,7 +13,8 @@
 import Foundation
 
 struct EnvLoaderConfiguration: Codable {
-    let envFilePath: String
+    let envFileName: String           // Just the filename, not full path
+    let searchPaths: [String]         // Relative paths to search
     let apiKeyNames: APIKeyNames
     let parsing: ParsingConfiguration
     let errorMessages: ErrorMessages
@@ -36,7 +37,8 @@ struct EnvLoaderConfiguration: Codable {
     // MARK: - Default Configuration
     
     static let `default` = EnvLoaderConfiguration(
-        envFilePath: "",
+        envFileName: ".env",
+        searchPaths: [".", "..", "../..", "../../.."],
         apiKeyNames: APIKeyNames(
             openAI: "OPENAI_API_KEY",
             anthropic: "ANTHROPIC_API_KEY",

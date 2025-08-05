@@ -1,5 +1,6 @@
 {
-  "envFilePath": "/Users/buda-air/Documents/code/atomic-aether/.env",
+  "envFileName": ".env",
+  "searchPaths": [".", "..", "../..", "../../.."],
   "apiKeyNames": {
     "openAI": "OPENAI_API_KEY",
     "anthropic": "ANTHROPIC_API_KEY",
