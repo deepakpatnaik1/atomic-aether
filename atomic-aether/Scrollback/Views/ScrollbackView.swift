@@ -16,6 +16,7 @@ struct ScrollbackView: View {
     @EnvironmentObject var messageStore: MessageStore
     @EnvironmentObject var personaService: PersonaService
     @EnvironmentObject var configBus: ConfigBus
+    @EnvironmentObject var historyLoader: ScrollbackHistoryLoaderService
     
     @State private var appearance = ScrollbackAppearance(
         width: 700,
@@ -49,6 +50,10 @@ struct ScrollbackView: View {
         ScrollViewReader { proxy in
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
+                    // History loader trigger (Phase II)
+                    ScrollbackHistoryTriggerView()
+                        .padding(.bottom, appearance.messageSpacing)
+                    
                     ForEach(Array(messageStore.messages.enumerated()), id: \.element.id) { index, message in
                         MessageRow(
                             message: message,

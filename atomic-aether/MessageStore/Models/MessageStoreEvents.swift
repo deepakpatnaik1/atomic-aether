@@ -27,3 +27,8 @@ struct MessageUpdatedEvent: AetherEvent, SystemEventType {
 struct MessagesCleared: AetherEvent, SystemEventType {
     let source: String = "MessageStore"
 }
+
+struct HistoricalMessagesLoadedEvent: AetherEvent, SystemEventType {
+    let count: Int
+    let source: String = "MessageStore"
+}

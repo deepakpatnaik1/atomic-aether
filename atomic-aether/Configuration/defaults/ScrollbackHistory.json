@@ -1,0 +1,21 @@
+{
+    "enabled": true,
+    "messagesPerBatch": 100,
+    "loadTriggerThreshold": 50.0,
+    "superJournalPath": "~/Documents/aetherVault/superjournal/",
+    "dateFormat": "yyyy-MM-dd-HH-mm-ss",
+    "showLoadingIndicator": true,
+    "loadingText": "Loading earlier messages...",
+    "loadMoreButtonText": "Load Earlier Messages",
+    "noMoreHistoryText": "Beginning of conversation history",
+    "errorRetryDelay": 2.0,
+    "maxRetries": 3,
+    "buttonStyle": {
+        "backgroundColor": "gray",
+        "textColor": "white",
+        "fontSize": 14.0,
+        "padding": 8.0,
+        "cornerRadius": 8.0,
+        "opacity": 0.8
+    }
+}

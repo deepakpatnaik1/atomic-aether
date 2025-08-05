@@ -88,4 +88,26 @@ class MessageStore: ObservableObject {
             eventBus?.publish(MessagesCleared())
         }
     }
+    
+    /// Prepend historical messages (Phase II - for ScrollbackHistory)
+    func prependHistoricalMessages(_ historicalMessages: [Message]) async {
+        guard !historicalMessages.isEmpty else { return }
+        
+        // Filter out any duplicates based on ID
+        let existingIds = Set(messages.map { $0.id })
+        let newMessages = historicalMessages.filter { !existingIds.contains($0.id) }
+        
+        // Prepend to beginning of array
+        messages = newMessages + messages
+        
+        // Still enforce max limit even with historical messages
+        if messages.count > configuration.maxMessages {
+            messages = Array(messages.suffix(configuration.maxMessages))
+        }
+        
+        // Publish event for historical load
+        if configuration.publishEvents {
+            eventBus?.publish(HistoricalMessagesLoadedEvent(count: newMessages.count))
+        }
+    }
 }

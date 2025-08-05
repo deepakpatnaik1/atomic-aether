@@ -71,6 +71,9 @@ struct atomic_aetherApp: App {
     // ATOM 30: Machine Trim Instructions (Phase II)
     @StateObject private var machineTrimInstructionsService: MachineTrimInstructionsService
     
+    // ATOM 31: Scrollback History Loader (Phase II)
+    @StateObject private var scrollbackHistoryLoader: ScrollbackHistoryLoaderService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -172,6 +175,9 @@ struct atomic_aetherApp: App {
         
         // Create MachineTrimInstructionsService (Phase II)
         _machineTrimInstructionsService = StateObject(wrappedValue: MachineTrimInstructionsService())
+        
+        // Create ScrollbackHistoryLoaderService (Phase II)
+        _scrollbackHistoryLoader = StateObject(wrappedValue: ScrollbackHistoryLoaderService())
     }
     
     var body: some Scene {
@@ -199,6 +205,7 @@ struct atomic_aetherApp: App {
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
             .environmentObject(systemPromptBuilder)
+            .environmentObject(scrollbackHistoryLoader)
             .onAppear {
                 // Setup and load environment variables
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
@@ -268,6 +275,14 @@ struct atomic_aetherApp: App {
                     personaProfileService: personaProfileService,
                     journalService: journalService,
                     machineTrimInstructionsService: machineTrimInstructionsService
+                )
+                
+                // Setup ScrollbackHistoryLoader (Phase II)
+                scrollbackHistoryLoader.setup(
+                    configBus: configBus,
+                    eventBus: eventBus,
+                    errorBus: errorBus,
+                    messageStore: messageStore
                 )
             }
         }
