@@ -20,7 +20,7 @@ struct BossProfileConfiguration: Codable {
     let maxFileSizeKB: Int
     
     static let `default` = BossProfileConfiguration(
-        profilePath: "~/Documents/aetherVault/boss/",
+        profilePath: "~/Documents/code/aether/aetherVault/playbook/boss/",
         includedExtensions: [".md", ".txt", ".markdown", ".text"],
         excludedFiles: [".DS_Store", ".gitignore"],
         fileSeparator: "\n\n=== {filename} ===\n\n",

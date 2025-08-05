@@ -1,5 +1,5 @@
 {
-    "profilePath": "~/Documents/aetherVault/boss/",
+    "profilePath": "~/Documents/code/aether/aetherVault/playbook/boss/",
     "includedExtensions": [".md", ".txt", ".markdown", ".text"],
     "excludedFiles": [".DS_Store", ".gitignore", "Thumbs.db"],
     "fileSeparator": "\n\n=== {filename} ===\n\n",
