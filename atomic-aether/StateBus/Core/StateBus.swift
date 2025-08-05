@@ -28,10 +28,18 @@ final class StateBus: ObservableObject {
     /// EventBus for publishing state changes
     private let eventBus: EventBus
     
+    /// Configuration loaded from JSON
+    private var configuration: StateBusConfiguration?
+    
     // MARK: - Initialization
     
-    init(eventBus: EventBus) {
+    init(eventBus: EventBus, configBus: ConfigBus? = nil) {
         self.eventBus = eventBus
+        
+        // Load configuration if available
+        if let config = configBus?.load(StateBusConfiguration.self, from: "StateBus.json") {
+            self.configuration = config
+        }
     }
     
     // MARK: - Public Interface
@@ -43,8 +51,22 @@ final class StateBus: ObservableObject {
     
     /// Set a value in state
     func set<T>(_ key: StateKey<T>, value: T?) {
+        // Check storage limit
+        if let max = configuration?.maxStorageEntries,
+           storage.count >= max && storage[key.name] == nil {
+            // Remove oldest entry (simple FIFO)
+            if let firstKey = storage.keys.first {
+                storage.removeValue(forKey: firstKey)
+            }
+        }
+        
         let oldValue = storage[key.name]
         storage[key.name] = value
+        
+        // Debug logging if enabled
+        if configuration?.enableDebugLogging == true {
+            print("[StateBus] Set '\(key.name)' = \(String(describing: value))")
+        }
         
         // Notify SwiftUI of change
         objectWillChange.send()

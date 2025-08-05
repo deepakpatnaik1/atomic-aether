@@ -94,8 +94,8 @@ struct atomic_aetherApp: App {
         _envLoader = StateObject(wrappedValue: envLoader)
         _messageStore = StateObject(wrappedValue: messageStore)
         
-        // Create StateBus with EventBus
-        let stateBus = StateBus(eventBus: eventBus)
+        // Create StateBus with EventBus and ConfigBus
+        let stateBus = StateBus(eventBus: eventBus, configBus: configBus)
         _stateBus = StateObject(wrappedValue: stateBus)
         
         // Create ErrorBus with dependencies
