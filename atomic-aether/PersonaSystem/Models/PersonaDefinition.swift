@@ -4,7 +4,7 @@
 //
 //  Core persona model with all properties
 //
-//  ATOM 13: Persona System - Persona definition
+//  ATOM 10: Personas - Persona definition
 //
 //  Atomic LEGO: Complete persona definition
 //  - Identity and display properties

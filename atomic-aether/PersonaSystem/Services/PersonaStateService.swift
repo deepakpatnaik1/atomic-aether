@@ -4,7 +4,7 @@
 //
 //  Manages persona state with three-layer system
 //
-//  ATOM 13: Persona System - Core state management
+//  ATOM 10: Personas - Core state management
 //
 //  Atomic LEGO: Central service for persona state
 //  - Tracks current Anthropic persona (always Claude)
@@ -23,7 +23,8 @@ final class PersonaStateService: ObservableObject {
     // MARK: - Published Properties
     
     @Published private(set) var configuration: PersonaSystemConfiguration
-    @Published private(set) var currentAnthropicPersona: String = "claude"
+    @Published private(set) var stateConfiguration: PersonaStateConfiguration
+    @Published private(set) var currentAnthropicPersona: String = ""
     @Published private(set) var currentNonAnthropicPersona: String = ""
     
     // MARK: - Dependencies
@@ -39,7 +40,7 @@ final class PersonaStateService: ObservableObject {
     /// The currently active persona (three-layer system)
     var currentPersona: String {
         get {
-            stateBus.get(.currentPersona) ?? configuration.defaultNonAnthropicPersona
+            stateBus.get(.currentPersona) ?? stateConfiguration.defaultNonAnthropicPersona
         }
         set {
             let oldPersona = currentPersona
@@ -84,8 +85,9 @@ final class PersonaStateService: ObservableObject {
         
         // Initialize with safe defaults
         self.configuration = .default
-        self.currentAnthropicPersona = "claude"
-        self.currentNonAnthropicPersona = "samara"
+        self.stateConfiguration = .default
+        self.currentAnthropicPersona = PersonaStateConfiguration.default.defaultAnthropicPersona
+        self.currentNonAnthropicPersona = PersonaStateConfiguration.default.defaultNonAnthropicPersona
     }
     
     // MARK: - Public Methods
@@ -95,6 +97,13 @@ final class PersonaStateService: ObservableObject {
         // Load configuration
         if let loadedConfig = configBus.load("Personas", as: PersonaSystemConfiguration.self) {
             self.configuration = loadedConfig
+        }
+        
+        // Load state configuration
+        if let loadedStateConfig = configBus.load("PersonaState", as: PersonaStateConfiguration.self) {
+            self.stateConfiguration = loadedStateConfig
+            self.currentAnthropicPersona = loadedStateConfig.defaultAnthropicPersona
+            self.currentNonAnthropicPersona = loadedStateConfig.defaultNonAnthropicPersona
         }
         
         // Restore state
@@ -189,7 +198,7 @@ final class PersonaStateService: ObservableObject {
                 stateBus.set(.currentPersona, value: saved)
             } else {
                 // Fallback to default
-                stateBus.set(.currentPersona, value: configuration.defaultNonAnthropicPersona)
+                stateBus.set(.currentPersona, value: stateConfiguration.defaultNonAnthropicPersona)
             }
         } else {
             // First time - set default
@@ -201,7 +210,7 @@ final class PersonaStateService: ObservableObject {
             if configuration.isValidPersona(saved) && !configuration.persona(for: saved)!.isAnthropic {
                 currentNonAnthropicPersona = saved
             } else {
-                currentNonAnthropicPersona = configuration.defaultNonAnthropicPersona
+                currentNonAnthropicPersona = stateConfiguration.defaultNonAnthropicPersona
             }
         } else {
             currentNonAnthropicPersona = configuration.defaultNonAnthropicPersona

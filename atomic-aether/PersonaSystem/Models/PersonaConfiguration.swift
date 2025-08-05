@@ -4,7 +4,7 @@
 //
 //  Configuration structure for personas
 //
-//  ATOM 13: Persona System - Configuration model
+//  ATOM 10: Personas - Configuration model
 //
 //  Atomic LEGO: JSON configuration mapping
 //  Loaded from Personas.json via ConfigBus
@@ -53,8 +53,8 @@ struct PersonaSystemConfiguration: Codable {
     
     static let `default` = PersonaSystemConfiguration(
         personas: [:], // Will be loaded from JSON
-        defaultNonAnthropicPersona: "samara",
-        personaTriggerPattern: "^(\\w+),\\s*(.*)$"
+        defaultNonAnthropicPersona: "", // Will be loaded from JSON
+        personaTriggerPattern: "" // Will be loaded from JSON
     )
 }
 

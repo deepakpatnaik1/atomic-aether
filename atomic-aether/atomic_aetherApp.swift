@@ -28,9 +28,11 @@ struct atomic_aetherApp: App {
     // ATOM 9: Models - Model Registry
     @StateObject private var modelRegistry: ModelRegistryService
     
+    // ATOM 10: Personas - Complete Persona System
+    @StateObject private var personaSystem: PersonaSystem
+    
     // ATOM 15: Scrollback Message Area
     @StateObject private var messageStore: MessageStore
-    @StateObject private var personaService = PersonaService()
     
     // ATOM 10: StateBus - Shared state management
     @StateObject private var stateBus: StateBus
@@ -136,14 +138,18 @@ struct atomic_aetherApp: App {
         )
         _modelStateService = StateObject(wrappedValue: modelStateService)
         
-        // Create PersonaStateService with all dependencies
-        let personaStateService = PersonaStateService(
+        // Create PersonaSystem with all dependencies
+        let personaSystem = PersonaSystem(
             configBus: configBus,
-            stateBus: stateBus,
             eventBus: eventBus,
             errorBus: errorBus,
+            stateBus: stateBus,
             modelStateService: modelStateService
         )
+        _personaSystem = StateObject(wrappedValue: personaSystem)
+        
+        // Get PersonaStateService from PersonaSystem
+        let personaStateService = personaSystem.stateService
         _personaStateService = StateObject(wrappedValue: personaStateService)
         
         // Create ConversationOrchestrator with all dependencies
@@ -212,7 +218,7 @@ struct atomic_aetherApp: App {
             .environmentObject(envLoader)
             .environmentObject(llmRouter)
             .environmentObject(messageStore)
-            .environmentObject(personaService)
+            .environmentObject(personaSystem)
             .environmentObject(stateBus)
             .environmentObject(errorBus)
             .environmentObject(modelStateService)
@@ -233,8 +239,8 @@ struct atomic_aetherApp: App {
                 envLoader.setup(configBus: configBus, errorBus: errorBus)
                 envLoader.load()
                 
-                // Setup services with ConfigBus
-                personaService.setupWithConfigBus(configBus)
+                // Setup PersonaSystem
+                personaSystem.setup()
                 
                 // Setup ErrorBus configuration
                 errorBus.setupConfiguration()
