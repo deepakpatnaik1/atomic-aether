@@ -19,25 +19,27 @@ final class ConfigBus: ObservableObject {
     
     private var fileMonitors: [String: DispatchSourceFileSystemObject] = [:]
     private let queue: DispatchQueue
+    private var configuration: ConfigBusConfiguration
+    private weak var eventBus: EventBus?
     
     // Publishers for each config
     @Published var configs: [String: Any] = [:]
     
     // MARK: - Initialization
     
-    init() {
-        // Try to load ConfigBus config for queue label
-        let defaultIdentifier = "com.aether.configbus"
-        var queueLabel = Bundle.main.bundleIdentifier ?? defaultIdentifier
+    init(eventBus: EventBus? = nil) {
+        self.eventBus = eventBus
         
-        // Try to load our own config (bootstrap loading)
+        // Bootstrap load our own config
         if let url = Bundle.main.url(forResource: "ConfigBus", withExtension: "json"),
            let data = try? Data(contentsOf: url),
-           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-           let configuredDefault = json["defaultBundleIdentifier"] as? String {
-            queueLabel = Bundle.main.bundleIdentifier ?? configuredDefault
+           let config = try? JSONDecoder().decode(ConfigBusConfiguration.self, from: data) {
+            self.configuration = config
+        } else {
+            self.configuration = .default
         }
         
+        let queueLabel = Bundle.main.bundleIdentifier ?? configuration.defaultBundleIdentifier
         self.queue = DispatchQueue(label: "\(queueLabel).configbus")
     }
     
@@ -50,8 +52,9 @@ final class ConfigBus: ObservableObject {
         }
         
         // Load from bundle
-        guard let url = Bundle.main.url(forResource: name, withExtension: "json") else {
+        guard let url = Bundle.main.url(forResource: name, withExtension: configuration.fileExtension) else {
             // Config file not found
+            eventBus?.publish(ConfigEvents.loadFailed(name, error: CocoaError(.fileNoSuchFile)))
             return nil
         }
         
@@ -60,12 +63,18 @@ final class ConfigBus: ObservableObject {
             let config = try JSONDecoder().decode(type, from: data)
             configs[name] = config
             
-            // Start watching
-            watchFile(url, configName: name, type: type)
+            // Start watching if enabled
+            if configuration.enableHotReload {
+                watchFile(url, configName: name, type: type)
+            }
+            
+            // Publish success event
+            eventBus?.publish(ConfigEvents.changed(name))
             
             return config
         } catch {
             // Failed to decode config
+            eventBus?.publish(ConfigEvents.loadFailed(name, error: error))
             return nil
         }
     }
@@ -103,16 +112,19 @@ final class ConfigBus: ObservableObject {
     }
     
     private func reload<T: Codable>(_ name: String, as type: T.Type) {
-        guard let url = Bundle.main.url(forResource: name, withExtension: "json") else { return }
+        guard let url = Bundle.main.url(forResource: name, withExtension: configuration.fileExtension) else { return }
         
         do {
             let data = try Data(contentsOf: url)
             let config = try JSONDecoder().decode(type, from: data)
             configs[name] = config
             objectWillChange.send()
-            // Config reloaded successfully
+            
+            // Publish reload event
+            eventBus?.publish(ConfigEvents.changed(name))
         } catch {
-            // Reload failed - silent failure
+            // Reload failed
+            eventBus?.publish(ConfigEvents.loadFailed(name, error: error))
         }
     }
     

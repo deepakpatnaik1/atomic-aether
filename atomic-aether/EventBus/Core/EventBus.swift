@@ -20,7 +20,11 @@ import Combine
 final class EventBus: EventBusProtocol, ObservableObject {
     
     // MARK: - Dependencies
-    private let configBus: ConfigBus?
+    var configBus: ConfigBus? {
+        didSet {
+            loadConfiguration()
+        }
+    }
     
     // MARK: - Event Publishers
     private let eventSubject = PassthroughSubject<AetherEvent, Never>()
@@ -97,9 +101,8 @@ final class EventBus: EventBusProtocol, ObservableObject {
     }
     
     // MARK: - Init
-    init(configBus: ConfigBus? = nil) {
-        self.configBus = configBus
-        loadConfiguration()
+    init() {
+        // ConfigBus will be set after creation due to circular dependency
     }
     
     // MARK: - Configuration

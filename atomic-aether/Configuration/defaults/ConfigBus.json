@@ -1,3 +1,5 @@
 {
-  "defaultBundleIdentifier": "com.aether.configbus"
+  "defaultBundleIdentifier": "com.aether.configbus",
+  "enableHotReload": true,
+  "fileExtension": "json"
 }

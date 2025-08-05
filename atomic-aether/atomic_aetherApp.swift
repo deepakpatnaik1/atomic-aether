@@ -78,13 +78,16 @@ struct atomic_aetherApp: App {
     @StateObject private var scrollbackHistoryLoader: ScrollbackHistoryLoaderService
     
     init() {
-        // Create ConfigBus first (needed by EventBus)
-        let configBus = ConfigBus()
+        // Create EventBus first (no dependencies)
+        let eventBus = EventBus()
+        _eventBus = StateObject(wrappedValue: eventBus)
+        
+        // Create ConfigBus with EventBus dependency
+        let configBus = ConfigBus(eventBus: eventBus)
         _configBus = StateObject(wrappedValue: configBus)
         
-        // Create EventBus with ConfigBus dependency
-        let eventBus = EventBus(configBus: configBus)
-        _eventBus = StateObject(wrappedValue: eventBus)
+        // Update EventBus with ConfigBus
+        eventBus.configBus = configBus
         
         // Create shared instances
         let envLoader = EnvLoader()
