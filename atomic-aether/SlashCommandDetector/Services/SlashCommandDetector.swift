@@ -4,9 +4,7 @@
 //
 //  Service to detect and manage slash commands
 //
-//  ATOM 4: /journal Slash Command - Command detection service
-//  ATOM 6: ConfigBus - Loads commands from configuration
-//  ATOM 5: EventBus - Publishes command events
+//  ATOM 22: Slash Command Detector - Core service
 //
 //  Atomic LEGO: Single responsibility - detect commands
 //  Tracks state for height restoration
@@ -20,7 +18,7 @@ class SlashCommandDetector: ObservableObject {
     @Published var activeCommand: SlashCommand?
     @Published var isExpanded = false
     
-    private var commands: [SlashCommand] = []
+    private var configuration: SlashCommandDetectorConfiguration = .default
     private var configBus: ConfigBus?
     private var eventBus: EventBus?
     private var cancellables = Set<AnyCancellable>()
@@ -34,20 +32,16 @@ class SlashCommandDetector: ObservableObject {
         self.configBus = configBus
         self.eventBus = eventBus
         
-        // Load commands from ConfigBus
-        if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
-            commands = config.commands
-            // Commands loaded successfully
-        } else {
-            commands = []
+        // Load configuration from ConfigBus
+        if let config = configBus.load("SlashCommandDetector", as: SlashCommandDetectorConfiguration.self) {
+            configuration = config
         }
         
         // Watch for config changes
         configBus.objectWillChange
             .sink { [weak self] _ in
-                if let config = configBus.load("SlashCommands", as: SlashCommandConfiguration.self) {
-                    self?.commands = config.commands
-                    // Commands reloaded
+                if let config = configBus.load("SlashCommandDetector", as: SlashCommandDetectorConfiguration.self) {
+                    self?.configuration = config
                 }
             }
             .store(in: &cancellables)
@@ -55,9 +49,15 @@ class SlashCommandDetector: ObservableObject {
     
     func detectCommand(in text: String) -> SlashCommand? {
         // Check if text starts with any command trigger
-        for command in commands {
-            if text.lowercased() == command.trigger.lowercased() {
-                return command
+        for command in configuration.commands {
+            if configuration.detectCaseSensitive {
+                if text == command.trigger {
+                    return command
+                }
+            } else {
+                if text.lowercased() == command.trigger.lowercased() {
+                    return command
+                }
             }
         }
         return nil
@@ -69,6 +69,9 @@ class SlashCommandDetector: ObservableObject {
         
         // Publish event if command detected
         if let command = detectedCommand {
+            eventBus?.publish(SlashCommandEvent.commandDetected(command: command))
+            
+            // Also publish legacy InputEvent for backward compatibility
             eventBus?.publish(InputEvent.slashCommandEntered(
                 command: command.trigger,
                 source: "SlashCommandDetector"
@@ -79,10 +82,11 @@ class SlashCommandDetector: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            if let command = detectedCommand, command.expandToLines != nil {
+            if let command = detectedCommand, let lines = command.expandToLines {
                 // Activate expansion
                 self.activeCommand = command
                 self.isExpanded = true
+                self.eventBus?.publish(SlashCommandEvent.commandExpanded(command: command, lines: lines))
             } else if let activeCommand = self.activeCommand, !text.starts(with: activeCommand.trigger) {
                 // Text changed, no longer just the command
                 // Keep expanded but ready for manual clear
@@ -92,7 +96,7 @@ class SlashCommandDetector: ObservableObject {
         
         // Return true if we should clear the text
         if let command = detectedCommand, command.expandToLines != nil {
-            shouldClearText = true
+            shouldClearText = configuration.clearTextOnExpand
         }
         
         return shouldClearText
@@ -115,6 +119,7 @@ class SlashCommandDetector: ObservableObject {
         DispatchQueue.main.async { [weak self] in
             self?.activeCommand = nil
             self?.isExpanded = false
+            self?.eventBus?.publish(SlashCommandEvent.commandCollapsed)
         }
     }
 }

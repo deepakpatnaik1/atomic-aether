@@ -4,7 +4,7 @@
 //
 //  Model for slash command configuration
 //
-//  ATOM 4: /journal Slash Command - Command data model
+//  ATOM 22: Slash Command Detector - Command data model
 //
 //  Atomic LEGO: Pure data model for slash commands
 //  Matches JSON structure for easy configuration
@@ -23,8 +23,4 @@ struct SlashCommand: Codable, Equatable, Identifiable {
     var name: String {
         trigger.hasPrefix("/") ? String(trigger.dropFirst()) : trigger
     }
-}
-
-struct SlashCommandConfiguration: Codable {
-    let commands: [SlashCommand]
 }
