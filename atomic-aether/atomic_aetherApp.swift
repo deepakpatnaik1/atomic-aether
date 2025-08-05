@@ -10,13 +10,13 @@ import AppKit
 
 @main
 struct atomic_aetherApp: App {
-    // ATOM 1: Dark Theme service
+    // ATOM 19: Theme System
     @StateObject private var themeService = ThemeService()
     
-    // ATOM 5: EventBus - The nervous system
+    // ATOM 1: EventBus - The nervous system
     @StateObject private var eventBus: EventBus
     
-    // ATOM 6: ConfigBus - Configuration management
+    // ATOM 4: ConfigBus - Configuration management
     @StateObject private var configBus = ConfigBus()
     
     // ATOM 7: Environment Configuration
@@ -25,7 +25,10 @@ struct atomic_aetherApp: App {
     // ATOM 8: LLM Services
     @StateObject private var llmRouter: LLMRouter
     
-    // ATOM 9: Scrollback Message Area
+    // ATOM 9: Models - Model Registry
+    @StateObject private var modelRegistry: ModelRegistryService
+    
+    // ATOM 15: Scrollback Message Area
     @StateObject private var messageStore: MessageStore
     @StateObject private var personaService = PersonaService()
     
@@ -107,6 +110,13 @@ struct atomic_aetherApp: App {
             eventBus: eventBus
         )
         _errorBus = StateObject(wrappedValue: errorBus)
+        
+        // Create ModelRegistry
+        let modelRegistry = ModelRegistryService(
+            configBus: configBus,
+            eventBus: eventBus
+        )
+        _modelRegistry = StateObject(wrappedValue: modelRegistry)
         
         // Create LLMRouter with the same envLoader instance
         let llmRouter = LLMRouter(
