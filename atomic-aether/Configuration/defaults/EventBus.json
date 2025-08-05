@@ -1,0 +1,10 @@
+{
+  "enableLogging": false,
+  "logLevel": "info",
+  "asyncProcessing": true,
+  "maxConcurrentHandlers": 5,
+  "debugMode": {
+    "enabled": false,
+    "replayLastNEvents": 100
+  }
+}

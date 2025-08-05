@@ -19,8 +19,16 @@ import Combine
 @MainActor
 final class EventBus: EventBusProtocol, ObservableObject {
     
+    // MARK: - Dependencies
+    private let configBus: ConfigBus?
+    
     // MARK: - Event Publishers
     private let eventSubject = PassthroughSubject<AetherEvent, Never>()
+    
+    // MARK: - Configuration
+    private var configuration: EventBusConfiguration?
+    private var eventHistory: [AetherEvent] = []
+    private var historyLimit: Int = 0
     
     // MARK: - Public Interface
     
@@ -31,6 +39,14 @@ final class EventBus: EventBusProtocol, ObservableObject {
     
     /// Publish an event to the bus
     func publish(_ event: AetherEvent) {
+        // Store in history if debug mode enabled
+        if configuration?.debugMode?.enabled == true {
+            eventHistory.append(event)
+            if eventHistory.count > historyLimit {
+                eventHistory.removeFirst()
+            }
+        }
+        
         eventSubject.send(event)
     }
     
@@ -46,15 +62,18 @@ final class EventBus: EventBusProtocol, ObservableObject {
             }
     }
     
-    /// Subscribe to multiple event types
-    func subscribe<T: AetherEvent, U: AetherEvent>(
-        to types: (T.Type, U.Type),
-        handler: @escaping (Any) -> Void
+    /// Subscribe to multiple event types using variadic parameters
+    func subscribe<T: AetherEvent>(
+        to eventTypes: T.Type...,
+        handler: @escaping (T) -> Void
     ) -> AnyCancellable {
         return events
-            .compactMap { event -> Any? in
-                if let typed = event as? T { return typed }
-                if let typed = event as? U { return typed }
+            .compactMap { event -> T? in
+                for eventType in eventTypes {
+                    if let typed = event as? T, type(of: typed) == eventType {
+                        return typed
+                    }
+                }
                 return nil
             }
             .sink { event in
@@ -62,8 +81,38 @@ final class EventBus: EventBusProtocol, ObservableObject {
             }
     }
     
+    /// Async stream subscription for modern Swift concurrency
+    func asyncSubscribe<T: AetherEvent>(
+        to eventType: T.Type
+    ) -> AsyncStream<T> {
+        AsyncStream { continuation in
+            let cancellable = subscribe(to: eventType) { event in
+                continuation.yield(event)
+            }
+            
+            continuation.onTermination = { _ in
+                cancellable.cancel()
+            }
+        }
+    }
+    
     // MARK: - Init
-    init() {}
+    init(configBus: ConfigBus? = nil) {
+        self.configBus = configBus
+        loadConfiguration()
+    }
+    
+    // MARK: - Configuration
+    private func loadConfiguration() {
+        guard let configBus = configBus else { return }
+        
+        configuration = configBus.load(EventBusConfiguration.self, from: "EventBus.json")
+        
+        // Apply configuration
+        if let debugConfig = configuration?.debugMode {
+            historyLimit = debugConfig.enabled ? debugConfig.replayLastNEvents : 0
+        }
+    }
 }
 
 // MARK: - Convenience Extensions
@@ -92,5 +141,22 @@ extension EventBus {
             .sink { event in
                 handler(event)
             }
+    }
+    
+    /// Get event history for debugging (only in debug mode)
+    var debugEventHistory: [AetherEvent] {
+        configuration?.debugMode?.enabled == true ? eventHistory : []
+    }
+    
+    /// Replay last N events for debugging
+    func replayHistory<T: AetherEvent>(
+        ofType eventType: T.Type,
+        handler: @escaping (T) -> Void
+    ) {
+        guard configuration?.debugMode?.enabled == true else { return }
+        
+        eventHistory
+            .compactMap { $0 as? T }
+            .forEach { handler($0) }
     }
 }
