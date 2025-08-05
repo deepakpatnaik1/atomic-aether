@@ -24,6 +24,7 @@ struct ScrollbackHistoryConfiguration: Codable {
     let noMoreHistoryText: String
     let errorRetryDelay: TimeInterval
     let maxRetries: Int
+    let autoLoadOnScroll: Bool  // Auto-load when trigger appears
     
     // Button appearance
     let buttonStyle: ButtonStyle
@@ -49,6 +50,7 @@ struct ScrollbackHistoryConfiguration: Codable {
         noMoreHistoryText: "Beginning of conversation history",
         errorRetryDelay: 2.0,
         maxRetries: 3,
+        autoLoadOnScroll: true,
         buttonStyle: ButtonStyle(
             backgroundColor: "systemGray5",
             textColor: "label",

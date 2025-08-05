@@ -64,6 +64,16 @@ struct ScrollbackHistoryTriggerView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .disabled(historyLoader.isLoading)
+                .onAppear {
+                    // Auto-load when trigger appears if enabled
+                    if configuration.autoLoadOnScroll && 
+                       !historyLoader.isLoading && 
+                       historyLoader.hasMoreHistory {
+                        Task {
+                            await historyLoader.loadMoreHistory()
+                        }
+                    }
+                }
                 
                 // Error state
                 if let error = historyLoader.loadError {

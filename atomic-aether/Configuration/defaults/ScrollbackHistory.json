@@ -10,6 +10,7 @@
     "noMoreHistoryText": "Beginning of conversation history",
     "errorRetryDelay": 2.0,
     "maxRetries": 3,
+    "autoLoadOnScroll": true,
     "buttonStyle": {
         "backgroundColor": "gray",
         "textColor": "white",
