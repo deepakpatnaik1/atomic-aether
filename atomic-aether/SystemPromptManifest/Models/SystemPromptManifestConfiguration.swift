@@ -13,6 +13,7 @@
 import Foundation
 
 struct SystemPromptManifestConfiguration: Codable {
+    let enabled: Bool
     let manifestPath: String
     let saveEveryPrompt: Bool
     let timestampFormat: String
@@ -20,6 +21,7 @@ struct SystemPromptManifestConfiguration: Codable {
     let createPathIfMissing: Bool
     
     static let `default` = SystemPromptManifestConfiguration(
+        enabled: true,
         manifestPath: "~/Documents/aetherVault/manifest/system-prompt.md",
         saveEveryPrompt: false,
         timestampFormat: "yyyy-MM-dd HH:mm:ss",

@@ -69,6 +69,9 @@ class SystemPromptManifestService: ObservableObject {
     
     // MARK: - Prompt Handling
     private func handlePromptBuilt(personaId: String, length: Int) async {
+        // Check if enabled
+        guard configuration.enabled else { return }
+        
         // Get the actual prompt from the builder
         guard let prompt = systemPromptBuilder?.buildSystemPrompt(personaId: personaId) else {
             return

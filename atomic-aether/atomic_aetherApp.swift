@@ -68,6 +68,9 @@ struct atomic_aetherApp: App {
     // ATOM 28: System Prompt Builder (Phase II)
     @StateObject private var systemPromptBuilder: SystemPromptBuilderService
     
+    // ATOM 29: System Prompt Manifest (Phase II)
+    @StateObject private var systemPromptManifestService: SystemPromptManifestService
+    
     // ATOM 30: Machine Trim Instructions (Phase II)
     @StateObject private var machineTrimInstructionsService: MachineTrimInstructionsService
     
@@ -173,6 +176,9 @@ struct atomic_aetherApp: App {
         // Create SystemPromptBuilder (Phase II)
         _systemPromptBuilder = StateObject(wrappedValue: SystemPromptBuilderService())
         
+        // Create SystemPromptManifestService (Phase II)
+        _systemPromptManifestService = StateObject(wrappedValue: SystemPromptManifestService())
+        
         // Create MachineTrimInstructionsService (Phase II)
         _machineTrimInstructionsService = StateObject(wrappedValue: MachineTrimInstructionsService())
         
@@ -205,6 +211,7 @@ struct atomic_aetherApp: App {
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
             .environmentObject(systemPromptBuilder)
+            .environmentObject(systemPromptManifestService)
             .environmentObject(scrollbackHistoryLoader)
             .onAppear {
                 // Setup and load environment variables
@@ -275,6 +282,14 @@ struct atomic_aetherApp: App {
                     personaProfileService: personaProfileService,
                     journalService: journalService,
                     machineTrimInstructionsService: machineTrimInstructionsService
+                )
+                
+                // Setup SystemPromptManifestService (Phase II)
+                systemPromptManifestService.setup(
+                    configBus: configBus,
+                    eventBus: eventBus,
+                    errorBus: errorBus,
+                    systemPromptBuilder: systemPromptBuilder
                 )
                 
                 // Setup ScrollbackHistoryLoader (Phase II)

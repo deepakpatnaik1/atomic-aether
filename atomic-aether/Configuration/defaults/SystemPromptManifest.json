@@ -1,4 +1,5 @@
 {
+    "enabled": true,
     "manifestPath": "~/Documents/aetherVault/manifest/system-prompt.md",
     "saveEveryPrompt": false,
     "timestampFormat": "yyyy-MM-dd HH:mm:ss",
