@@ -66,13 +66,15 @@ struct InputBarView: View {
                     modelPickerService: modelPickerService,
                     modelDisplayService: modelDisplayService,
                     fontSize: appearance.controls.modelPicker.fontSize,
-                    opacity: appearance.controls.modelPicker.opacity
+                    opacity: appearance.controls.modelPicker.opacity,
+                    focusState: $isTextFieldFocused
                 )
                 
                 PersonaPickerView(
                     inputText: $text,
                     fontSize: appearance.controls.modelPicker.fontSize,
-                    opacity: appearance.controls.modelPicker.opacity
+                    opacity: appearance.controls.modelPicker.opacity,
+                    focusState: $isTextFieldFocused
                 )
                 
                 Spacer()

@@ -20,6 +20,7 @@ struct PersonaPickerView: View {
     
     let fontSize: CGFloat
     let opacity: Double
+    var focusState: FocusState<Bool>.Binding
     
     @State private var uiConfig: PersonaUIConfiguration = .default
     
@@ -82,6 +83,9 @@ struct PersonaPickerView: View {
             
             // Insert persona name into input with trailing space
             inputText = "\(persona.displayName) "
+            
+            // Restore focus to input bar
+            focusState.wrappedValue = true
         }) {
             HStack {
                 Text(persona.displayName)

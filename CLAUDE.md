@@ -783,6 +783,16 @@ All 22 atoms below are complete and belong to Phase I:
   - Removed all hardcoded values ("claude", "samara")
   - Updated atom to use complete Atomic LEGO structure
   - Maintained full backward compatibility
+- **PersonaSwitcher UI Enhancement** (Tag: calling-personas-modifies-pickers):
+  - Added PersonaPickerView matching ModelPicker style
+  - Placed to the right of ModelPicker in InputBarView
+  - Two ways to summon personas:
+    - Type persona name (e.g., "Claude") - immediate switch
+    - Click PersonaSwitcher - inserts "PersonaName " with cursor after space
+  - Model auto-switches based on persona's isAnthropic property
+  - Fixed race condition in PersonaFolderWatcher initialization
+  - Fixed case-sensitive boolean parsing in YAML frontmatter
+  - Fixed inconsistent parameter naming in PersonaSwitchedEvent
 
 ### ATOM 11: Model/Persona/Picker Interaction ✅
 - **Status**: Complete and assessed against 7 BOSS RULES

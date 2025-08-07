@@ -17,6 +17,7 @@ struct ModelPickerView: View {
     @ObservedObject var modelDisplayService: ModelDisplayService
     let fontSize: CGFloat
     let opacity: Double
+    var focusState: FocusState<Bool>.Binding
     
     var body: some View {
         Menu {
@@ -52,6 +53,8 @@ struct ModelPickerView: View {
         ForEach(group.models, id: \.id) { model in
             Button(action: {
                 modelPickerService.selectModel(model.id)
+                // Restore focus to input bar
+                focusState.wrappedValue = true
             }) {
                 HStack {
                     Text(model.displayName)
