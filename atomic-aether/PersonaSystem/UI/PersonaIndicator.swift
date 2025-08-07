@@ -4,7 +4,7 @@
 //
 //  Shows current persona in the UI
 //
-//  ATOM 13: Persona System - Visual indicator
+//  ATOM 10: Personas - Visual indicator
 //
 //  Atomic LEGO: UI component showing active persona
 //  Updates reactively when persona changes

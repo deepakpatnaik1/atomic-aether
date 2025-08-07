@@ -4,7 +4,7 @@
 //
 //  Model for messages loaded from SuperJournal
 //
-//  ATOM 31: Scrollback History Loader - Historical message model
+//  ATOM 30: Scrollback History Loader - Historical message model
 //
 //  Atomic LEGO: Codable wrapper for SuperJournal entries
 //  Converts between file format and Message model

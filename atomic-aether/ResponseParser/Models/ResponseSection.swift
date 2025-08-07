@@ -4,7 +4,7 @@
 //
 //  Response parsing data models
 //
-//  ATOM 23: Response Parser - Data models
+//  ATOM 22: Response Parser - Data models
 //
 //  Atomic LEGO: Pure data models for parsed response sections
 //  Handles mixed inferability within responses

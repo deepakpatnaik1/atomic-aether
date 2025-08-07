@@ -4,7 +4,7 @@
 //
 //  Interactive model picker menu component
 //
-//  ATOM 19: Interactive Model Picker - UI Component
+//  ATOM 8: Model Picker - UI Component
 //
 //  Atomic LEGO: SwiftUI Menu component for model selection
 //  Displays current model and dropdown with grouped options

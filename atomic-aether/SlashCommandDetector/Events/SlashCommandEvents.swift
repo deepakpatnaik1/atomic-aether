@@ -4,7 +4,7 @@
 //
 //  Events published by slash command detector
 //
-//  ATOM 22: Slash Command Detector - Event definitions
+//  ATOM 6: Slash Command Detector - Event definitions
 //
 //  Atomic LEGO: Events for command detection and state changes
 //  Enables decoupled communication with other atoms

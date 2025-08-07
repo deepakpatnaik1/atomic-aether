@@ -4,7 +4,7 @@
 //
 //  Service to manage model picker state and selection
 //
-//  ATOM 19: Interactive Model Picker - Service
+//  ATOM 8: Model Picker - Service
 //
 //  Atomic LEGO: Coordinates model selection between UI and ModelStateService
 //  Groups models by provider for display
@@ -175,7 +175,8 @@ final class ModelPickerService: ObservableObject {
     }
     
     private func extractProvider(from modelId: String) -> String {
-        let components = modelId.split(separator: ":")
+        let separator = Character(configuration.providerSeparator)
+        let components = modelId.split(separator: separator)
         return components.first.map(String.init) ?? configuration.unknownProviderLabel
     }
 }

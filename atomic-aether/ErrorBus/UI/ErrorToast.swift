@@ -4,7 +4,7 @@
 //
 //  Toast UI for displaying errors
 //
-//  ATOM 11: ErrorBus - Error display component
+//  ATOM 2: ErrorBus - Error display component
 //
 //  Atomic LEGO: Non-intrusive error display
 //  Shows current error with appropriate styling

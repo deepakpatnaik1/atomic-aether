@@ -4,7 +4,7 @@
 //
 //  Events related to conversations and messaging
 //
-//  ATOM 5: EventBus - Conversation event definitions
+//  ATOM 1: EventBus - Conversation event definitions
 //
 //  ATOMIC LEGO: Pure conversation event definitions
 //  - Message flow, persona detection, responses

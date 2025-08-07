@@ -20,10 +20,10 @@ struct PersonaSwitchedEvent: AetherEvent, SystemEventType {
     let isExplicit: Bool // true if user named persona, false if implicit
     let source: String
     
-    init(from: String, to: String, explicit: Bool = true, source: String = "PersonaStateService") {
-        self.fromPersona = from
-        self.toPersona = to
-        self.isExplicit = explicit
+    init(fromPersona: String, toPersona: String, isExplicit: Bool = true, source: String = "PersonaStateService") {
+        self.fromPersona = fromPersona
+        self.toPersona = toPersona
+        self.isExplicit = isExplicit
         self.source = source
     }
 }

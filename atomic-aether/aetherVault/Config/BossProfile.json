@@ -1,0 +1,7 @@
+{
+    "profilePath": "~/Documents/code/atomic-aether/atomic-aether/aetherVault/Boss/",
+    "includedExtensions": [".md", ".txt", ".markdown", ".text"],
+    "excludedFiles": [".DS_Store", ".gitignore", "Thumbs.db"],
+    "fileSeparator": "\n\n=== {filename} ===\n\n",
+    "maxFileSizeKB": 100
+}

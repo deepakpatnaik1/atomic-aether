@@ -4,7 +4,7 @@
 //
 //  Persona configuration service
 //
-//  ATOM 9: Scrollback Message Area - Persona management
+//  ATOM 15: Scrollback - Persona management
 //
 //  Atomic LEGO: Loads persona configuration from ConfigBus
 //  Provides colors and display names for speakers

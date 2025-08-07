@@ -28,7 +28,7 @@ final class ModelRegistryService: ObservableObject {
     }
     
     private func loadConfiguration() {
-        configuration = configBus.load(LLMConfiguration.self, from: "LLMProviders.json")
+        configuration = configBus.load("LLMProviders", as: LLMConfiguration.self)
         
         if let config = configuration {
             availableProviders = Array(config.providers.keys.compactMap(LLMProvider.init))

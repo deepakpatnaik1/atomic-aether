@@ -4,7 +4,7 @@
 //
 //  Events published by response parser
 //
-//  ATOM 23: Response Parser - Event definitions
+//  ATOM 22: Response Parser - Event definitions
 //
 //  Atomic LEGO: Events for parsed response sections
 //  Enables decoupled communication with other atoms

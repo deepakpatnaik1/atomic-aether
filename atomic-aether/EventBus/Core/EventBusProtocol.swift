@@ -2,7 +2,7 @@
 //  EventBusProtocol.swift
 //  atomic-aether
 //
-//  ATOM 5: EventBus - Protocol for event-driven communication
+//  ATOM 1: EventBus - Protocol for event-driven communication
 //
 //  Protocol-based design enables:
 //  - Dependency injection instead of singletons

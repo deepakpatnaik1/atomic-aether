@@ -1,0 +1,8 @@
+{
+  "personasPath": "/Users/d.patnaik/code/atomic-aether/atomic-aether/aetherVault/Personas/",
+  "watchInterval": 1.0,
+  "requiredFrontmatterFields": ["name", "avatar", "color", "isAnthropic"],
+  "defaultColor": "#CCCCCC",
+  "defaultAvatar": "🤖",
+  "ignorePatterns": [".DS_Store", "*.tmp", ".*"]
+}

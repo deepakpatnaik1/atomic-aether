@@ -82,6 +82,7 @@ class PersonaProfileService: ObservableObject {
             return
         }
         
+        
         do {
             // Check if directory exists
             var isDirectory: ObjCBool = false
@@ -130,6 +131,7 @@ class PersonaProfileService: ObservableObject {
             profileCache[personaId] = sections.joined()
             lastLoadTime[personaId] = Date()
             loadedProfiles.insert(personaId)
+            
             
             eventBus?.publish(PersonaProfileEvent.profileLoaded(
                 personaId: personaId,

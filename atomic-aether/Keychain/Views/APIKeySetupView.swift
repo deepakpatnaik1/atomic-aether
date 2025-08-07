@@ -4,7 +4,7 @@
 //
 //  UI for setting up API keys in Keychain
 //
-//  ATOM 17: Keychain Storage - Setup UI
+//  ATOM 13: API Key Storage - Setup UI
 //
 //  Atomic LEGO: Simple form for API key entry
 //  Saves securely to Keychain

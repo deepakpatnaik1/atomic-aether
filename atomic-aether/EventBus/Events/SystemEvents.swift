@@ -4,7 +4,7 @@
 //
 //  Events related to system and app state
 //
-//  ATOM 5: EventBus - System event definitions
+//  ATOM 1: EventBus - System event definitions
 //
 //  ATOMIC LEGO: Pure system event definitions
 //  - App lifecycle, configuration changes

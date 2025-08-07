@@ -4,7 +4,7 @@
 //
 //  Error severity levels for categorization
 //
-//  ATOM 11: ErrorBus - Error severity model
+//  ATOM 2: ErrorBus - Error severity model
 //
 //  Atomic LEGO: Simple severity levels with display properties
 //  Used for visual styling and behavior

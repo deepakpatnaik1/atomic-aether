@@ -4,7 +4,7 @@
 //
 //  Events related to user input
 //
-//  ATOM 5: EventBus - Input event definitions
+//  ATOM 1: EventBus - Input event definitions
 //
 //  ATOMIC LEGO: Pure input event definitions
 //  - Text submission, keyboard, file drops

@@ -22,7 +22,7 @@ struct JournalConfiguration: Codable {
     let createPathIfMissing: Bool       // Auto-create directories
     
     static let `default` = JournalConfiguration(
-        journalPath: "~/Documents/code/aetherVault/journal/journal.md",
+        journalPath: "~/Documents/code/atomic-aether/atomic-aether/aetherVault/Journal/journal.md",
         dateFormat: "yyyy-MM-dd HH:mm:ss",
         timezone: "Europe/Berlin",
         maxEntriesInMemory: 10000,

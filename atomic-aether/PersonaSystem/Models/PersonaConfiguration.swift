@@ -13,7 +13,7 @@
 import Foundation
 
 struct PersonaSystemConfiguration: Codable {
-    let personas: [String: PersonaDefinition]
+    var personas: [String: PersonaDefinition]
     let defaultNonAnthropicPersona: String
     let personaTriggerPattern: String
     

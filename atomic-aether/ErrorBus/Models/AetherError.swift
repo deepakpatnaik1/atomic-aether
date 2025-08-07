@@ -4,7 +4,7 @@
 //
 //  Common error types for the application
 //
-//  ATOM 11: ErrorBus - Application error types
+//  ATOM 2: ErrorBus - Application error types
 //
 //  Atomic LEGO: Centralized error definitions
 //  All atoms can use these common error types

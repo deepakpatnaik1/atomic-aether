@@ -4,7 +4,7 @@
 //
 //  Base protocol for all events in the system
 //
-//  ATOM 5: EventBus - Event protocol foundation
+//  ATOM 1: EventBus - Event protocol foundation
 //
 //  ATOMIC LEGO: Pure event definition
 //  - All events conform to AetherEvent protocol

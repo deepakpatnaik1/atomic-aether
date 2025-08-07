@@ -27,6 +27,7 @@ final class PersonaSystem: ObservableObject {
     
     let stateService: PersonaStateService
     let detector: PersonaDetector
+    private let folderWatcher: PersonaFolderWatcher
     
     // MARK: - Initialization
     
@@ -42,6 +43,12 @@ final class PersonaSystem: ObservableObject {
         self.errorBus = errorBus
         self.stateBus = stateBus
         
+        // Load configuration once
+        let configuration = configBus.load("Personas", as: PersonaSystemConfiguration.self) ?? .default
+        
+        // Create folder watcher
+        self.folderWatcher = PersonaFolderWatcher()
+        
         // Create services
         self.stateService = PersonaStateService(
             configBus: configBus,
@@ -51,18 +58,20 @@ final class PersonaSystem: ObservableObject {
             modelStateService: modelStateService
         )
         
-        self.detector = PersonaDetector(
-            configBus: configBus,
-            eventBus: eventBus
-        )
+        self.detector = PersonaDetector(configuration: configuration)
     }
     
     // MARK: - Public Methods
     
     /// Setup the persona system
     func setup() {
+        // Setup folder watcher first
+        folderWatcher.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
+        
+        // Then setup state service which will subscribe to folder events
         stateService.setup()
-        detector.setup()
+        
+        // PersonaDetector doesn't need setup - it's a pure detection service
     }
     
     /// Process a message for persona detection

@@ -4,7 +4,7 @@
 //
 //  Individual message display with optional speaker label
 //
-//  ATOM 9: Scrollback Message Area - Message row component
+//  ATOM 15: Scrollback - Message row component
 //
 //  Atomic LEGO: Displays a single message with appropriate styling
 //  Shows speaker label only when speaker changes

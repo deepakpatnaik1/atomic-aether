@@ -27,7 +27,8 @@ struct ModelDebugView: View {
                     Text("• \(provider.rawValue.capitalized)")
                         .fontWeight(.medium)
                     
-                    if let models = modelRegistry.availableModels(for: provider), !models.isEmpty {
+                    let models = modelRegistry.availableModels(for: provider)
+                    if !models.isEmpty {
                         ForEach(models, id: \.self) { model in
                             Text("  - \(model)")
                                 .font(.caption)

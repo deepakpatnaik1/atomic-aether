@@ -4,7 +4,7 @@
 //
 //  Events for StateBus state changes
 //
-//  ATOM 10: StateBus - State change events
+//  ATOM 3: StateBus - State change events
 //
 //  ATOMIC LEGO: Events fired when shared state changes
 //  - Allows atoms to react to state mutations

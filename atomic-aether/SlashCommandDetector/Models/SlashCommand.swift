@@ -4,7 +4,7 @@
 //
 //  Model for slash command configuration
 //
-//  ATOM 22: Slash Command Detector - Command data model
+//  ATOM 6: Slash Command Detector - Command data model
 //
 //  Atomic LEGO: Pure data model for slash commands
 //  Matches JSON structure for easy configuration

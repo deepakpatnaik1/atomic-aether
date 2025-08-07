@@ -4,7 +4,7 @@
 //
 //  Configuration for machine trim instructions
 //
-//  ATOM 30: Machine Trim Instructions - Configuration model
+//  ATOM 29: Machine Trim Instructions - Configuration model
 //
 //  Atomic LEGO: All instruction text externalized
 //  Hot-reloadable via ConfigBus

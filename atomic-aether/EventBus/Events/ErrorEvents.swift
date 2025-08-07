@@ -4,7 +4,7 @@
 //
 //  Events for error reporting and handling
 //
-//  ATOM 11: ErrorBus - Error-related events
+//  ATOM 2: ErrorBus - Error-related events
 //
 //  ATOMIC LEGO: Events fired by ErrorBus
 //  Other atoms can subscribe to react to errors

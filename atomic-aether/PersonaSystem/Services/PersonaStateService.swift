@@ -35,6 +35,11 @@ final class PersonaStateService: ObservableObject {
     private let errorBus: ErrorBus
     private let modelStateService: ModelStateService
     
+    // MARK: - Private Properties
+    
+    private var cancellables = Set<AnyCancellable>()
+    private var dynamicPersonas: [String: PersonaDefinition] = [:]
+    
     // MARK: - Computed Properties
     
     /// The currently active persona (three-layer system)
@@ -51,9 +56,9 @@ final class PersonaStateService: ObservableObject {
             
             // Publish event
             eventBus.publish(PersonaSwitchedEvent(
-                from: oldPersona,
-                to: newValue,
-                explicit: true
+                fromPersona: oldPersona,
+                toPersona: newValue,
+                isExplicit: true
             ))
         }
     }
@@ -88,6 +93,9 @@ final class PersonaStateService: ObservableObject {
         self.stateConfiguration = .default
         self.currentAnthropicPersona = PersonaStateConfiguration.default.defaultAnthropicPersona
         self.currentNonAnthropicPersona = PersonaStateConfiguration.default.defaultNonAnthropicPersona
+        
+        // Set up subscriptions in init to avoid race conditions
+        subscribeToFolderEvents()
     }
     
     // MARK: - Public Methods
@@ -108,6 +116,7 @@ final class PersonaStateService: ObservableObject {
         
         // Restore state
         restoreState()
+        
     }
     
     /// Process a message and extract persona if present
@@ -117,7 +126,12 @@ final class PersonaStateService: ObservableObject {
         let words = trimmed.split(separator: " ", maxSplits: 1)
         
         if let firstWord = words.first {
-            let potentialPersona = String(firstWord).lowercased()
+            var potentialPersona = String(firstWord).lowercased()
+            
+            // Strip @ symbol if present
+            if potentialPersona.hasPrefix("@") {
+                potentialPersona = String(potentialPersona.dropFirst())
+            }
             
             // Check if first word is a valid persona
             if configuration.isValidPersona(potentialPersona) {
@@ -141,11 +155,14 @@ final class PersonaStateService: ObservableObject {
     /// Switch to a specific persona
     func switchToPersona(_ personaId: String) {
         guard let persona = configuration.persona(for: personaId) else {
-            errorBus.report(
-                message: "Invalid persona: \(personaId)",
-                from: "PersonaStateService",
-                severity: .error
-            )
+            // Don't report error if personas haven't been loaded yet (empty configuration)
+            if !configuration.personas.isEmpty {
+                errorBus.report(
+                    message: "Invalid persona: \(personaId)",
+                    from: "PersonaStateService",
+                    severity: .error
+                )
+            }
             return
         }
         
@@ -160,9 +177,6 @@ final class PersonaStateService: ObservableObject {
         
         // Update current persona using setter to trigger events
         currentPersona = personaId
-        
-        // Trigger UI updates
-        objectWillChange.send()
         
         // Update conversation history
         updateConversationHistory(personaId)
@@ -189,6 +203,95 @@ final class PersonaStateService: ObservableObject {
     
     // MARK: - Private Methods
     
+    private func subscribeToFolderEvents() {
+        // Subscribe to persona folder events
+        eventBus.subscribe(to: PersonaFolderEvent.self) { [weak self] event in
+            Task { @MainActor in
+                switch event {
+                case .personasLoaded(let personas):
+                    self?.updateDynamicPersonas(from: personas)
+                case .personaAdded(let persona):
+                    self?.addDynamicPersona(persona)
+                case .personaRemoved(let id):
+                    self?.removeDynamicPersona(id)
+                case .personaUpdated(let persona):
+                    self?.updateDynamicPersona(persona)
+                case .folderWatchError:
+                    break // Errors already reported by folder watcher
+                }
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func updateDynamicPersonas(from personas: [PersonaFolder]) {
+        // Clear existing dynamic personas
+        dynamicPersonas.removeAll()
+        
+        // Convert PersonaFolder to PersonaDefinition and add to dictionary
+        for persona in personas {
+            dynamicPersonas[persona.id] = persona.toPersonaDefinition()
+        }
+        
+        // Update configuration with dynamic personas
+        var updatedConfig = configuration
+        updatedConfig.personas = dynamicPersonas
+        self.configuration = updatedConfig
+        
+        // Check if current personas still exist
+        validateCurrentPersonas()
+        
+        // Notify UI
+        objectWillChange.send()
+    }
+    
+    private func addDynamicPersona(_ persona: PersonaFolder) {
+        dynamicPersonas[persona.id] = persona.toPersonaDefinition()
+        configuration.personas[persona.id] = persona.toPersonaDefinition()
+        objectWillChange.send()
+    }
+    
+    private func removeDynamicPersona(_ id: String) {
+        dynamicPersonas.removeValue(forKey: id)
+        configuration.personas.removeValue(forKey: id)
+        
+        // If removed persona was current, switch to default
+        if currentPersona == id {
+            switchToPersona(stateConfiguration.defaultNonAnthropicPersona)
+        }
+        
+        objectWillChange.send()
+    }
+    
+    private func updateDynamicPersona(_ persona: PersonaFolder) {
+        dynamicPersonas[persona.id] = persona.toPersonaDefinition()
+        configuration.personas[persona.id] = persona.toPersonaDefinition()
+        objectWillChange.send()
+    }
+    
+    private func validateCurrentPersonas() {
+        // Check if current anthropic persona still exists
+        if !configuration.isValidPersona(currentAnthropicPersona) {
+            // Find first available anthropic persona
+            if let firstAnthropic = configuration.anthropicPersonas.first {
+                currentAnthropicPersona = firstAnthropic.id
+            }
+        }
+        
+        // Check if current non-anthropic persona still exists
+        if !configuration.isValidPersona(currentNonAnthropicPersona) {
+            // Find first available non-anthropic persona
+            if let firstNonAnthropic = configuration.nonAnthropicPersonas.first {
+                currentNonAnthropicPersona = firstNonAnthropic.id
+            }
+        }
+        
+        // Check if overall current persona still exists
+        if !configuration.isValidPersona(currentPersona) {
+            switchToPersona(currentNonAnthropicPersona)
+        }
+    }
+    
     private func restoreState() {
         // Restore current persona
         if let saved = stateBus.get(.currentPersona) {
@@ -213,7 +316,7 @@ final class PersonaStateService: ObservableObject {
                 currentNonAnthropicPersona = stateConfiguration.defaultNonAnthropicPersona
             }
         } else {
-            currentNonAnthropicPersona = configuration.defaultNonAnthropicPersona
+            currentNonAnthropicPersona = stateConfiguration.defaultNonAnthropicPersona
         }
     }
     

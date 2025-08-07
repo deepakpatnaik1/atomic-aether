@@ -4,7 +4,7 @@
 //
 //  Configuration model for error handling behavior
 //
-//  ATOM 11: ErrorBus - Configuration model
+//  ATOM 2: ErrorBus - Configuration model
 //
 //  Atomic LEGO: Decodable configuration for ErrorHandling.json
 //

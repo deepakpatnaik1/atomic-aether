@@ -19,10 +19,10 @@ struct atomic_aetherApp: App {
     // ATOM 4: ConfigBus - Configuration management
     @StateObject private var configBus = ConfigBus()
     
-    // ATOM 7: Environment Configuration
+    // ATOM 20: Environment Loader
     @StateObject private var envLoader: EnvLoader
     
-    // ATOM 8: LLM Services
+    // ATOM 18: LLM Services
     @StateObject private var llmRouter: LLMRouter
     
     // ATOM 9: Models - Model Registry
@@ -31,31 +31,31 @@ struct atomic_aetherApp: App {
     // ATOM 10: Personas - Complete Persona System
     @StateObject private var personaSystem: PersonaSystem
     
-    // ATOM 15: Scrollback Message Area
+    // ATOM 21: Message Store
     @StateObject private var messageStore: MessageStore
     
-    // ATOM 10: StateBus - Shared state management
+    // ATOM 3: StateBus - Shared state management
     @StateObject private var stateBus: StateBus
     
-    // ATOM 11: ErrorBus - Centralized error handling
+    // ATOM 2: ErrorBus - Centralized error handling
     @StateObject private var errorBus: ErrorBus
     
-    // ATOM 12: Model State Management
+    // ATOM 17: Model State
     @StateObject private var modelStateService: ModelStateService
     
-    // ATOM 13: Persona System
+    // ATOM 10: Personas - State Service
     @StateObject private var personaStateService: PersonaStateService
     
-    // ATOM 15: Conversation Flow
+    // ATOM 14: ConversationFlow
     @StateObject private var conversationOrchestrator: ConversationOrchestrator
     
-    // ATOM 18: Dynamic Model Display
+    // ATOM 16: Model Display
     @StateObject private var modelDisplayService: ModelDisplayService
     
-    // ATOM 19: Interactive Model Picker
+    // ATOM 8: Model Picker
     @StateObject private var modelPickerService: ModelPickerService
     
-    // ATOM 23: Response Parser (Phase II)
+    // ATOM 22: Response Parser (Phase II)
     @StateObject private var responseParserService: ResponseParserService
     
     // ATOM 24: Journal Service (Phase II)
@@ -73,14 +73,14 @@ struct atomic_aetherApp: App {
     // ATOM 28: System Prompt Builder (Phase II)
     @StateObject private var systemPromptBuilder: SystemPromptBuilderService
     
-    // ATOM 29: System Prompt Manifest (Phase II)
-    @StateObject private var systemPromptManifestService: SystemPromptManifestService
-    
-    // ATOM 30: Machine Trim Instructions (Phase II)
+    // ATOM 29: Machine Trim Instructions (Phase II)
     @StateObject private var machineTrimInstructionsService: MachineTrimInstructionsService
     
-    // ATOM 31: Scrollback History Loader (Phase II)
+    // ATOM 30: Scrollback History Loader (Phase II)
     @StateObject private var scrollbackHistoryLoader: ScrollbackHistoryLoaderService
+    
+    // Legacy support for Scrollback
+    @StateObject private var personaService = PersonaService()
     
     init() {
         // Create EventBus first (no dependencies)
@@ -197,9 +197,6 @@ struct atomic_aetherApp: App {
         // Create SystemPromptBuilder (Phase II)
         _systemPromptBuilder = StateObject(wrappedValue: SystemPromptBuilderService())
         
-        // Create SystemPromptManifestService (Phase II)
-        _systemPromptManifestService = StateObject(wrappedValue: SystemPromptManifestService())
-        
         // Create MachineTrimInstructionsService (Phase II)
         _machineTrimInstructionsService = StateObject(wrappedValue: MachineTrimInstructionsService())
         
@@ -232,11 +229,11 @@ struct atomic_aetherApp: App {
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
             .environmentObject(systemPromptBuilder)
-            .environmentObject(systemPromptManifestService)
             .environmentObject(scrollbackHistoryLoader)
+            .environmentObject(personaService)
             .onAppear {
                 // Setup and load environment variables
-                envLoader.setup(configBus: configBus, errorBus: errorBus)
+                envLoader.setup(configBus: configBus, errorBus: errorBus, eventBus: eventBus)
                 envLoader.load()
                 
                 // Setup PersonaSystem
@@ -303,14 +300,6 @@ struct atomic_aetherApp: App {
                     personaProfileService: personaProfileService,
                     journalService: journalService,
                     machineTrimInstructionsService: machineTrimInstructionsService
-                )
-                
-                // Setup SystemPromptManifestService (Phase II)
-                systemPromptManifestService.setup(
-                    configBus: configBus,
-                    eventBus: eventBus,
-                    errorBus: errorBus,
-                    systemPromptBuilder: systemPromptBuilder
                 )
                 
                 // Setup ScrollbackHistoryLoader (Phase II)

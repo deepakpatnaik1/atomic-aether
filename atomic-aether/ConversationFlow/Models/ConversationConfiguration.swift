@@ -4,7 +4,7 @@
 //
 //  Configuration for conversation flow
 //
-//  ATOM 15: Conversation Flow - Configuration model
+//  ATOM 14: ConversationFlow - Configuration model
 //
 //  Atomic LEGO: Settings loaded from JSON
 //  Controls conversation behavior and limits

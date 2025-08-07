@@ -4,8 +4,8 @@
 //
 //  Service to manage input bar appearance configuration
 //
-//  ATOM 2: Input Bar UI - Configuration service
-//  ATOM 6: ConfigBus - Now uses ConfigBus for hot-reloading
+//  ATOM 5: Input Bar - Appearance configuration service
+//  Uses ConfigBus (ATOM 4) for hot-reloading
 //
 //  Atomic LEGO: Subscribes to configuration changes
 //  Zero coupling to configuration loading details

@@ -2,18 +2,18 @@
 //  MessageRole.swift
 //  atomic-aether
 //
-//  Enumeration for message roles in LLM conversations
+//  Role enumeration for LLM messages
 //
 //  ATOM 9: Models - Message role types
 //
-//  Atomic LEGO: Simple enum for type-safe message roles
-//  Raw string values match API expectations
+//  Atomic LEGO: Simple enum for message roles
+//  Used across LLM services and conversation flow
 //
 
 import Foundation
 
 enum MessageRole: String, Codable {
+    case system = "system"
     case user = "user"
     case assistant = "assistant"
-    case system = "system"
 }

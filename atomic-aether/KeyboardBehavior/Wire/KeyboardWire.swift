@@ -4,7 +4,7 @@
 //
 //  Wire for KeyboardBehavior atom
 //
-//  ATOM 16: Smart Enter Key - Wire
+//  ATOM 12: Keyboard Behavior - Wire
 //
 //  Atomic LEGO: Connection point for keyboard behavior
 //  Documents how this atom integrates with the app

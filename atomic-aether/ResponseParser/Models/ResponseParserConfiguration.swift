@@ -4,7 +4,7 @@
 //
 //  Configuration for response parsing
 //
-//  ATOM 23: Response Parser - Configuration model
+//  ATOM 22: Response Parser - Configuration model
 //
 //  Atomic LEGO: All parsing markers externalized
 //  Hot-reloadable via ConfigBus

@@ -4,9 +4,8 @@
 //
 //  Pure visual input bar component with uniform padding
 //
-//  ATOM 2: Input Bar UI - Glassmorphic input bar with uniform padding
-//  ATOM 3: Multiline Text Support - TextEditor with natural growth
-//  ATOM 4: /journal Slash Command - Command detection and expansion
+//  ATOM 5: Input Bar - Text input system with glassmorphic UI
+//  Includes multiline support and slash command detection
 //
 //  Atomic LEGO: UI-only, no behavior
 //  Just appearance as defined in configuration
@@ -66,6 +65,12 @@ struct InputBarView: View {
                 ModelPickerView(
                     modelPickerService: modelPickerService,
                     modelDisplayService: modelDisplayService,
+                    fontSize: appearance.controls.modelPicker.fontSize,
+                    opacity: appearance.controls.modelPicker.opacity
+                )
+                
+                PersonaPickerView(
+                    inputText: $text,
                     fontSize: appearance.controls.modelPicker.fontSize,
                     opacity: appearance.controls.modelPicker.opacity
                 )

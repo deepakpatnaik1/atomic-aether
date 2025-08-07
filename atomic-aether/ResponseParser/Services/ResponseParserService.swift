@@ -4,7 +4,7 @@
 //
 //  Parses streaming LLM responses with two-part format
 //
-//  ATOM 23: Response Parser - Core service
+//  ATOM 22: Response Parser - Core service
 //
 //  Atomic LEGO: Detects section markers and routes content
 //  Handles mixed inferability within machine trim sections

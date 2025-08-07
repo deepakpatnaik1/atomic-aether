@@ -4,7 +4,7 @@
 //
 //  UI trigger for loading historical messages
 //
-//  ATOM 31: Scrollback History Loader - Trigger view
+//  ATOM 30: Scrollback History Loader - Trigger view
 //
 //  Atomic LEGO: Button to load more messages
 //  Appears at top of scrollback when enabled

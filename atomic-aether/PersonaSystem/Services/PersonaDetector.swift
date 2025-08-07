@@ -4,7 +4,7 @@
 //
 //  Detects persona triggers in messages
 //
-//  ATOM 13: Persona System - Message detection
+//  ATOM 10: Personas - Message detection
 //
 //  Atomic LEGO: Focused service for persona detection
 //  Separates detection logic from state management

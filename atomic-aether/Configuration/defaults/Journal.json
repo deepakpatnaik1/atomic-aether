@@ -1,9 +1,0 @@
-{
-    "journalPath": "~/Documents/code/aetherVault/journal/journal.md",
-    "dateFormat": "yyyy-MM-dd HH:mm:ss",
-    "timezone": "Europe/Berlin",
-    "maxEntriesInMemory": 10000,
-    "fileEncoding": "utf8",
-    "appendDelimiter": "\n\n---\n\n",
-    "createPathIfMissing": true
-}

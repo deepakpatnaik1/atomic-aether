@@ -4,7 +4,7 @@
 //
 //  Events related to UI navigation
 //
-//  ATOM 5: EventBus - Navigation event definitions
+//  ATOM 1: EventBus - Navigation event definitions
 //
 //  ATOMIC LEGO: Pure navigation event definitions
 //  - Turn mode, scrolling, focus changes

@@ -4,7 +4,7 @@
 //
 //  Central state management for sharing data between atoms
 //
-//  ATOM 10: StateBus - Shared state container
+//  ATOM 3: StateBus - Shared state container
 //
 //  Atomic LEGO: Generic state storage with type safety
 //  - Any atom can store/retrieve state
@@ -37,7 +37,7 @@ final class StateBus: ObservableObject {
         self.eventBus = eventBus
         
         // Load configuration if available
-        if let config = configBus?.load(StateBusConfiguration.self, from: "StateBus.json") {
+        if let config = configBus?.load("StateBus", as: StateBusConfiguration.self) {
             self.configuration = config
         }
     }

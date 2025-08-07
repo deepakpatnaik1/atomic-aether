@@ -4,7 +4,7 @@
 //
 //  Request model for conversation flow
 //
-//  ATOM 15: Conversation Flow - Request model
+//  ATOM 14: ConversationFlow - Request model
 //
 //  Atomic LEGO: Data structure for LLM requests
 //  Includes persona context and conversation history

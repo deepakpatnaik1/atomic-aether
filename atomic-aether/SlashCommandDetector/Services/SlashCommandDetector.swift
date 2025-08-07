@@ -4,7 +4,7 @@
 //
 //  Service to detect and manage slash commands
 //
-//  ATOM 22: Slash Command Detector - Core service
+//  ATOM 6: Slash Command Detector - Core service
 //
 //  Atomic LEGO: Single responsibility - detect commands
 //  Tracks state for height restoration

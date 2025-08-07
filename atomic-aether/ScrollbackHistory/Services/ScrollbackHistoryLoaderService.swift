@@ -4,7 +4,7 @@
 //
 //  Loads historical conversations from SuperJournal files
 //
-//  ATOM 31: Scrollback History Loader - Core service
+//  ATOM 30: Scrollback History Loader - Core service
 //
 //  Atomic LEGO: Reads SuperJournal files and converts to messages
 //  Maintains loading state and handles pagination

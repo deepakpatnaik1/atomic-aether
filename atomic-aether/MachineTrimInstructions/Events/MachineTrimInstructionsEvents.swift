@@ -4,7 +4,7 @@
 //
 //  Events for machine trim instructions
 //
-//  ATOM 30: Machine Trim Instructions - Event definitions
+//  ATOM 29: Machine Trim Instructions - Event definitions
 //
 //  Atomic LEGO: Minimal events for instruction generation
 //  Only what consumers need to know

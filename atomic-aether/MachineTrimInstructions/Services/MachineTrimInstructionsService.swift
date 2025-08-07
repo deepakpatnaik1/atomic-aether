@@ -4,7 +4,7 @@
 //
 //  Provides machine trim instructions for system prompt
 //
-//  ATOM 30: Machine Trim Instructions - Core service
+//  ATOM 29: Machine Trim Instructions - Core service
 //
 //  Atomic LEGO: Generates instructions from configuration
 //  Pure function - no state management

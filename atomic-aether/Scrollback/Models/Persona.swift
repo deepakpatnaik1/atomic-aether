@@ -4,7 +4,7 @@
 //
 //  Persona configuration model
 //
-//  ATOM 9: Scrollback Message Area - Persona definition
+//  ATOM 15: Scrollback - Persona definition
 //
 //  Atomic LEGO: Maps to Personas.json configuration
 //  Defines display name and accent color for speakers

@@ -4,7 +4,7 @@
 //
 //  Scrollback UI configuration model
 //
-//  ATOM 9: Scrollback Message Area - Appearance configuration
+//  ATOM 15: Scrollback - Appearance configuration
 //
 //  Atomic LEGO: Maps to ScrollbackAppearance.json
 //  All visual properties externalized to configuration

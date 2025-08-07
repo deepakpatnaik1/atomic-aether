@@ -4,7 +4,7 @@
 //
 //  Handles keyboard input behavior
 //
-//  ATOM 16: Smart Enter Key - Service layer
+//  ATOM 12: Keyboard Behavior - Service layer
 //
 //  Atomic LEGO: Service that determines submit vs newline
 //  Based on configuration and modifier keys

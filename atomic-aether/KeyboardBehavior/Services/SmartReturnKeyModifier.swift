@@ -4,7 +4,7 @@
 //
 //  Custom view modifier for smart enter key behavior
 //
-//  ATOM 16: Smart Enter Key - View Modifier
+//  ATOM 12: Keyboard Behavior - View Modifier
 //
 //  Atomic LEGO: SwiftUI modifier for keyboard handling
 //  Works around onKeyPress limitations

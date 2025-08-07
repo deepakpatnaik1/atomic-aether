@@ -4,7 +4,7 @@
 //
 //  Speaker label with colored border and gradient line
 //
-//  ATOM 9: Scrollback Message Area - Speaker label component
+//  ATOM 15: Scrollback - Speaker label component
 //
 //  Atomic LEGO: Reusable speaker label with persona styling
 //  Ported from original aether design

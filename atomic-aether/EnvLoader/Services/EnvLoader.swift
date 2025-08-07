@@ -25,11 +25,13 @@ class EnvLoader: ObservableObject {
     private var configuration: EnvLoaderConfiguration = .default
     private var configBus: ConfigBus?
     private var errorBus: ErrorBus?
+    private var eventBus: EventBus?
     
-    /// Setup with ConfigBus and ErrorBus
-    func setup(configBus: ConfigBus, errorBus: ErrorBus) {
+    /// Setup with dependencies
+    func setup(configBus: ConfigBus, errorBus: ErrorBus, eventBus: EventBus) {
         self.configBus = configBus
         self.errorBus = errorBus
+        self.eventBus = eventBus
         
         // Load configuration
         if let config = configBus.load("EnvLoader", as: EnvLoaderConfiguration.self) {

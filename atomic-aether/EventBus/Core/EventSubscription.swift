@@ -4,7 +4,7 @@
 //
 //  Subscription lifecycle management
 //
-//  ATOM 5: EventBus - Subscription management
+//  ATOM 1: EventBus - Subscription management
 //
 //  ATOMIC LEGO: Clean subscription handling
 //  - Automatic cancellation on dealloc

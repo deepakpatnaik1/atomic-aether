@@ -4,7 +4,7 @@
 //
 //  Orchestrates conversation flow between user and personas
 //
-//  ATOM 15: Conversation Flow - Main orchestrator
+//  ATOM 14: ConversationFlow - Main orchestrator
 //
 //  Atomic LEGO: Coordinates all conversation components
 //  Links persona detection, model selection, and LLM calls
@@ -143,11 +143,7 @@ final class ConversationOrchestrator: ObservableObject {
                 streamingEnabled: configuration.streamingEnabled
             )
             
-            // 6. Send to LLM first (before creating placeholder)
-            let llmRequest = request.toLLMRequest()
-            let stream = try await llmRouter.sendMessage(llmRequest)
-            
-            // 7. Create placeholder response message (only after successful API call)
+            // 6. Create placeholder response message first
             let responseMessage = Message(
                 speaker: persona,
                 content: "",
@@ -155,6 +151,12 @@ final class ConversationOrchestrator: ObservableObject {
                 modelUsed: request.model
             )
             messageStore.addMessage(responseMessage)
+            
+            // 7. Send to LLM
+            let llmRequest = request.toLLMRequest()
+            
+            do {
+                let stream = try await llmRouter.sendMessage(llmRequest)
             
             // 8. Process response stream
             if configuration.streamingEnabled {
@@ -192,6 +194,40 @@ final class ConversationOrchestrator: ObservableObject {
                 persona: persona,
                 model: request.model
             ))
+            
+            } catch {
+                // Update the placeholder message with error
+                let errorMessage: String
+                if let llmError = error as? LLMError {
+                    switch llmError {
+                    case .apiKeyMissing:
+                        errorMessage = "API key missing. Please set up your API keys in Settings (Cmd+Shift+,)"
+                    case .invalidModel(let model):
+                        errorMessage = "Invalid model: \(model)"
+                    case .networkError(let description):
+                        errorMessage = "Network error: \(description)"
+                    case .invalidResponse(let reason):
+                        errorMessage = "Invalid response: \(reason)"
+                    case .rateLimitExceeded:
+                        errorMessage = "Rate limit exceeded. Please try again later."
+                    case .streamingError(let message):
+                        errorMessage = "Streaming error: \(message)"
+                    case .providerError(let provider, let message):
+                        errorMessage = "\(provider) error: \(message)"
+                    }
+                } else {
+                    errorMessage = "Error: \(error.localizedDescription)"
+                }
+                
+                messageStore.updateMessage(
+                    responseMessage.id,
+                    content: "⚠️ \(errorMessage)",
+                    isStreaming: false
+                )
+                
+                // Re-throw to be caught by outer catch
+                throw error
+            }
             
         } catch {
             self.error = error

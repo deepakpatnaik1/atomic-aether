@@ -4,7 +4,7 @@
 //
 //  Configuration for model picker UI
 //
-//  ATOM 19: Interactive Model Picker - Configuration
+//  ATOM 8: Model Picker - Configuration
 //
 //  Atomic LEGO: Configuration structure for model picker
 //  Loaded from ModelPicker.json via ConfigBus
@@ -31,6 +31,7 @@ struct ModelPickerConfiguration: Codable {
     // Default labels
     let allModelsLabel: String
     let unknownProviderLabel: String
+    let providerSeparator: String
     
     // MARK: - Helper Methods
     
@@ -68,6 +69,7 @@ struct ModelPickerConfiguration: Codable {
         allowDynamicModels: false,
         chevronSizeRatio: 0.7,
         allModelsLabel: "All Models",
-        unknownProviderLabel: "unknown"
+        unknownProviderLabel: "unknown",
+        providerSeparator: ":"
     )
 }

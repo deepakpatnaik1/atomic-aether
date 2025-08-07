@@ -4,7 +4,7 @@
 //
 //  Events for scrollback history loading
 //
-//  ATOM 31: Scrollback History Loader - Event definitions
+//  ATOM 30: Scrollback History Loader - Event definitions
 //
 //  Atomic LEGO: Loading state events
 //  Minimal events for history loading lifecycle

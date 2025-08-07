@@ -4,7 +4,7 @@
 //
 //  Central error handling and reporting
 //
-//  ATOM 11: ErrorBus - Centralized error management
+//  ATOM 2: ErrorBus - Centralized error management
 //
 //  Atomic LEGO: Collects and manages errors from all atoms
 //  - Publish errors for display

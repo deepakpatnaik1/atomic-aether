@@ -4,7 +4,7 @@
 //
 //  Central nervous system for event-driven communication
 //
-//  ATOM 5: EventBus - The nervous system enabling true Atomic LEGO
+//  ATOM 1: EventBus - The nervous system enabling true Atomic LEGO
 //  
 //  ATOMIC LEGO: Pure event routing with zero coupling
 //  - Publish events without knowing subscribers
@@ -85,6 +85,25 @@ final class EventBus: EventBusProtocol, ObservableObject {
             }
     }
     
+    /// Subscribe to two different event types (required by protocol)
+    func subscribe<T: AetherEvent, U: AetherEvent>(
+        to types: (T.Type, U.Type),
+        handler: @escaping (Any) -> Void
+    ) -> AnyCancellable {
+        return events
+            .compactMap { event -> Any? in
+                if let typed = event as? T {
+                    return typed
+                } else if let typed = event as? U {
+                    return typed
+                }
+                return nil
+            }
+            .sink { event in
+                handler(event)
+            }
+    }
+    
     /// Async stream subscription for modern Swift concurrency
     func asyncSubscribe<T: AetherEvent>(
         to eventType: T.Type
@@ -109,7 +128,7 @@ final class EventBus: EventBusProtocol, ObservableObject {
     private func loadConfiguration() {
         guard let configBus = configBus else { return }
         
-        configuration = configBus.load(EventBusConfiguration.self, from: "EventBus.json")
+        configuration = configBus.load("EventBus", as: EventBusConfiguration.self)
         
         // Apply configuration
         if let debugConfig = configuration?.debugMode {

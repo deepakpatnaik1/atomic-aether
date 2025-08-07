@@ -20,7 +20,7 @@ struct PersonaProfileConfiguration: Codable {
     let maxFileSizeKB: Int
     
     static let `default` = PersonaProfileConfiguration(
-        personasPath: "~/Documents/code/aetherVault/playbook/personas/",
+        personasPath: "~/Documents/code/atomic-aether/atomic-aether/aetherVault/Personas/",
         includedExtensions: [".md", ".txt", ".markdown", ".text"],
         excludedFiles: [".DS_Store", ".gitignore"],
         fileSeparator: "\n\n=== {filename} ===\n\n",
@@ -35,7 +35,9 @@ struct PersonaProfileConfiguration: Codable {
     
     /// Get URL for specific persona folder
     func urlForPersona(_ personaId: String) -> URL? {
-        personasURL?.appendingPathComponent(personaId)
+        // Capitalize first letter to match folder naming convention
+        let folderName = personaId.prefix(1).uppercased() + personaId.dropFirst()
+        return personasURL?.appendingPathComponent(folderName)
     }
     
     /// Check if a file should be included

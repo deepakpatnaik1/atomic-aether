@@ -4,7 +4,7 @@
 //
 //  Configuration for slash command detector
 //
-//  ATOM 22: Slash Command Detector - Configuration model
+//  ATOM 6: Slash Command Detector - Configuration model
 //
 //  Atomic LEGO: All command settings externalized
 //  Hot-reloadable via ConfigBus

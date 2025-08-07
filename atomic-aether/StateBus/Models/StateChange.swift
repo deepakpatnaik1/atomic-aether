@@ -4,7 +4,7 @@
 //
 //  Event model for state changes
 //
-//  ATOM 10: StateBus - State change event
+//  ATOM 3: StateBus - State change event
 //
 //  Atomic LEGO: Simple event for notifying state mutations
 //  Used with EventBus for reactive updates

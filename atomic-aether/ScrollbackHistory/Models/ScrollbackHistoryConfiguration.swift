@@ -4,7 +4,7 @@
 //
 //  Configuration for scrollback history loading
 //
-//  ATOM 31: Scrollback History Loader - Configuration model
+//  ATOM 30: Scrollback History Loader - Configuration model
 //
 //  Atomic LEGO: All loading behavior externalized
 //  Hot-reloadable via ConfigBus
@@ -42,7 +42,7 @@ struct ScrollbackHistoryConfiguration: Codable {
         enabled: true,
         messagesPerBatch: 100,
         loadTriggerThreshold: 50,
-        superJournalPath: "~/Documents/code/aetherVault/superjournal/",
+        superJournalPath: "~/Documents/code/atomic-aether/atomic-aether/aetherVault/Superjournal/",
         dateFormat: "yyyy-MM-dd-HH-mm-ss",
         showLoadingIndicator: true,
         loadingText: "Loading earlier messages...",

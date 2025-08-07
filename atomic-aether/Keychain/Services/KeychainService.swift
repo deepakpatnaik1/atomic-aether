@@ -4,7 +4,7 @@
 //
 //  Secure storage for API keys using macOS Keychain
 //
-//  ATOM 17: Keychain Storage - Secure API key management
+//  ATOM 13: API Key Storage - Secure API key management
 //
 //  Atomic LEGO: Single responsibility - Keychain operations
 //  No file access needed, secure by default

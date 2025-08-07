@@ -4,7 +4,7 @@
 //
 //  Processes streaming LLM responses
 //
-//  ATOM 15: Conversation Flow - Stream handler
+//  ATOM 14: ConversationFlow - Stream handler
 //
 //  Atomic LEGO: Focused service for stream processing
 //  Updates messages in real-time as chunks arrive
@@ -43,7 +43,6 @@ final class StreamProcessor {
     private func setupResponseParserSubscription() {
         eventSubscription = eventBus.subscribe(to: ResponseParserEvent.self) { [weak self] event in
             guard let self = self else { return }
-            
             switch event {
             case .normalToken(let token):
                 // Update the current streaming message with parsed tokens only
@@ -88,7 +87,6 @@ final class StreamProcessor {
                 switch response {
                 case .content(let content):
                     chunkCount += 1
-                    
                     // Send to response parser if available (Phase II)
                     if let parser = responseParser {
                         // Parser will handle the tokens and publish events
@@ -135,8 +133,29 @@ final class StreamProcessor {
             responseParser?.completeResponse()
             
         } catch {
-            // Handle stream error
-            let errorMessage = "Error: \(error.localizedDescription)"
+            // Handle stream error with better error messages
+            let errorMessage: String
+            if let llmError = error as? LLMError {
+                switch llmError {
+                case .apiKeyMissing:
+                    errorMessage = "⚠️ API key missing. Please set up your API keys in Settings (Cmd+Shift+,)"
+                case .invalidModel(let model):
+                    errorMessage = "⚠️ Invalid model: \(model)"
+                case .networkError(let description):
+                    errorMessage = "⚠️ Network error: \(description)"
+                case .invalidResponse(let reason):
+                    errorMessage = "⚠️ Invalid response: \(reason)"
+                case .rateLimitExceeded:
+                    errorMessage = "⚠️ Rate limit exceeded. Please try again later."
+                case .streamingError(let message):
+                    errorMessage = "⚠️ Streaming error: \(message)"
+                case .providerError(let provider, let message):
+                    errorMessage = "⚠️ \(provider) error: \(message)"
+                }
+            } else {
+                errorMessage = "⚠️ Error: \(error.localizedDescription)"
+            }
+            
             let currentContent = parsedContent[messageId] ?? ""
             await finalizeStream(
                 messageId: messageId,

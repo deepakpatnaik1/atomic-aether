@@ -4,7 +4,7 @@
 //
 //  Type-safe keys for StateBus storage
 //
-//  ATOM 10: StateBus - Type-safe state keys
+//  ATOM 3: StateBus - Type-safe state keys
 //
 //  Atomic LEGO: Generic key structure for any state type
 //  Consuming atoms define their own keys

@@ -4,7 +4,7 @@
 //
 //  Configuration for keyboard behavior
 //
-//  ATOM 16: Smart Enter Key - Configuration model
+//  ATOM 12: Keyboard Behavior - Configuration model
 //
 //  Atomic LEGO: Pure data model for keyboard settings
 //  Defines which keys trigger submit vs newline

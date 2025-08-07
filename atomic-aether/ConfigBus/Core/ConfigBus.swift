@@ -2,7 +2,7 @@
 //  ConfigBus.swift
 //  atomic-aether
 //
-//  ATOM 6: ConfigBus - Simple configuration with hot-reloading
+//  ATOM 4: ConfigBus - Simple configuration with hot-reloading
 //
 //  Loads JSON configs from bundle and watches for changes
 //  That's it. No abstractions, no protocols, just works.
@@ -30,7 +30,7 @@ final class ConfigBus: ObservableObject {
     init(eventBus: EventBus? = nil) {
         self.eventBus = eventBus
         
-        // Bootstrap load our own config
+        // Bootstrap load our own config from bundle
         if let url = Bundle.main.url(forResource: "ConfigBus", withExtension: "json"),
            let data = try? Data(contentsOf: url),
            let config = try? JSONDecoder().decode(ConfigBusConfiguration.self, from: data) {
@@ -53,7 +53,7 @@ final class ConfigBus: ObservableObject {
         
         // Load from bundle
         guard let url = Bundle.main.url(forResource: name, withExtension: configuration.fileExtension) else {
-            // Config file not found
+            // Config file not found in bundle
             eventBus?.publish(ConfigEvents.loadFailed(name, error: CocoaError(.fileNoSuchFile)))
             return nil
         }
@@ -63,10 +63,8 @@ final class ConfigBus: ObservableObject {
             let config = try JSONDecoder().decode(type, from: data)
             configs[name] = config
             
-            // Start watching if enabled
-            if configuration.enableHotReload {
-                watchFile(url, configName: name, type: type)
-            }
+            // Bundle files can't be watched for changes
+            // Hot reload only works in development with external files
             
             // Publish success event
             eventBus?.publish(ConfigEvents.changed(name))
@@ -112,7 +110,11 @@ final class ConfigBus: ObservableObject {
     }
     
     private func reload<T: Codable>(_ name: String, as type: T.Type) {
-        guard let url = Bundle.main.url(forResource: name, withExtension: configuration.fileExtension) else { return }
+        let configPath = "~/Documents/code/atomic-aether/aetherVault/Config/\(name).\(configuration.fileExtension)"
+        let expandedPath = NSString(string: configPath).expandingTildeInPath
+        let url = URL(fileURLWithPath: expandedPath)
+        
+        guard FileManager.default.fileExists(atPath: expandedPath) else { return }
         
         do {
             let data = try Data(contentsOf: url)

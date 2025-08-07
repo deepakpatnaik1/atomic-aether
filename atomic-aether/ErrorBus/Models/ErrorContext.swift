@@ -4,7 +4,7 @@
 //
 //  Context information for errors
 //
-//  ATOM 11: ErrorBus - Error context model
+//  ATOM 2: ErrorBus - Error context model
 //
 //  Atomic LEGO: Metadata wrapper for errors
 //  Provides additional context for debugging and display
