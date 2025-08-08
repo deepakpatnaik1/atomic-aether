@@ -24,6 +24,8 @@ struct PersonaDefinition: Codable, Identifiable {
     let accentColor: ColorComponents
     let voiceStyle: String? // e.g., "professional", "casual", "analytical"
     let expertise: [String]? // e.g., ["business", "strategy", "leadership"]
+    let personaType: String? // "Functional Expert" or "Cognitive Voice"
+    let role: String? // 2-3 word role description
     
     // MARK: - Computed Properties
     

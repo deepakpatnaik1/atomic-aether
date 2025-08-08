@@ -391,11 +391,12 @@ Users/buda-air/Documents/code/atomic-aether/aetherVault/Trash
 https://github.com/deepakpatnaik1/Atomic Aether
 
 
-## Phase I Complete (All 22 Atoms) ✅
+## Phase I Complete (All 23 Atoms) ✅
 
 **Tag**: Atomic Aether-Phase-I  
 **Completion Date**: August 3, 2025  
-**Status**: All 22 atoms are now properly wired and configuration-driven according to the BOSS RULES.
+**Status**: All 23 atoms are now properly wired and configuration-driven according to the BOSS RULES.
+**Update**: ATOM 31 (PersonaPicker) extracted from PersonaSystem for proper atomic separation.
 
 ## Phase II: Memory & Journaling System (In Progress)
 
@@ -449,7 +450,7 @@ This preserves user agency over their memory while preventing unbounded growth. 
 
 ## Phase I Atoms (Complete)
 
-All 22 atoms below are complete and belong to Phase I:
+All 23 atoms below are complete and belong to Phase I:
 
 1. **EventBus** - Event-driven communication system ✅
 2. **ErrorBus** - Centralized error handling ✅
@@ -473,6 +474,7 @@ All 22 atoms below are complete and belong to Phase I:
 20. **Environment Loader** - .env file parsing for API keys ✅
 21. **Message Store** - Message persistence and management ✅
 22. **Slash Command Detector** - Detects and processes slash commands ✅
+23. **PersonaPicker** - Interactive persona selection menu (extracted from PersonaSystem) ✅
 
 ## The Atoms
 
@@ -636,6 +638,14 @@ All 22 atoms below are complete and belong to Phase I:
   - ConversationOrchestrator = intended central coordinator for complex flows
   - Direct calls for actions, events for notifications = valid architectural choice
   - Persona detection provides immediate UI feedback, actual processing in PersonaStateService
+- **Picker Spacing Fix** (Tag: model-picker-persona-picker-together):
+  - Fixed inconsistent spacing between ModelPicker and PersonaPicker
+  - Root cause: SwiftUI Menu components sized themselves based on dropdown content width
+  - PersonaPicker had wider dropdown content (section headers) causing visual imbalance
+  - Solution: Applied .fixedSize() to both pickers
+  - Forces pickers to size based on visible label content only, not dropdown width
+  - Ensures equal 12pt spacing between +, ModelPicker, and PersonaPicker
+  - Follows Occam's Razor - simplest possible fix with one modifier per picker
 
 ### ATOM 6: Slash Command Detector ✅
 - **Status**: Complete and assessed against 7 BOSS RULES
@@ -1423,6 +1433,37 @@ All 22 atoms below are complete and belong to Phase I:
   - Configuration option: `autoLoadOnScroll: true`
   - Maintains button as fallback control
   - Tagged: `post-audit-atom-31`
+
+### ATOM 31: PersonaPicker - Interactive Persona Selection Menu ✅
+- **Status**: Complete (extracted from PersonaSystem)
+- **Phase**: I (UI component)
+- **Tag**: atom-31-persona-picker
+- **Files**:
+  - PersonaPicker/Core/PersonaPicker.swift - Atom coordinator
+  - PersonaPicker/UI/PersonaPickerView.swift - SwiftUI menu component
+  - PersonaPicker/Wire/PersonaPickerWire.swift - Integration documentation
+  - PersonaUIConfiguration model (shared with PersonaSystem)
+  - aetherVault/Config/PersonaUI.json - UI configuration (shared)
+- **Description**: Dropdown menu for selecting AI personas
+- **Key Features**:
+  - Groups personas by category (Functional Experts, Cognitive Voices)
+  - Shows current selection with chevron indicator
+  - Displays persona names and roles with different styling
+  - Integrates with PersonaStateService for selection
+  - Inserts persona name into input field
+  - Full configuration-driven appearance
+- **Integration**:
+  - Used in InputBarView alongside ModelPicker
+  - Depends on PersonaStateService from PersonaSystem atom
+  - Shares PersonaUIConfiguration with PersonaSystem
+- **Assessment Results**:
+  - ✅ Swifty: Native Menu component, proper SwiftUI patterns
+  - ✅ Atomic LEGO: Proper Core/UI/Wire structure
+  - ✅ Configuration: All values externalized to PersonaUI.json
+  - ✅ Easy removal: Delete folder + remove from InputBarView
+  - ✅ No damage: Pure UI component, optional feature
+  - ✅ Occam's Razor: Simple menu implementation
+  - ✅ Bus integration: Uses ConfigBus for configuration only
 
 ## Architecture Principles
 

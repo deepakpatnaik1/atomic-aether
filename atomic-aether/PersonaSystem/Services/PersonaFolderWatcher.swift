@@ -164,16 +164,20 @@ class PersonaFolderWatcher: ObservableObject {
             let folderName = folderURL.lastPathComponent
             let isAnthropicValue = parsed.frontmatter["isAnthropic"] ?? "false"
             
-            return PersonaFolder(
+            let personaFolder = PersonaFolder(
                 id: folderName.lowercased(),
                 folderPath: folderURL,
                 displayName: parsed.frontmatter["name"] ?? folderName,
                 avatar: parsed.frontmatter["avatar"] ?? configuration.defaultAvatar,
                 color: Color(hex: parsed.frontmatter["color"]) ?? Color(hex: configuration.defaultColor)!,
                 isAnthropic: isAnthropicValue.lowercased() == "true",
+                personaType: parsed.frontmatter["personaType"],
+                role: parsed.frontmatter["role"],
                 lastModified: lastModified,
                 content: parsed.content
             )
+            
+            return personaFolder
             
         } catch {
             errorBus?.report(error, from: "PersonaFolderWatcher", severity: .warning)

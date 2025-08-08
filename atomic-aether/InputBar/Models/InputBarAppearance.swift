@@ -111,8 +111,7 @@ extension InputBarAppearance {
         case "pink": return .pink
         case "clear": return .clear
         default: 
-            // For unknown colors, print warning and return clear
-            print("⚠️ Unknown color '\(string)' in configuration. Using clear.")
+            // For unknown colors, return clear
             return .clear
         }
     }

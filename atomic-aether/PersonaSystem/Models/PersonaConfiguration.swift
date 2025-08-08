@@ -44,6 +44,16 @@ struct PersonaSystemConfiguration: Codable {
         allPersonas.filter { !$0.isAnthropic }
     }
     
+    /// Get all Functional Expert personas
+    var functionalExperts: [PersonaDefinition] {
+        allPersonas.filter { $0.personaType == "Functional Expert" }
+    }
+    
+    /// Get all Cognitive Voice personas
+    var cognitiveVoices: [PersonaDefinition] {
+        allPersonas.filter { $0.personaType == "Cognitive Voice" }
+    }
+    
     /// Regex for persona detection
     var triggerRegex: NSRegularExpression? {
         try? NSRegularExpression(pattern: personaTriggerPattern, options: .caseInsensitive)

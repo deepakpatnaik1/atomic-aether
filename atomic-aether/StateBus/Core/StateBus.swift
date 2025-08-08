@@ -63,11 +63,6 @@ final class StateBus: ObservableObject {
         let oldValue = storage[key.name]
         storage[key.name] = value
         
-        // Debug logging if enabled
-        if configuration?.enableDebugLogging == true {
-            print("[StateBus] Set '\(key.name)' = \(String(describing: value))")
-        }
-        
         // Notify SwiftUI of change
         objectWillChange.send()
         

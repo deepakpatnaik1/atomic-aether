@@ -57,9 +57,9 @@ final class StreamProcessor {
             case .normalResponseComplete, .machineTrimComplete, .fullyInferableResponse:
                 // These are handled elsewhere
                 break
-            case .parsingError(let error):
-                // Log error but don't interrupt streaming
-                print("ResponseParser error during streaming: \(error)")
+            case .parsingError(_):
+                // Parser error but don't interrupt streaming
+                break
             }
         }
     }

@@ -105,6 +105,12 @@ final class PersonaStateService: ObservableObject {
         // Load configuration
         if let loadedConfig = configBus.load("Personas", as: PersonaSystemConfiguration.self) {
             self.configuration = loadedConfig
+            
+            // Re-apply dynamic personas on top of loaded configuration
+            // This preserves personas loaded from folders
+            for (id, persona) in dynamicPersonas {
+                self.configuration.personas[id] = persona
+            }
         }
         
         // Load state configuration

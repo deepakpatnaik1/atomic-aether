@@ -33,10 +33,6 @@ class InputBarAppearanceService: ObservableObject {
         // Initial load - no fallback
         appearance = configBus.load("InputBarAppearance", as: InputBarAppearance.self)
         
-        if appearance == nil {
-            print("❌ FATAL: InputBarAppearance.json missing from bundle")
-        }
-        
         // Watch for changes
         cancellable = configBus.objectWillChange
             .sink { [weak self] _ in

@@ -20,6 +20,8 @@ struct PersonaFolder: Identifiable, Equatable {
     let avatar: String      // From frontmatter 'avatar'
     let color: Color        // From frontmatter 'color'
     let isAnthropic: Bool   // From frontmatter 'isAnthropic'
+    let personaType: String?// From frontmatter 'personaType' (Functional Expert or Cognitive Voice)
+    let role: String?       // From frontmatter 'role' (2-3 word description)
     let lastModified: Date
     let content: String     // Full markdown content after frontmatter
     
@@ -41,7 +43,9 @@ struct PersonaFolder: Identifiable, Equatable {
             systemPrompt: content,
             accentColor: components,
             voiceStyle: nil,  // Not specified in frontmatter
-            expertise: nil    // Not specified in frontmatter
+            expertise: nil,   // Not specified in frontmatter
+            personaType: personaType,
+            role: role
         )
     }
 }
@@ -69,3 +73,4 @@ extension Color {
         return nil
     }
 }
+
