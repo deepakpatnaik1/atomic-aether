@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import SwiftUI
 import Combine
 
 @MainActor
@@ -19,6 +20,8 @@ class BossProfileService: ObservableObject {
     @Published private(set) var isLoaded = false
     @Published private(set) var fileCount = 0
     @Published private(set) var lastError: Error?
+    @Published private(set) var bossColor: Color = Color.gray
+    @Published private(set) var bossDisplayName: String = "Boss"
     
     // MARK: - Private Properties
     private var configuration: BossProfileConfiguration = .default
@@ -101,6 +104,20 @@ class BossProfileService: ObservableObject {
                 
                 // Read file content
                 if let content = try? String(contentsOf: fileURL, encoding: .utf8) {
+                    // Special handling for Boss.md
+                    if fileURL.lastPathComponent == "Boss.md" {
+                        // Parse frontmatter for Boss metadata
+                        if let parsed = FrontmatterParser.parse(fileContent: content) {
+                            if let name = parsed.frontmatter["name"] {
+                                bossDisplayName = name
+                            }
+                            if let colorHex = parsed.frontmatter["color"], 
+                               let color = Color(hex: colorHex) {
+                                bossColor = color
+                            }
+                        }
+                    }
+                    
                     let header = configuration.fileSeparator
                         .replacingOccurrences(of: "{filename}", with: fileURL.lastPathComponent)
                     sections.append(header + content)

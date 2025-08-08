@@ -1,7 +1,7 @@
 ---
 name: Eva
 avatar: 🐬
-color: #A8DADC
+color: #00BCD4
 isAnthropic: false
 personaType: Cognitive Voice
 role: Emotional Explorer

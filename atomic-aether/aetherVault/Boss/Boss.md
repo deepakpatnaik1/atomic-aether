@@ -1,7 +1,7 @@
 ---
 name: Boss
 avatar: none
-color: #B8D4E3
+color: #00D4FF
 isAnthropic: false
 ---
 

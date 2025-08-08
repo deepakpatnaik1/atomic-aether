@@ -1,7 +1,7 @@
 ---
 name: Samara
 avatar: 🦉
-color: #C7CEEA
+color: #3498DB
 isAnthropic: false
 personaType: Functional Expert
 role: Question Answerer

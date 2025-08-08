@@ -1,7 +1,7 @@
 ---
 name: Gunnar
 avatar: 🪼
-color: #FFDAC1
+color: #FF6B35
 isAnthropic: false
 personaType: Functional Expert
 role: Startup Founder

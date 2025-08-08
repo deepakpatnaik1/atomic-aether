@@ -14,6 +14,8 @@ import SwiftUI
 
 struct APIKeySetupView: View {
     @EnvironmentObject var envLoader: EnvLoader
+    @EnvironmentObject var devKeysService: DevKeysService
+    @EnvironmentObject var configBus: ConfigBus
     @State private var openAIKey = ""
     @State private var anthropicKey = ""
     @State private var fireworksKey = ""
@@ -24,6 +26,14 @@ struct APIKeySetupView: View {
             Text("API Key Setup")
                 .font(.title)
                 .padding(.bottom)
+            
+            // DevKeys Toggle Section
+            DevKeysToggleView()
+                .padding(.horizontal)
+                .padding(.bottom, 10)
+            
+            Divider()
+                .padding(.horizontal)
             
             VStack(alignment: .leading, spacing: 15) {
                 // OpenAI Key
@@ -93,6 +103,7 @@ struct APIKeySetupView: View {
     private func saveKeys() {
         var saved = false
         
+        // Save to Keychain
         if !openAIKey.isEmpty {
             _ = KeychainService.save(key: .openAIKey, value: openAIKey)
             saved = true
@@ -106,6 +117,19 @@ struct APIKeySetupView: View {
         if !fireworksKey.isEmpty {
             _ = KeychainService.save(key: .fireworksKey, value: fireworksKey)
             saved = true
+        }
+        
+        // Also save to DevKeys if enabled
+        if devKeysService.isEnabled {
+            if !openAIKey.isEmpty {
+                devKeysService.save(key: .openAI, value: openAIKey)
+            }
+            if !anthropicKey.isEmpty {
+                devKeysService.save(key: .anthropic, value: anthropicKey)
+            }
+            if !fireworksKey.isEmpty {
+                devKeysService.save(key: .fireworks, value: fireworksKey)
+            }
         }
         
         if saved {

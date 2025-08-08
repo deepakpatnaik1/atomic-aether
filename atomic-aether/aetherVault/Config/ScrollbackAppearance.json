@@ -11,7 +11,12 @@
     "backgroundOpacity": 0.05,
     "gradientStartOpacity": 0.0,
     "gradientMidOpacity": 0.3,
-    "gradientEndOpacity": 0.6
+    "gradientEndOpacity": 0.6,
+    "namePaddingHorizontal": 8,
+    "namePaddingVertical": 3,
+    "cornerRadius": 4,
+    "stackSpacing": 0,
+    "labelWidth": 120
   },
   "message": {
     "fontSize": 15,
@@ -22,6 +27,8 @@
     "contentLeadingPadding": 16,
     "lastMessageBottomPadding": 16,
     "progressIndicatorScale": 0.5,
-    "progressIndicatorPadding": 4
+    "progressIndicatorPadding": 4,
+    "stackSpacing": 2,
+    "unknownSpeakerColor": "#808080"
   }
 }

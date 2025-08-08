@@ -29,6 +29,11 @@ struct ScrollbackAppearance: Codable {
         let gradientStartOpacity: Double
         let gradientMidOpacity: Double
         let gradientEndOpacity: Double
+        let namePaddingHorizontal: Double
+        let namePaddingVertical: Double
+        let cornerRadius: Double
+        let stackSpacing: Double
+        let labelWidth: Double
     }
     
     struct MessageAppearance: Codable {
@@ -41,5 +46,7 @@ struct ScrollbackAppearance: Codable {
         let lastMessageBottomPadding: Double
         let progressIndicatorScale: Double
         let progressIndicatorPadding: Double
+        let stackSpacing: Double
+        let unknownSpeakerColor: String
     }
 }

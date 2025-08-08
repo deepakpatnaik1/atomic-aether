@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "autoEnableInDebug": true,
+  "storagePrefix": "dev.apikeys",
+  "warningMessage": "⚠️ Dev mode active - keys stored insecurely",
+  "toggleLabel": "Development Mode", 
+  "clearOnDisable": false,
+  "ui": {
+    "showInRelease": false,
+    "warningColor": "#FF6B6B",
+    "toggleDescription": "Store API keys in UserDefaults (no password prompts)",
+    "sectionTitle": "Developer Options",
+    "keySavedMessage": "Key saved to dev storage",
+    "keysClearedMessage": "All dev keys cleared"
+  }
+}

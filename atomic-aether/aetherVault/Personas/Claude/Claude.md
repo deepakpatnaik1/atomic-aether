@@ -1,7 +1,7 @@
 ---
 name: Claude
 avatar: 🦧
-color: #E0BBE4
+color: #9B59B6
 isAnthropic: true
 personaType: Functional Expert
 role: 7 Boss Rules Architect

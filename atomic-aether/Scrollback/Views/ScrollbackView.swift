@@ -14,7 +14,7 @@ import SwiftUI
 
 struct ScrollbackView: View {
     @EnvironmentObject var messageStore: MessageStore
-    @EnvironmentObject var personaService: PersonaService
+    @EnvironmentObject var personaStateService: PersonaStateService
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var historyLoader: ScrollbackHistoryLoaderService
     
@@ -34,7 +34,7 @@ struct ScrollbackView: View {
                                 message: message,
                                 showSpeakerLabel: shouldShowSpeakerLabel(at: index),
                                 isLastFromSpeaker: isLastFromSpeaker(at: index),
-                                personaService: personaService,
+                                personaStateService: personaStateService,
                                 appearance: appearance
                             )
                         }
@@ -65,9 +65,6 @@ struct ScrollbackView: View {
         if let config = configBus.load("ScrollbackAppearance", as: ScrollbackAppearance.self) {
             appearance = config
         }
-        
-        // Setup persona service
-        personaService.setupWithConfigBus(configBus)
     }
     
     private func shouldShowSpeakerLabel(at index: Int) -> Bool {

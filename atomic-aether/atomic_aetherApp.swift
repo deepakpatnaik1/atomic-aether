@@ -79,8 +79,9 @@ struct atomic_aetherApp: App {
     // ATOM 30: Scrollback History Loader (Phase II)
     @StateObject private var scrollbackHistoryLoader: ScrollbackHistoryLoaderService
     
-    // Legacy support for Scrollback
-    @StateObject private var personaService = PersonaService()
+    // ATOM: DevKeys - Development-only API key storage
+    @StateObject private var devKeysService: DevKeysService
+    
     
     init() {
         // Create EventBus first (no dependencies)
@@ -93,6 +94,10 @@ struct atomic_aetherApp: App {
         
         // Update EventBus with ConfigBus
         eventBus.configBus = configBus
+        
+        // Create DevKeysService
+        let devKeysService = DevKeysService()
+        _devKeysService = StateObject(wrappedValue: devKeysService)
         
         // Create shared instances
         let envLoader = EnvLoader()
@@ -230,10 +235,13 @@ struct atomic_aetherApp: App {
             .environmentObject(personaProfileService)
             .environmentObject(systemPromptBuilder)
             .environmentObject(scrollbackHistoryLoader)
-            .environmentObject(personaService)
+            .environmentObject(devKeysService)
             .onAppear {
-                // Setup and load environment variables
-                envLoader.setup(configBus: configBus, errorBus: errorBus, eventBus: eventBus)
+                // Setup DevKeys service
+                devKeysService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus, stateBus: stateBus)
+                
+                // Setup and load environment variables with DevKeys support
+                envLoader.setup(configBus: configBus, errorBus: errorBus, eventBus: eventBus, devKeysService: devKeysService)
                 envLoader.load()
                 
                 // Setup PersonaSystem

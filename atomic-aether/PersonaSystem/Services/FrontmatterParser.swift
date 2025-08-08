@@ -12,13 +12,13 @@
 
 import Foundation
 
-struct FrontmatterParser {
-    struct ParsedContent {
-        let frontmatter: [String: String]
-        let content: String
+public struct FrontmatterParser {
+    public struct ParsedContent {
+        public let frontmatter: [String: String]
+        public let content: String
     }
     
-    static func parse(fileContent: String) -> ParsedContent? {
+    public static func parse(fileContent: String) -> ParsedContent? {
         let lines = fileContent.components(separatedBy: .newlines)
         
         // Check if file starts with ---

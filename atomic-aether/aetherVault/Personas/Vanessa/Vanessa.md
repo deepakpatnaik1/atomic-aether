@@ -1,7 +1,7 @@
 ---
 name: Vanessa
 avatar: 🐝
-color: #B2E1D4
+color: #4CAF50
 isAnthropic: false
 personaType: Cognitive Voice
 role: First Principles

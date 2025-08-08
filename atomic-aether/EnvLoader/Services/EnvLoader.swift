@@ -26,12 +26,14 @@ class EnvLoader: ObservableObject {
     private var configBus: ConfigBus?
     private var errorBus: ErrorBus?
     private var eventBus: EventBus?
+    private var devKeysService: DevKeysService?
     
     /// Setup with dependencies
-    func setup(configBus: ConfigBus, errorBus: ErrorBus, eventBus: EventBus) {
+    func setup(configBus: ConfigBus, errorBus: ErrorBus, eventBus: EventBus, devKeysService: DevKeysService? = nil) {
         self.configBus = configBus
         self.errorBus = errorBus
         self.eventBus = eventBus
+        self.devKeysService = devKeysService
         
         // Load configuration
         if let config = configBus.load("EnvLoader", as: EnvLoaderConfiguration.self) {
@@ -39,9 +41,15 @@ class EnvLoader: ObservableObject {
         }
     }
     
-    /// Load environment variables from Keychain or fallback sources
+    /// Load environment variables from DevKeys, Keychain, or fallback sources
     func load() {
-        // Strategy 1: Try Keychain first (most secure)
+        // Strategy 0: Try DevKeys first if enabled (no password prompts)
+        if loadFromDevKeys() {
+            eventBus?.publish(EnvLoaderEvent.environmentLoaded(hasKeys: environment?.hasAnyKey ?? false))
+            return
+        }
+        
+        // Strategy 1: Try Keychain (most secure)
         if loadFromKeychain() {
             eventBus?.publish(EnvLoaderEvent.environmentLoaded(hasKeys: environment?.hasAnyKey ?? false))
             return
@@ -68,6 +76,34 @@ class EnvLoader: ObservableObject {
             severity: .warning
         )
         eventBus?.publish(EnvLoaderEvent.loadingFailed(reason: configuration.errorMessages.noKeysFound))
+    }
+    
+    /// Load from DevKeys if enabled
+    private func loadFromDevKeys() -> Bool {
+        guard let devKeys = devKeysService,
+              devKeys.isEnabled else {
+            return false
+        }
+        
+        let openAIKey = devKeys.retrieve(key: .openAI)
+        let anthropicKey = devKeys.retrieve(key: .anthropic)
+        let fireworksKey = devKeys.retrieve(key: .fireworks)
+        
+        // Check if we have at least one key
+        if openAIKey != nil || anthropicKey != nil || fireworksKey != nil {
+            environment = Environment(
+                openAIKey: openAIKey,
+                anthropicKey: anthropicKey,
+                fireworksKey: fireworksKey
+            )
+            
+            // Silent success - no logging needed for dev mode
+            
+            return true
+        }
+        
+        // DevKeys is enabled but has no keys stored
+        return false
     }
     
     /// Load from process environment (Xcode scheme variables)

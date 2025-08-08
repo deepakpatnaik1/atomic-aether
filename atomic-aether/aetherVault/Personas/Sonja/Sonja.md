@@ -1,7 +1,7 @@
 ---
 name: Sonja
 avatar: 🪲
-color: #FFF9C4
+color: #F1C40F
 isAnthropic: false
 personaType: Functional Expert
 role: Business Operations

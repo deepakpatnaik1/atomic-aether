@@ -1,7 +1,7 @@
 ---
 name: Lyra
 avatar: 🦋
-color: #D5E4C1
+color: #16A085
 isAnthropic: false
 personaType: Cognitive Voice
 role: Creative Solutions

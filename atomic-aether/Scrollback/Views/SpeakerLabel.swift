@@ -18,7 +18,7 @@ struct SpeakerLabel: View {
     let appearance: ScrollbackAppearance.SpeakerLabelAppearance
     
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(alignment: .top, spacing: appearance.stackSpacing) {
             // Colored left border
             Rectangle()
                 .fill(accentColor)
@@ -28,29 +28,15 @@ struct SpeakerLabel: View {
             Text(displayName)
                 .font(.system(size: appearance.fontSize, weight: .medium))
                 .foregroundColor(.white.opacity(appearance.nameOpacity))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
+                .padding(.horizontal, appearance.namePaddingHorizontal)
+                .padding(.vertical, appearance.namePaddingVertical)
                 .background(
-                    RoundedRectangle(cornerRadius: 4)
+                    RoundedRectangle(cornerRadius: appearance.cornerRadius)
                         .fill(Color.white.opacity(appearance.backgroundOpacity))
                 )
             
-            // Horizontal gradient line (starts from right, tapers to left)
-            Rectangle()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            accentColor.opacity(appearance.gradientStartOpacity),
-                            accentColor.opacity(appearance.gradientMidOpacity),
-                            accentColor.opacity(appearance.gradientEndOpacity)
-                        ],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .frame(height: appearance.gradientLineHeight)
-                .padding(.leading, appearance.gradientLinePadding)
+            Spacer(minLength: 0)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .frame(width: appearance.labelWidth, alignment: .topLeading)
     }
 }
