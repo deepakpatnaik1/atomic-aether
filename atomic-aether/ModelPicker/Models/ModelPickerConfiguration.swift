@@ -24,6 +24,7 @@ struct ModelPickerConfiguration: Codable {
     
     // Interaction settings
     let allowDynamicModels: Bool
+    let autoSwitchPersona: Bool
     
     // UI settings
     let chevronSizeRatio: Double
@@ -32,6 +33,25 @@ struct ModelPickerConfiguration: Codable {
     let allModelsLabel: String
     let unknownProviderLabel: String
     let providerSeparator: String
+    
+    // Typography settings
+    let typography: Typography?
+    let menuItemLayout: MenuItemLayout?
+    
+    // MARK: - Nested Types
+    
+    struct Typography: Codable {
+        let sectionHeader: SectionHeaderConfig?
+        
+        struct SectionHeaderConfig: Codable {
+            let sizeMultiplier: Double
+            let opacityMultiplier: Double
+        }
+    }
+    
+    struct MenuItemLayout: Codable {
+        let checkmarkIcon: String
+    }
     
     // MARK: - Helper Methods
     
@@ -67,9 +87,12 @@ struct ModelPickerConfiguration: Codable {
         ],
         providerOrder: ["anthropic", "openai", "fireworks"],
         allowDynamicModels: false,
+        autoSwitchPersona: true,
         chevronSizeRatio: 0.7,
         allModelsLabel: "All Models",
         unknownProviderLabel: "unknown",
-        providerSeparator: ":"
+        providerSeparator: ":",
+        typography: nil,
+        menuItemLayout: nil
     )
 }

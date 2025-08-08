@@ -12,8 +12,18 @@
   },
   "providerOrder": ["anthropic", "openai", "fireworks"],
   "allowDynamicModels": false,
+  "autoSwitchPersona": true,
   "chevronSizeRatio": 0.7,
   "allModelsLabel": "All Models",
   "unknownProviderLabel": "unknown",
-  "providerSeparator": ":"
+  "providerSeparator": ":",
+  "typography": {
+    "sectionHeader": {
+      "sizeMultiplier": 0.85,
+      "opacityMultiplier": 0.7
+    }
+  },
+  "menuItemLayout": {
+    "checkmarkIcon": "checkmark"
+  }
 }

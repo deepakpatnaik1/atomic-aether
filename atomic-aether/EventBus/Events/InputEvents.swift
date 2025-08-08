@@ -19,6 +19,7 @@ import SwiftUI
 enum InputEvent: InputEventType {
     case textChanged(text: String, source: String)
     case textSubmitted(text: String, source: String)
+    case insertText(text: String, source: String)
     case keyPressed(key: KeyEquivalent, modifiers: EventModifiers, source: String)
     case fileDropped(files: [DroppedFileData], source: String)
     case filePasted(data: Data, type: String, source: String)
@@ -31,6 +32,7 @@ enum InputEvent: InputEventType {
         switch self {
         case .textChanged(_, let source),
              .textSubmitted(_, let source),
+             .insertText(_, let source),
              .keyPressed(_, _, let source),
              .fileDropped(_, let source),
              .filePasted(_, _, let source),

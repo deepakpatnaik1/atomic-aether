@@ -16,7 +16,7 @@ import SwiftUI
 struct PersonaPickerView: View {
     @EnvironmentObject var personaStateService: PersonaStateService
     @EnvironmentObject var configBus: ConfigBus
-    @Binding var inputText: String
+    @EnvironmentObject var eventBus: EventBus
     
     let fontSize: CGFloat
     let opacity: Double
@@ -83,11 +83,11 @@ struct PersonaPickerView: View {
             // Switch to the persona
             personaStateService.switchToPersona(persona.id)
             
-            // Insert persona name into input with trailing space
-            inputText = "\(persona.displayName)\(uiConfig.inputBarLayout.insertedTextSuffix)"
-            
-            // Restore focus to input bar
-            focusState.wrappedValue = true
+            // Publish event to insert persona name into input
+            eventBus.publish(InputEvent.insertText(
+                text: "\(persona.displayName)\(uiConfig.inputBarLayout.insertedTextSuffix)",
+                source: "PersonaPicker"
+            ))
         }) {
             HStack {
                 if let role = persona.role {

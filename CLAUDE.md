@@ -803,6 +803,13 @@ All 23 atoms below are complete and belong to Phase I:
   - Fixed race condition in PersonaFolderWatcher initialization
   - Fixed case-sensitive boolean parsing in YAML frontmatter
   - Fixed inconsistent parameter naming in PersonaSwitchedEvent
+- **PersonaPicker Roles Enhancement** (Tag: persona-picker-shows-roles):
+  - Extracted PersonaPicker as separate ATOM 31 from PersonaSystem
+  - Persona names display in full white, roles in grey (0.7 opacity)
+  - Roles use Menlo font at 90% size for visual distinction
+  - Section headers (Functional Experts, Cognitive Voices) now uppercase
+  - All hardcoded values moved to configuration (PersonaUI.json)
+  - Removed all debugging print statements from codebase
 
 ### ATOM 11: Model/Persona/Picker Interaction ✅
 - **Status**: Complete and assessed against 7 BOSS RULES

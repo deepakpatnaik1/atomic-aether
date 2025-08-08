@@ -12,6 +12,7 @@
 //
 
 import SwiftUI
+import Combine
 
 struct InputBarView: View {
     @StateObject private var appearanceService = InputBarAppearanceService()
@@ -25,6 +26,7 @@ struct InputBarView: View {
     @EnvironmentObject var personaStateService: PersonaStateService
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         Group {
@@ -43,6 +45,15 @@ struct InputBarView: View {
             appearanceService.setupWithConfigBus(configBus)
             slashCommandDetector.setupWithBuses(configBus, eventBus)
             keyboardService.setupWithConfigBus(configBus)
+            
+            // Subscribe to text insertion events
+            eventBus.subscribe(to: InputEvent.self) { event in
+                if case .insertText(let newText, _) = event {
+                    text = newText
+                    isTextFieldFocused = true
+                }
+            }
+            .store(in: &cancellables)
         }
     }
     
@@ -72,7 +83,6 @@ struct InputBarView: View {
                 .fixedSize()
                 
                 PersonaPickerView(
-                    inputText: $text,
                     fontSize: appearance.controls.modelPicker.fontSize,
                     opacity: appearance.controls.modelPicker.opacity,
                     focusState: $isTextFieldFocused

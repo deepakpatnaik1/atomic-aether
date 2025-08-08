@@ -76,9 +76,36 @@ final class ModelPickerService: ObservableObject {
         updateModelGroups()
     }
     
-    /// Select a model
-    func selectModel(_ modelId: String) {
+    /// Select a model and optionally switch personas
+    /// Returns the persona that was switched to (if any)
+    func selectModel(_ modelId: String) -> String? {
+        var switchedPersona: String? = nil
+        
+        // Check if we need to switch personas based on model type
+        if configuration.autoSwitchPersona {
+            let isAnthropicModel = modelStateService.configuration.isAnthropicModel(modelId)
+            let isCurrentPersonaAnthropic = personaStateService.isCurrentPersonaAnthropic
+            
+            // If selecting a non-Anthropic model while on an Anthropic persona
+            if !isAnthropicModel && isCurrentPersonaAnthropic {
+                // Switch to default non-Anthropic persona
+                let defaultNonAnthropicPersona = personaStateService.stateConfiguration.defaultNonAnthropicPersona
+                personaStateService.switchToPersona(defaultNonAnthropicPersona)
+                switchedPersona = defaultNonAnthropicPersona
+            }
+            // If selecting an Anthropic model while on a non-Anthropic persona
+            else if isAnthropicModel && !isCurrentPersonaAnthropic {
+                // Switch to default Anthropic persona
+                let defaultAnthropicPersona = personaStateService.stateConfiguration.defaultAnthropicPersona
+                personaStateService.switchToPersona(defaultAnthropicPersona)
+                switchedPersona = defaultAnthropicPersona
+            }
+        }
+        
+        // Select the model
         modelStateService.selectModel(modelId)
+        
+        return switchedPersona
     }
     
     // MARK: - Private Methods
