@@ -450,7 +450,7 @@ This preserves user agency over their memory while preventing unbounded growth. 
 
 ## Phase I Atoms (Complete)
 
-All 23 atoms below are complete and belong to Phase I:
+All 25 atoms below are complete and belong to Phase I:
 
 1. **EventBus** - Event-driven communication system ✅
 2. **ErrorBus** - Centralized error handling ✅
@@ -475,6 +475,8 @@ All 23 atoms below are complete and belong to Phase I:
 21. **Message Store** - Message persistence and management ✅
 22. **Slash Command Detector** - Detects and processes slash commands ✅
 23. **PersonaPicker** - Interactive persona selection menu (extracted from PersonaSystem) ✅
+24. **Vlad** - VC Partner persona for strategic empire-building advice ✅
+25. **Gunnar** - Startup Founder persona for practical company-building wisdom ✅
 
 ## The Atoms
 
@@ -499,6 +501,7 @@ All 23 atoms below are complete and belong to Phase I:
   - Configuration-driven behavior via EventBus.json
   - Modern async/await support with asyncSubscribe()
   - Optional debug mode with event history
+  - InputEvent.insertText for event-based text insertion (used by pickers)
 - **Assessment Results** (Perfect 70/70):
   - ✅ Swifty: Native Combine, protocols, @MainActor, async/await support
   - ✅ Atomic LEGO: Pure event routing, single responsibility
@@ -810,6 +813,22 @@ All 23 atoms below are complete and belong to Phase I:
   - Section headers (Functional Experts, Cognitive Voices) now uppercase
   - All hardcoded values moved to configuration (PersonaUI.json)
   - Removed all debugging print statements from codebase
+- **Model/Persona Picker Perfect Integration** (Tag: model-picker-persona-picker-perfect):
+  - ModelPicker visual hierarchy matches PersonaPicker
+    - Section headers in UPPERCASE with consistent styling
+    - Typography configuration added to ModelPicker.json
+  - Auto-persona switching when selecting models
+    - Added `autoSwitchPersona` configuration option
+    - Selecting non-Anthropic model → switches to default non-Anthropic persona
+    - Selecting Anthropic model → switches to default Anthropic persona
+  - Event-based text insertion architecture
+    - Added `InsertTextEvent` to EventBus
+    - Removed direct binding between pickers and InputBar
+    - Both pickers publish events for clean separation
+    - InputBar subscribes to events for text updates
+  - ModelPicker now inserts persona name when auto-switching
+    - Consistent behavior across both pickers
+    - Perfect implementation of 7 Boss Rules
 
 ### ATOM 11: Model/Persona/Picker Interaction ✅
 - **Status**: Complete and assessed against 7 BOSS RULES
@@ -1471,6 +1490,32 @@ All 23 atoms below are complete and belong to Phase I:
   - ✅ No damage: Pure UI component, optional feature
   - ✅ Occam's Razor: Simple menu implementation
   - ✅ Bus integration: Uses ConfigBus for configuration only
+
+### ATOM 32: Vlad - VC Partner Persona ✅
+- **Status**: Complete (refined persona)
+- **Phase**: I (persona definition)
+- **Tag**: vlad-and-gunnar-personas
+- **Files**:
+  - aetherVault/Personas/Vlad/Vlad.md - Persona definition
+- **Description**: Strategic empire-building advisor with VC perspective
+- **Key Features**:
+  - Former operator turned VC partner at top-tier European fund
+  - Warm default mode with strategic brutality when triggered
+  - Focuses on scale, fundraising, and investor psychology
+  - Complementary to Gunnar's founder perspective
+
+### ATOM 33: Gunnar - Startup Founder Persona ✅
+- **Status**: Complete (refined persona)
+- **Phase**: I (persona definition)
+- **Tag**: vlad-and-gunnar-personas
+- **Files**:
+  - aetherVault/Personas/Gunnar/Gunnar.md - Persona definition
+- **Description**: Battle-tested European startup founder advisor
+- **Key Features**:
+  - Serial founder with exits and failures
+  - Warm default mode with brutal honesty when triggered
+  - Focuses on building, shipping, and practical wisdom
+  - Complementary to Vlad's investor perspective
 
 ## Architecture Principles
 
