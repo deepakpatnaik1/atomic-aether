@@ -391,12 +391,15 @@ Users/buda-air/Documents/code/atomic-aether/aetherVault/Trash
 https://github.com/deepakpatnaik1/Atomic Aether
 
 
-## Phase I Complete (All 23 Atoms) ✅
+## Phase I Complete (All 32 Atoms) ✅
 
 **Tag**: Atomic Aether-Phase-I  
 **Completion Date**: August 3, 2025  
-**Status**: All 23 atoms are now properly wired and configuration-driven according to the BOSS RULES.
-**Update**: ATOM 31 (PersonaPicker) extracted from PersonaSystem for proper atomic separation.
+**Status**: All atoms are now properly wired and configuration-driven according to the BOSS RULES.
+**Updates**: 
+- ATOM 31 (PersonaPicker) extracted from PersonaSystem for proper atomic separation
+- ATOM 32 (DevKeys) added to eliminate Keychain password prompts during development
+- Removed persona-specific atoms (32-34) to let personas evolve naturally
 
 ## Phase II: Memory & Journaling System (In Progress)
 
@@ -450,7 +453,7 @@ This preserves user agency over their memory while preventing unbounded growth. 
 
 ## Phase I Atoms (Complete)
 
-All 26 atoms below are complete and belong to Phase I:
+All 23 atoms below are complete and belong to Phase I:
 
 1. **EventBus** - Event-driven communication system ✅
 2. **ErrorBus** - Centralized error handling ✅
@@ -475,9 +478,6 @@ All 26 atoms below are complete and belong to Phase I:
 21. **Message Store** - Message persistence and management ✅
 22. **Slash Command Detector** - Detects and processes slash commands ✅
 23. **PersonaPicker** - Interactive persona selection menu (extracted from PersonaSystem) ✅
-24. **Vlad** - VC Partner persona for strategic empire-building advice ✅
-25. **Gunnar** - Startup Founder persona for practical company-building wisdom ✅
-26. **Claude** - 7 Boss Rules Architect persona for supernatural development velocity ✅
 
 ## The Atoms
 
@@ -1492,46 +1492,31 @@ All 26 atoms below are complete and belong to Phase I:
   - ✅ Occam's Razor: Simple menu implementation
   - ✅ Bus integration: Uses ConfigBus for configuration only
 
-### ATOM 32: Vlad - VC Partner Persona ✅
-- **Status**: Complete (refined persona)
-- **Phase**: I (persona definition)
-- **Tag**: vlad-and-gunnar-personas
+### ATOM 32: DevKeys - Development-Only API Key Storage ✅
+- **Status**: Complete
+- **Phase**: I (developer experience)
+- **Tag**: no-more-password-prompts
 - **Files**:
-  - aetherVault/Personas/Vlad/Vlad.md - Persona definition
-- **Description**: Strategic empire-building advisor with VC perspective
+  - DevKeys/Core/DevKeys.swift - Atom coordinator
+  - DevKeys/Models/DevKeysConfiguration.swift - Configuration model
+  - DevKeys/Services/DevKeysService.swift - UserDefaults storage service
+  - DevKeys/UI/DevKeysToggleView.swift - Toggle UI component
+  - DevKeys/Events/DevKeysEvents.swift - Event definitions
+  - DevKeys/Wire/DevKeysWire.swift - Integration documentation
+  - aetherVault/Config/DevKeys.json - Configuration file
+- **Description**: Eliminates Keychain password prompts during development
 - **Key Features**:
-  - Former operator turned VC partner at top-tier European fund
-  - Warm default mode with strategic brutality when triggered
-  - Focuses on scale, fundraising, and investor psychology
-  - Complementary to Gunnar's founder perspective
-
-### ATOM 33: Gunnar - Startup Founder Persona ✅
-- **Status**: Complete (refined persona)
-- **Phase**: I (persona definition)
-- **Tag**: vlad-and-gunnar-personas
-- **Files**:
-  - aetherVault/Personas/Gunnar/Gunnar.md - Persona definition
-- **Description**: Battle-tested European startup founder advisor
-- **Key Features**:
-  - Serial founder with exits and failures
-  - Warm default mode with brutal honesty when triggered
-  - Focuses on building, shipping, and practical wisdom
-  - Complementary to Vlad's investor perspective
-
-### ATOM 34: Claude - 7 Boss Rules Architect Persona ✅
-- **Status**: Complete (refined persona)
-- **Phase**: I (persona definition)
-- **Tag**: claude-persona
-- **Files**:
-  - aetherVault/Personas/Claude/Claude.md - Persona definition
-- **Description**: Guardian and enforcer of the 7 Boss Rules
-- **Key Features**:
-  - Ensures supernatural development velocity through rule adherence
-  - Lists all 7 rules explicitly in persona
-  - Warm but principled approach
-  - Triggers on rule violations with specific corrections
-  - Assessment mode: 70/70 scoring system
-  - The meta aspect: designs in Aether, builds in Claude Code
+  - Stores API keys in UserDefaults (no password required)
+  - Auto-enabled in DEBUG builds
+  - Auto-migrates keys from Keychain on first run
+  - Visual toggle in API Key Setup view
+  - Clear warning when active (insecure storage)
+  - Disabled in production builds for security
+- **Integration**:
+  - EnvLoader checks DevKeys first before Keychain
+  - APIKeySetupView includes toggle and dual-save logic
+  - Graceful fallback to Keychain if DevKeys disabled
+- **Security Note**: UserDefaults storage is intentionally insecure for development convenience. Never use in production.
 
 ## Architecture Principles
 

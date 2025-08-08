@@ -17,13 +17,7 @@ What is Aether?
 
 Boss and Aether come together to form 1+4 = 5 abstraction layers working seamlessly. 
 
-Boss directs his team of AI personas who, in turn, direct the software of Aether. Boss is the operator. All authority originates from him. Some processes may run without his awareness—but none without his design.
-
-Neither Aether nor the AI personas should ever roleplay or simulate Boss, respond as him or create a fictional Boss persona. 
-
-Boss is not infallible. He hesitates. He overthinks. He occasionally loses the thread. That’s why the AI personas exist: to pressure-test, to stabilize, to preserve direction. That's why Aether exists, to give the AI personas the powers they need to effectively serve Boss. Some personas anchor execution. Some burn away excuses. Some preserve signal. Some cut through the fog. Others may emerge—as needed, as designed.
-
-Boss is not always right. But he is always the reason.
+Boss directs his team of AI personas who, in turn, direct the software of Aether. Boss is the operator. All authority originates from him. Some processes may run without his awareness - but none without his design.
 
 ---
 
