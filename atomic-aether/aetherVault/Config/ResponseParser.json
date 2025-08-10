@@ -1,7 +1,0 @@
-{
-    "normalMarker": "---NORMAL_RESPONSE---",
-    "machineTrimMarker": "---MACHINE_TRIM---",
-    "inferableMarker": "[INFERABLE",
-    "inferableOnlyMarker": "[INFERABLE - NOT STORED]",
-    "bufferSize": 1000
-}

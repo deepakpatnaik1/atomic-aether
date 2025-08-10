@@ -10,77 +10,57 @@ import AppKit
 
 @main
 struct atomic_aetherApp: App {
-    // ATOM 19: Theme System
-    @StateObject private var themeService = ThemeService()
-    
-    // ATOM 1: EventBus - The nervous system
+    // ATOM 101: EventBus - The nervous system
     @StateObject private var eventBus: EventBus
     
-    // ATOM 4: ConfigBus - Configuration management
-    @StateObject private var configBus = ConfigBus()
-    
-    // ATOM 20: Environment Loader
-    @StateObject private var envLoader: EnvLoader
-    
-    // ATOM 18: LLM Services
-    @StateObject private var llmRouter: LLMRouter
-    
-    // ATOM 9: Models - Model Registry
-    @StateObject private var modelRegistry: ModelRegistryService
-    
-    // ATOM 10: Personas - Complete Persona System
-    @StateObject private var personaSystem: PersonaSystem
-    
-    // ATOM 21: Message Store
-    @StateObject private var messageStore: MessageStore
-    
-    // ATOM 3: StateBus - Shared state management
-    @StateObject private var stateBus: StateBus
-    
-    // ATOM 2: ErrorBus - Centralized error handling
+    // ATOM 102: ErrorBus - Centralized error handling
     @StateObject private var errorBus: ErrorBus
     
-    // ATOM 17: Model State
-    @StateObject private var modelStateService: ModelStateService
+    // ATOM 103: StateBus - Shared state management
+    @StateObject private var stateBus: StateBus
     
-    // ATOM 10: Personas - State Service
-    @StateObject private var personaStateService: PersonaStateService
+    // ATOM 104: ConfigBus - Configuration management
+    @StateObject private var configBus = ConfigBus()
     
-    // ATOM 14: ConversationFlow
-    @StateObject private var conversationOrchestrator: ConversationOrchestrator
-    
-    // ATOM 16: Model Display
-    @StateObject private var modelDisplayService: ModelDisplayService
-    
-    // ATOM 8: Model Picker
+    // ATOM 201: Model Picker
     @StateObject private var modelPickerService: ModelPickerService
     
-    // ATOM 22: Response Parser (Phase II)
-    @StateObject private var responseParserService: ResponseParserService
+    // ATOM 202: LLM System - Models and Services
+    @StateObject private var llmRouter: LLMRouter
+    @StateObject private var modelRegistry: ModelRegistryService
     
-    // ATOM 24: Journal Service (Phase II)
-    @StateObject private var journalService: JournalService
+    // ATOM 203: Model Display
+    @StateObject private var modelDisplayService: ModelDisplayService
     
-    // ATOM 25: SuperJournal Service (Phase II)
-    @StateObject private var superJournalService: SuperJournalService
+    // ATOM 204: Model State
+    @StateObject private var modelStateService: ModelStateService
     
-    // ATOM 26: Boss Profile Service (Phase II)
+    // ATOM 401: Personas - Complete Persona System
+    @StateObject private var personaSystem: PersonaSystem
+    @StateObject private var personaStateService: PersonaStateService
+    
+    // ATOM 501: ConversationFlow
+    @StateObject private var conversationOrchestrator: ConversationOrchestrator
+    
+    // ATOM 601: Theme System
+    @StateObject private var themeService = ThemeService()
+    
+    // ATOM 206: Environment Loader
+    @StateObject private var envLoader: EnvLoader
+    
+    // ATOM 503: Message Store
+    @StateObject private var messageStore: MessageStore
+    
+    
+    
+    // ATOM 207: DevKeys - Development-only API key storage
+    @StateObject private var devKeysService: DevKeysService
+    
+    // ATOM 403: Boss Profile Service
     @StateObject private var bossProfileService: BossProfileService
     
-    // ATOM 27: Persona Profile Service (Phase II)
+    // ATOM 404: Persona Profile Service
     @StateObject private var personaProfileService: PersonaProfileService
-    
-    // ATOM 28: System Prompt Builder (Phase II)
-    @StateObject private var systemPromptBuilder: SystemPromptBuilderService
-    
-    // ATOM 29: Machine Trim Instructions (Phase II)
-    @StateObject private var machineTrimInstructionsService: MachineTrimInstructionsService
-    
-    // ATOM 30: Scrollback History Loader (Phase II)
-    @StateObject private var scrollbackHistoryLoader: ScrollbackHistoryLoaderService
-    
-    // ATOM: DevKeys - Development-only API key storage
-    @StateObject private var devKeysService: DevKeysService
     
     
     init() {
@@ -184,14 +164,8 @@ struct atomic_aetherApp: App {
             personaStateService: personaStateService
         ))
         
-        // Create ResponseParserService (Phase II)
-        _responseParserService = StateObject(wrappedValue: ResponseParserService())
         
-        // Create JournalService (Phase II)
-        _journalService = StateObject(wrappedValue: JournalService())
         
-        // Create SuperJournalService (Phase II)
-        _superJournalService = StateObject(wrappedValue: SuperJournalService())
         
         // Create BossProfileService (Phase II)
         _bossProfileService = StateObject(wrappedValue: BossProfileService())
@@ -199,14 +173,6 @@ struct atomic_aetherApp: App {
         // Create PersonaProfileService (Phase II)
         _personaProfileService = StateObject(wrappedValue: PersonaProfileService())
         
-        // Create SystemPromptBuilder (Phase II)
-        _systemPromptBuilder = StateObject(wrappedValue: SystemPromptBuilderService())
-        
-        // Create MachineTrimInstructionsService (Phase II)
-        _machineTrimInstructionsService = StateObject(wrappedValue: MachineTrimInstructionsService())
-        
-        // Create ScrollbackHistoryLoaderService (Phase II)
-        _scrollbackHistoryLoader = StateObject(wrappedValue: ScrollbackHistoryLoaderService())
     }
     
     var body: some Scene {
@@ -228,13 +194,8 @@ struct atomic_aetherApp: App {
             .environmentObject(conversationOrchestrator)
             .environmentObject(modelDisplayService)
             .environmentObject(modelPickerService)
-            .environmentObject(responseParserService)
-            .environmentObject(journalService)
-            .environmentObject(superJournalService)
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
-            .environmentObject(systemPromptBuilder)
-            .environmentObject(scrollbackHistoryLoader)
             .environmentObject(devKeysService)
             .onAppear {
                 // Setup DevKeys service
@@ -272,18 +233,8 @@ struct atomic_aetherApp: App {
                 // Setup ModelPickerService after view is ready
                 modelPickerService.setup()
                 
-                // Setup ResponseParserService (Phase II)
-                responseParserService.setup(configBus: configBus, eventBus: eventBus)
-                conversationOrchestrator.setResponseParser(responseParserService)
                 
-                // Wire SystemPromptBuilder to ConversationOrchestrator (Phase II)
-                conversationOrchestrator.setSystemPromptBuilder(systemPromptBuilder)
                 
-                // Setup JournalService (Phase II)
-                journalService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
-                
-                // Setup SuperJournalService (Phase II)
-                superJournalService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
                 
                 // Setup BossProfileService (Phase II)
                 bossProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
@@ -291,32 +242,7 @@ struct atomic_aetherApp: App {
                 // Setup PersonaProfileService (Phase II)
                 personaProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
                 
-                // Setup MachineTrimInstructionsService (Phase II)
-                machineTrimInstructionsService.setup(
-                    configBus: configBus,
-                    eventBus: eventBus,
-                    errorBus: errorBus,
-                    personaStateService: personaStateService
-                )
                 
-                // Setup SystemPromptBuilder (Phase II)
-                systemPromptBuilder.setup(
-                    configBus: configBus,
-                    eventBus: eventBus,
-                    personaStateService: personaStateService,
-                    bossProfileService: bossProfileService,
-                    personaProfileService: personaProfileService,
-                    journalService: journalService,
-                    machineTrimInstructionsService: machineTrimInstructionsService
-                )
-                
-                // Setup ScrollbackHistoryLoader (Phase II)
-                scrollbackHistoryLoader.setup(
-                    configBus: configBus,
-                    eventBus: eventBus,
-                    errorBus: errorBus,
-                    messageStore: messageStore
-                )
             }
         }
         .commands {

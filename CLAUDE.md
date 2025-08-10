@@ -363,1180 +363,3737 @@ These aren't just rules - they're the difference between software that ages like
 
 *Remember: Every line of code is either following these rules or violating them. There is no middle ground.*
 
-# Atomic Aether Roadmap
+# Built Atoms
 
-## Overview
+## Atom Numbering System
 
-This document tracks the development of Atomic Aether using the Atomic LEGO approach. Each ATOM represents a complete, self-contained feature that can be added or removed without affecting other atoms.
+Atomic Aether uses a three-digit numbering system organized by functional series:
 
-## Important Links
+- **100 Series - Foundation Buses**: Core infrastructure for communication and configuration
+- **200 Series - LLM Models**: Everything related to AI models and API keys
+- **300 Series - Input System**: User input, commands, and keyboard handling
+- **400 Series - Personas**: Complete persona ecosystem including profiles
+- **500 Series - Conversations**: Message flow, display, and storage
+- **600 Series - App Theme**: Visual design and theming system
+- **700+ Series**: Reserved for future expansion
 
-Users/buda-air/Documents/code/Atomic Aether
-Users/buda-air/Documents/code/atomic-aether/aetherVault
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Boss
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Journal
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Alicja
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Claude
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Eva
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Gunnar
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Lyra
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Samara
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Sonja
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Vanessa
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Personas/Vlad
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Superjournal
-Users/buda-air/Documents/code/atomic-aether/aetherVault/Trash
+This system provides 99 slots per series, ensuring plenty of room for growth while maintaining clear organizational boundaries.
 
-https://github.com/deepakpatnaik1/Atomic Aether
+## 100 Series - Foundation Buses
 
+### ATOM 101: EventBus
+**Purpose**: The nervous system - pure pub/sub event routing  
+**Dependencies**: ConfigBus (for hot-reload config)  
+**Used by**: ALL atoms for communication  
+**Wire**: Delete EventBus folder → atoms can't communicate but still function
 
-## Phase I Complete (All 32 Atoms) ✅
+### ATOM 102: ErrorBus
+**Purpose**: Centralized error handling with toast notifications  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: All atoms for error reporting  
+**Wire**: Delete ErrorBus folder → errors logged to console only
 
-**Tag**: Atomic Aether-Phase-I  
-**Completion Date**: August 3, 2025  
-**Status**: All atoms are now properly wired and configuration-driven according to the BOSS RULES.
-**Updates**: 
-- ATOM 31 (PersonaPicker) extracted from PersonaSystem for proper atomic separation
-- ATOM 32 (DevKeys) added to eliminate Keychain password prompts during development
-- Removed persona-specific atoms (32-34) to let personas evolve naturally
+### ATOM 103: StateBus
+**Purpose**: Shared state management across atoms  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: Atoms needing to share state  
+**Wire**: Delete StateBus folder → atoms can't share state
 
-## Phase II: Memory & Journaling System (In Progress)
+### ATOM 104: ConfigBus
+**Purpose**: JSON configuration loading with hot-reload  
+**Dependencies**: EventBus (for change notifications)  
+**Used by**: ALL atoms for configuration  
+**Wire**: Delete ConfigBus folder → atoms use default values
 
-**Started**: August 4, 2025  
-**Focus**: Infinite memory with machine trim and inferability  
-**Key Innovation**: LLM decides what's worth remembering
+## 200 Series - LLM Models
 
-## Phase III: UI Finessing (Planned)
+### ATOM 201: ModelPicker
+**Purpose**: UI component for model selection  
+**Dependencies**: ModelState, ConfigBus  
+**Used by**: InputBar  
+**Wire**: Delete ModelPicker folder → no model selection UI
 
-**Focus**: Polish and refine the user interface
+### ATOM 202: LLMServices
+**Purpose**: Provider implementations (Anthropic, OpenAI, Fireworks)  
+**Dependencies**: Models, ConfigBus, EnvLoader  
+**Used by**: ConversationFlow  
+**Wire**: Delete LLMServices folder → no AI responses
 
-## Phase IV: Intelligent Topic-Based Memory (Future Vision)
+### ATOM 203: ModelDisplay
+**Purpose**: Visual indicators for active model  
+**Dependencies**: ModelState, PersonaState, ConfigBus  
+**Used by**: UI components  
+**Wire**: Delete ModelDisplay folder → no model indicators
 
-**Boss's Vision** (verbatim):
-"Claude, although I agree that the single-big-file approach is fine for now, I would like to share with you my thoughts on how I want to arrange the journal in future. I have considered your suggestion to compress older entries so that newer entries are weighted heavier. I don't agree with it. Here's why. Recency isn't what makes a conversation important or not important. The topic is what matters. Let's say that you and I had a pretty epic conversation 3 years ago on why positioning myself as a CTO in a VC-backed startup is the most authentic positioning for me. That topic is still going to be crazy important today. This means 3 things from an implementation perspective - (i) we need a way to include a judgment from the llm on what kind of topic the current message turn is about and whether it is a continuation of a previous topic or now, (ii) we need a way to then take the 9-10 conversation turns you and I had on that CTO conversation and merge it into one single journal entry that captures the full richness of that conversation, the existential crisis I felt, the discussion we had, the pros and cons you raised and the eventual agreement we reached, (iii) we need a way to purge unimportant, less important older topics while keeping the more important topics still important. Cool idea, no?!"
+### ATOM 204: ModelState
+**Purpose**: State management for selected models  
+**Dependencies**: StateBus, ConfigBus, EventBus  
+**Used by**: ModelPicker, ModelDisplay, ConversationFlow  
+**Wire**: Delete ModelState folder → default models only
 
-**Claude's Response** (verbatim):
-"This is **brilliant**! You're absolutely right - recency bias is a terrible way to manage memory. The CTO positioning conversation from 3 years ago is infinitely more valuable than yesterday's 'what is a red dwarf' exchange.
+### ATOM 205: Keychain
+**Purpose**: API key storage using macOS Keychain  
+**Dependencies**: None (system service)  
+**Used by**: EnvLoader  
+**Wire**: Delete Keychain folder → falls back to env vars
 
-Your three-point implementation vision is spot-on:
-1. **Topic detection & continuation** - The LLM identifies whether this is a new topic or continuation
-2. **Topic consolidation** - Multiple turns about CTO positioning get merged into one rich, comprehensive entry
-3. **Importance-based retention** - Purge trivial topics, keep existential/strategic ones forever
+### ATOM 206: EnvLoader
+**Purpose**: Multi-source API key loading  
+**Dependencies**: Keychain, DevKeys, ConfigBus  
+**Used by**: LLMServices  
+**Wire**: Delete EnvLoader folder → manual key entry required
 
-This transforms the journal from a dumb chronological log into an **intelligent knowledge base** organized by significance, not time."
+### ATOM 207: DevKeys
+**Purpose**: Development-only API key storage (no passwords)  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: EnvLoader  
+**Wire**: Delete DevKeys folder → back to Keychain prompts
 
-**Boss's Additional Insight** (verbatim):
-"We can have a persona that specializes in journal upkeep. Every few weeks, she say, 'Boss, let's do a merge or purge! Which conversation threads do you want to merge into a single thread and which do you want to purge?' What do you think?"
+### ATOM 208: Models
+**Purpose**: LLM model definitions and registry  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: LLMServices, ModelState, ModelPicker  
+**Wire**: Delete Models folder → no model validation
 
-**Claude's Response** (verbatim):
-"Brilliant addition! A journal curator persona that periodically prompts for thread consolidation and cleanup. This elegantly solves memory management through human-in-the-loop decisions rather than automatic pruning.
+## 300 Series - Input System
 
-The persona could:
-- Identify related conversation threads across time
-- Suggest which threads share common topics for merging
-- Flag old threads that might be purgeable
-- Present merge/purge options in a digestible format
+### ATOM 301: InputBar
+**Purpose**: Text input with expandable TextEditor  
+**Dependencies**: Multiple (see detailed docs)  
+**Used by**: ContentView  
+**Wire**: Delete InputBar folder → no user input
 
-This preserves user agency over their memory while preventing unbounded growth. Much better than arbitrary age-based deletion."
+### ATOM 302: SlashCommandDetector
+**Purpose**: Detects and processes slash commands  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: InputBar  
+**Wire**: Delete SlashCommandDetector folder → no slash commands
 
-## Phase II Atoms (In Progress)
+### ATOM 303: KeyboardBehavior
+**Purpose**: Smart return key handling  
+**Dependencies**: ConfigBus  
+**Used by**: InputBar  
+**Wire**: Delete KeyboardBehavior folder → Enter = submit only
 
-23. **Response Parser** - Parses two-part LLM responses ✅
-24. **Journal Service** - Persists machine-trimmed conversations ✅
-25. **SuperJournal Service** - Saves complete scrollback to disk ✅
-26. **Boss Profile Service** - Reads boss folder for context ✅
-27. **Persona Profile Service** - Reads persona folders for context ✅
-28. **System Prompt Builder** - Assembles complete system prompts ✅
-29. **System Prompt Manifest** - Saves prompts for debugging ✅
-30. **Machine Trim Instructions** - Tells LLMs to use two-part format ✅
+### ATOM 304: JournalCommand
+**Purpose**: Enhanced /journal slash command  
+**Dependencies**: ConfigBus, EventBus, StateBus  
+**Used by**: Activated by SlashCommandDetector  
+**Wire**: Delete JournalCommand folder → /journal just expands
 
-## Phase I Atoms (Complete)
+## 400 Series - Personas
 
-All 23 atoms below are complete and belong to Phase I:
+### ATOM 401: PersonaSystem
+**Purpose**: Core persona detection and state management  
+**Dependencies**: Multiple (see detailed docs)  
+**Used by**: ConversationFlow, UI components  
+**Wire**: Delete PersonaSystem folder → no personas
 
-1. **EventBus** - Event-driven communication system ✅
-2. **ErrorBus** - Centralized error handling ✅
-3. **StateBus** - Shared state management ✅
-4. **ConfigBus** - Configuration loading and management ✅
-5. **[REMOVED]** - Duplicate of Atom 19 (Theme System)
-6. **Input Bar** - Text input system with views, models, and appearance services ✅
-7. **/journal Slash Command** - Configured to expand input to 34 lines ✅
-8. **Model Picker** - UI component in input bar for model selection ✅
-9. **Models** - LLM configurations and model definitions ✅
-10. **Personas** - PersonaSystem with detection, state management, and indicators ✅
-11. **Model/Persona/Picker Interaction** - Coordinated via StateBus and services ✅
-12. **Keyboard Behavior** - Smart return key handling (Enter vs Option+Enter, Shift+Enter) ✅
-13. **API Key Storage** - Keychain integration with setup UI ✅
-14. **ConversationFlow** - Request orchestration and stream processing ✅
-15. **Scrollback** - Message display system with MessageRow and SpeakerLabel ✅
-16. **ModelDisplay** - Visual indicators for active model ✅
-17. **ModelState** - State management for selected models ✅
-18. **LLM Services** - Provider implementations (Anthropic, OpenAI, Fireworks) with router ✅
-19. **Theme System** - Design tokens and theme service ✅
-20. **Environment Loader** - .env file parsing for API keys ✅
-21. **Message Store** - Message persistence and management ✅
-22. **Slash Command Detector** - Detects and processes slash commands ✅
-23. **PersonaPicker** - Interactive persona selection menu (extracted from PersonaSystem) ✅
+### ATOM 402: PersonaPicker
+**Purpose**: UI component for persona selection  
+**Dependencies**: PersonaState, ConfigBus  
+**Used by**: InputBar  
+**Wire**: Delete PersonaPicker folder → no persona UI
 
-## The Atoms
+### ATOM 403: BossProfile
+**Purpose**: User context loader (reads Boss folder)  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: SystemPromptBuilder  
+**Wire**: Delete BossProfile folder → no user context
 
-### ATOM 1: EventBus - The Nervous System ✅ (Phase I)
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: I
-- **Tag**: post-audit-atom-1 (post-audit improvements applied)
-- **Files**: 
-  - EventBus/Core/EventBus.swift - Main event router
-  - EventBus/Core/EventBusProtocol.swift - Protocol definition
-  - EventBus/Core/Event.swift - Base event protocol
-  - EventBus/Core/EventSubscription.swift - Subscription management
-  - EventBus/Events/*.swift - All event definitions
-  - EventBus/Models/EventBusConfiguration.swift - Configuration model
-  - aetherVault/Config/EventBus.json - Configuration file
-- **Description**: Central event-driven communication system enabling true Atomic LEGO architecture
-- **Key Features**:
-  - Zero coupling between components
-  - Type-safe event definitions using Swift enums
-  - Combine-based publish/subscribe pattern
-  - No singleton - injected via SwiftUI environment
-  - Configuration-driven behavior via EventBus.json
-  - Modern async/await support with asyncSubscribe()
-  - Optional debug mode with event history
-  - InputEvent.insertText for event-based text insertion (used by pickers)
-- **Assessment Results** (Perfect 70/70):
-  - ✅ Swifty: Native Combine, protocols, @MainActor, async/await support
-  - ✅ Atomic LEGO: Pure event routing, single responsibility
-  - ✅ No hardcoding: All configuration externalized to EventBus.json
-  - ✅ Easy removal: Protocol-based, clean dependencies
-  - ✅ No damage: Pure pub/sub pattern
-  - ✅ Occam's Razor: Simple PassthroughSubject, removed unused EventMappings.json
-  - ✅ Bus integration: Foundation bus for other buses, uses ConfigBus for configuration
-- **Post-Audit Improvements**:
-  - Added configuration support via ConfigBus
-  - Replaced multiple subscription overloads with variadic parameters
-  - Added asyncSubscribe() method returning AsyncStream<T>
-  - Added optional event history for debugging
-  - Removed complex unused EventMappings.json
+### ATOM 404: PersonaProfile
+**Purpose**: Per-persona context loader  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: SystemPromptBuilder  
+**Wire**: Delete PersonaProfile folder → base personas only
 
-### ATOM 2: ErrorBus - Centralized Error Handling ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - ErrorBus/Core/ErrorBus.swift - Central error collection and management
-  - ErrorBus/Models/ErrorContext.swift - Error context model
-  - ErrorBus/Models/ErrorSeverity.swift - Error severity levels
-  - ErrorBus/Models/ErrorHandlingConfig.swift - Configuration model
-  - ErrorBus/Models/AetherError.swift - Custom error types
-  - ErrorBus/UI/ErrorToast.swift - Toast UI component
-  - aetherVault/Config/ErrorHandling.json - Configuration file
-- **Description**: Centralized error handling with non-intrusive toast notifications
-- **Key Features**:
-  - Collects errors from all atoms via simple API
-  - Auto-dismissal based on severity and configuration
-  - Error history tracking
-  - Non-blocking toast UI overlay
-- **Assessment Results**:
-  - ✅ Swifty: Proper use of ObservableObject, @Published, SwiftUI patterns
-  - ✅ Atomic LEGO: Clean separation of error service, models, and UI
-  - ✅ Configuration: All settings externalized to ErrorHandling.json
-  - ✅ Easy removal: Other atoms continue to function without it
-  - ✅ No damage: Non-intrusive error collection and display
-  - ✅ Occam's Razor: Simple error reporting and display (logging removed)
-  - ✅ Bus integration: Uses EventBus for events, ConfigBus for configuration
+## 500 Series - Conversations
 
-### ATOM 3: StateBus - Shared State Management ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: post-audit-atom-3 (post-audit improvements applied)
-- **Files**:
-  - StateBus/Core/StateBus.swift - Central state storage service
-  - StateBus/Models/StateKey.swift - Type-safe key definitions
-  - StateBus/Models/StateChange.swift - State change event model
-  - StateBus/Models/StateBusConfiguration.swift - Configuration model
-  - aetherVault/Config/StateBus.json - Configuration file
-  - StateBus/Services/ - Empty folder for completeness
-  - StateBus/UI/ - Empty folder for completeness
-- **Description**: Type-safe shared state management for communication between atoms
-- **Key Features**:
-  - Generic type-safe storage with StateKey<T>
-  - Reactive updates via objectWillChange
-  - Event notifications for state changes
-  - Simple key-value storage pattern
-  - Configuration-driven limits and debug logging
-  - FIFO eviction when storage limit reached
-- **Assessment Results** (Perfect 70/70):
-  - ✅ Swifty: Uses @MainActor, ObservableObject, generics properly
-  - ✅ Atomic LEGO: Complete Model/Core/Services/UI structure
-  - ✅ Configuration: All settings externalized to StateBus.json
-  - ✅ Easy removal: Other atoms can function without shared state
-  - ✅ No damage: Optional state sharing service
-  - ✅ Occam's Razor: Simple dictionary storage with minimal additions
-  - ✅ Bus integration: Uses EventBus for events, ConfigBus for configuration
-- **Post-Audit Improvements**:
-  - Added configuration support via ConfigBus
-  - Added maxStorageEntries limit with FIFO eviction
-  - Added optional debug logging
-  - Completed Atomic LEGO folder structure
-  - Kept solution minimal per Occam's Razor
+### ATOM 501: ConversationFlow
+**Purpose**: Request orchestration and stream processing  
+**Dependencies**: Multiple (see detailed docs)  
+**Used by**: InputBar  
+**Wire**: Delete ConversationFlow folder → no conversation handling
 
-### ATOM 4: ConfigBus - Configuration Management ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: post-audit-atom-4 (post-audit improvements applied)
-- **Files**:
-  - ConfigBus/Core/ConfigBus.swift - Configuration loading service
-  - ConfigBus/Models/ConfigBusConfiguration.swift - Configuration model
-  - ConfigBus/Events/ConfigBusEvents.swift - Event definitions
-  - ConfigBus/Services/ - Empty folder for completeness
-  - ConfigBus/UI/ - Empty folder for completeness
-  - aetherVault/Config/ConfigBus.json - ConfigBus's own configuration
-  - aetherVault/Config/*.json - All app configuration files
-- **Description**: Simple configuration loading with hot-reloading capability
-- **Key Features**:
-  - Loads JSON configs from bundle
-  - Caches loaded configurations
-  - File watching for hot-reload during development
-  - Type-safe loading with Codable
-  - Bootstrap loading of its own config
-  - Event publishing for config changes
-  - Configurable file extension and hot reload
-- **Assessment Results** (Perfect 70/70):
-  - ✅ Swifty: Uses native DispatchSource, Codable, ObservableObject
-  - ✅ Atomic LEGO: Complete Model/Core/Services/UI/Events structure
-  - ✅ Configuration: Own settings externalized to ConfigBus.json
-  - ✅ Easy removal: Atoms can use defaults if ConfigBus removed
-  - ✅ No damage: Pure configuration loading service
-  - ✅ Occam's Razor: Simple file loading and caching
-  - ✅ Bus integration: Now publishes events via EventBus
-- **Post-Audit Improvements**:
-  - Completed Atomic LEGO folder structure
-  - Added ConfigBusConfiguration model
-  - Extended configuration with enableHotReload and fileExtension
-  - Added event publishing for config changes and errors
-  - Fixed circular dependency with EventBus
+### ATOM 502: Scrollback
+**Purpose**: Message display system  
+**Dependencies**: MessageStore, ConfigBus  
+**Used by**: ContentView  
+**Wire**: Delete Scrollback folder → no message display
 
-### ATOM 5: Input Bar - Text Input System ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - InputBar/Views/InputBarView.swift - Main input component
-  - InputBar/Services/InputBarAppearanceService.swift - Appearance configuration service
-  - InputBar/Models/InputBarAppearance.swift - Appearance data model
-  - InputBar/Models/SlashCommand.swift - Command model
-  - InputBar/Services/SlashCommandDetector.swift - Command detection service
-  - aetherVault/Config/InputBarAppearance.json - UI configuration
-- **Description**: Glassmorphic multiline text input with slash commands
-- **Key Features**:
-  - TextEditor with configurable expansion up to 34 lines
-  - Slash command detection and handling
-  - Integrated model picker and persona switching
-  - Smart return key handling
-  - Full configuration-driven appearance
-  - Composed of smaller atoms (ModelPickerView, SlashCommandDetector)
-- **Assessment Results**:
-  - ✅ Swifty: Uses native SwiftUI patterns, @EnvironmentObject for DI
-  - ✅ Atomic LEGO: Composed of smaller atoms, uses ConversationOrchestrator as intended
-  - ✅ Configuration: All appearance externalized, color fallback fixed
-  - ✅ Easy removal: Can be replaced with alternative input mechanism
-  - ✅ No damage: Pure UI component that doesn't affect other atoms
-  - ✅ Occam's Razor: Direct orchestrator call is simpler than event indirection
-  - ✅ Bus integration: Uses ConfigBus and EventBus appropriately
-- **Architecture Notes**:
-  - Services via @EnvironmentObject = proper SwiftUI dependency injection
-  - ConversationOrchestrator = intended central coordinator for complex flows
-  - Direct calls for actions, events for notifications = valid architectural choice
-  - Persona detection provides immediate UI feedback, actual processing in PersonaStateService
-- **Picker Spacing Fix** (Tag: model-picker-persona-picker-together):
-  - Fixed inconsistent spacing between ModelPicker and PersonaPicker
-  - Root cause: SwiftUI Menu components sized themselves based on dropdown content width
-  - PersonaPicker had wider dropdown content (section headers) causing visual imbalance
-  - Solution: Applied .fixedSize() to both pickers
-  - Forces pickers to size based on visible label content only, not dropdown width
-  - Ensures equal 12pt spacing between +, ModelPicker, and PersonaPicker
-  - Follows Occam's Razor - simplest possible fix with one modifier per picker
+### ATOM 503: MessageStore
+**Purpose**: Central message repository  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: Scrollback, ConversationFlow  
+**Wire**: Delete MessageStore folder → no message storage
 
-### ATOM 6: Slash Command Detector ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: atom-22-slash-command-detector (post-audit: post-audit-atom-22)
-- **Files**:
-  - SlashCommandDetector/Models/SlashCommand.swift - Command data model
-  - SlashCommandDetector/Models/SlashCommandConfiguration.swift - Configuration model
-  - SlashCommandDetector/Services/SlashCommandDetector.swift - Command detection service
-  - SlashCommandDetector/Events/SlashCommandEvents.swift - Event definitions
-  - aetherVault/Config/SlashCommandDetector.json - Command definitions
-- **Description**: Configurable slash command detection system
-- **Key Features**:
-  - Detects any slash commands typed in input
-  - Expands input area to configured lines
-  - Publishes SlashCommandEvent events
-  - Case-sensitive detection option
-  - Clear text on expand option
-  - Hot-reload command configuration
-  - Extensible command list via JSON
-- **Assessment Results**:
-  - ✅ Swifty: Proper Swift patterns, async dispatch for UI updates
-  - ✅ Atomic LEGO: Proper Model/Service/Events structure in dedicated folder
-  - ✅ Configuration: All settings externalized to JSON
-  - ✅ Easy removal: Self-contained atom with clean boundaries
-  - ✅ No damage: Pure detection service
-  - ✅ Occam's Razor: Simple detection and state management
-  - ✅ Bus integration: Uses ConfigBus for config, EventBus for events
-- **Post-Audit Fix**: Reorganized from InputBar subfolder to proper top-level atom structure (tag: post-audit-atom-22)
+## 600 Series - App Theme
 
-### ATOM 7: /journal Slash Command ✅
-- **Status**: Complete
-- **Description**: Implementation of /journal command functionality
-- **Note**: Uses ATOM 6 (SlashCommandDetector) for command detection
+### ATOM 601: ThemeSystem
+**Purpose**: Design tokens and theme service  
+**Dependencies**: ConfigBus  
+**Used by**: App root  
+**Wire**: Delete ThemeSystem folder → default appearance
 
-### ATOM 8: Model Picker - Interactive Model Selection UI ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - ModelPicker/UI/ModelPickerView.swift - SwiftUI Menu component
-  - ModelPicker/Services/ModelPickerService.swift - Model selection service
-  - ModelPicker/Models/ModelPickerConfiguration.swift - Configuration model
-  - aetherVault/Config/ModelPicker.json - UI and behavior configuration
-- **Description**: Dropdown menu for selecting AI models
-- **Key Features**:
-  - Groups models by provider with customizable icons
-  - Shows current selection with checkmark
-  - Configurable provider order and display
-  - Integrates with ModelStateService for selection
-  - Updates display via ModelDisplayService
-- **Assessment Results**:
-  - ✅ Swifty: Native Menu component, proper Combine usage
-  - ✅ Atomic LEGO: Clean Model/Service/UI separation in own folder
-  - ✅ Configuration: All settings externalized (fixed hardcoded values)
-  - ✅ Easy removal: Can be replaced with alternative selection UI
-  - ✅ No damage: Pure UI component for model selection
-  - ✅ Occam's Razor: Simple menu implementation
-  - ✅ Bus integration: Uses ConfigBus for configuration
+## Detailed Documentation
 
-### ATOM 9: Models & ATOM 18: LLM Services ✅
-- **Status**: Complete and assessed against 7 BOSS RULES (assessed together due to close relationship)
-- **Tag**: post-audit-atom-9 (Models atom improvements applied)
-- **Files**:
-  - **Models (ATOM 9)**:
-    - Models/Core/ - Empty (models are the core)
-    - Models/Models/LLMProvider.swift - Provider enumeration
-    - Models/Models/LLMConfiguration.swift - Configuration structures
-    - Models/Models/LLMRequest.swift - Request model
-    - Models/Models/LLMResponse.swift - Response and error models
-    - Models/Models/MessageRole.swift - Message role enum
-    - Models/Services/ModelRegistryService.swift - Model validation service
-    - Models/Events/ModelEvents.swift - Model loading events
-    - Models/UI/ModelDebugView.swift - Optional debug view
-  - **LLM Services (ATOM 18)**:
-    - Protocols/LLMService.swift - Service protocol
-    - Services/LLM/LLMRouter.swift - Request router
-    - Services/LLM/AnthropicService.swift - Anthropic provider
-    - Services/LLM/OpenAIService.swift - OpenAI provider
-    - Services/LLM/FireworksService.swift - Fireworks provider
-    - aetherVault/Config/LLMProviders.json - Provider configurations
-- **Description**: Protocol-based LLM integration with multiple providers
-- **Key Features**:
-  - Unified LLMService protocol for all providers
-  - Router pattern for provider selection
-  - Streaming responses via AsyncThrowingStream
-  - Configuration-driven provider settings
-  - Type-safe message roles with MessageRole enum
-  - Comprehensive error handling
-  - Model registry for validation
-  - Event publishing for model changes
-- **Assessment Results** (Models now Perfect 70/70):
-  - ✅ Swifty: Protocols, async/await, proper error handling
-  - ✅ Atomic LEGO: Complete atomic structure for Models atom
-  - ✅ Configuration: Provider settings externalized, roles now type-safe
-  - ✅ Easy removal: Self-contained Models atom, providers independent
-  - ✅ No damage: Isolated provider implementations
-  - ✅ Occam's Razor: Simple protocol with just two methods
-  - ✅ Bus integration: ConfigBus for config, EventBus for model events
-- **Post-Audit Improvements (Models)**:
-  - Created proper Atomic LEGO structure for Models atom
-  - Added ModelRegistryService for validation
-  - Added model events for notifications
-  - Created optional debug UI
-  - Maintained compatibility with existing code
-  - ✅ Bus integration: Uses ConfigBus, EventBus, and EnvLoader
+### ATOM 101: EventBus - The Nervous System
 
-### ATOM 10: Personas - PersonaSystem with Detection and State Management ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: post-audit-atom-10 (post-audit improvements applied)
-- **Files**:
-  - PersonaSystem/Core/PersonaSystem.swift - Core atom coordinator
-  - PersonaSystem/Models/PersonaDefinition.swift - Core persona model
-  - PersonaSystem/Models/PersonaConfiguration.swift - Configuration structure
-  - PersonaSystem/Models/PersonaStateKeys.swift - State storage keys
-  - PersonaSystem/Models/PersonaStateConfiguration.swift - State service configuration
-  - PersonaSystem/Models/PersonaUIConfiguration.swift - UI labels configuration
-  - PersonaSystem/Services/PersonaDetector.swift - Message persona detection
-  - PersonaSystem/Services/PersonaStateService.swift - State management
-  - PersonaSystem/Events/PersonaEvents.swift - Event definitions
-  - PersonaSystem/UI/PersonaIndicator.swift - Visual indicators and switcher
-  - aetherVault/Config/Personas.json - Persona definitions
-  - aetherVault/Config/PersonaUI.json - UI strings configuration
-  - aetherVault/Config/PersonaState.json - State service configuration
-- **Description**: Complete persona system with detection, switching, and UI
-- **Key Features**:
-  - 10+ pre-configured personas with unique personalities
-  - Three-layer persona system (Anthropic/Non-Anthropic/Current)
-  - Real-time persona detection from message text
-  - Visual indicators with color coding
-  - Persona switcher menu
-  - State persistence across sessions
-  - Full Atomic LEGO structure with Core/Models/Services/Events/UI
-  - All configuration externalized to JSON files
-- **Assessment Results** (Perfect 70/70):
-  - ✅ Swifty: Proper use of @MainActor, ObservableObject, Codable patterns
-  - ✅ Atomic LEGO: Complete Core/Models/Services/Events/UI structure
-  - ✅ Configuration: All defaults externalized to JSON files
-  - ✅ Easy removal: Self-contained PersonaSystem folder
-  - ✅ No damage: Isolated persona functionality
-  - ✅ Occam's Razor: Simple persona model and state management
-  - ✅ Bus integration: Uses ConfigBus, StateBus, EventBus, and ErrorBus
-- **Post-Audit Improvements**:
-  - Created Core/PersonaSystem.swift for atom coordination
-  - Created Events/PersonaEvents.swift folder and moved events from Models
-  - Created PersonaStateConfiguration.swift to externalize hardcoded defaults
-  - Added PersonaState.json configuration file
-  - Removed all hardcoded values ("claude", "samara")
-  - Updated atom to use complete Atomic LEGO structure
-  - Maintained full backward compatibility
-- **PersonaSwitcher UI Enhancement** (Tag: calling-personas-modifies-pickers):
-  - Added PersonaPickerView matching ModelPicker style
-  - Placed to the right of ModelPicker in InputBarView
-  - Two ways to summon personas:
-    - Type persona name (e.g., "Claude") - immediate switch
-    - Click PersonaSwitcher - inserts "PersonaName " with cursor after space
-  - Model auto-switches based on persona's isAnthropic property
-  - Fixed race condition in PersonaFolderWatcher initialization
-  - Fixed case-sensitive boolean parsing in YAML frontmatter
-  - Fixed inconsistent parameter naming in PersonaSwitchedEvent
-- **PersonaPicker Roles Enhancement** (Tag: persona-picker-shows-roles):
-  - Extracted PersonaPicker as separate ATOM 31 from PersonaSystem
-  - Persona names display in full white, roles in grey (0.7 opacity)
-  - Roles use Menlo font at 90% size for visual distinction
-  - Section headers (Functional Experts, Cognitive Voices) now uppercase
-  - All hardcoded values moved to configuration (PersonaUI.json)
-  - Removed all debugging print statements from codebase
-- **Model/Persona Picker Perfect Integration** (Tag: model-picker-persona-picker-perfect):
-  - ModelPicker visual hierarchy matches PersonaPicker
-    - Section headers in UPPERCASE with consistent styling
-    - Typography configuration added to ModelPicker.json
-  - Auto-persona switching when selecting models
-    - Added `autoSwitchPersona` configuration option
-    - Selecting non-Anthropic model → switches to default non-Anthropic persona
-    - Selecting Anthropic model → switches to default Anthropic persona
-  - Event-based text insertion architecture
-    - Added `InsertTextEvent` to EventBus
-    - Removed direct binding between pickers and InputBar
-    - Both pickers publish events for clean separation
-    - InputBar subscribes to events for text updates
-  - ModelPicker now inserts persona name when auto-switching
-    - Consistent behavior across both pickers
-    - Perfect implementation of 7 Boss Rules
+EventBus is the foundational communication layer that enables the Atomic LEGO architecture. It provides zero-coupling communication between all atoms through a pure publish/subscribe pattern.
 
-### ATOM 11: Model/Persona/Picker Interaction ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**: (Interaction between existing atoms)
-  - PersonaStateService.modelForCurrentPersona() - Determines model based on persona
-  - ModelStateService - Manages model overrides
-  - ModelPickerService - Updates model selection
-  - ModelDisplayService - Shows current model
-  - InputBar integration - Brings all three together
-- **Description**: Coordinated interaction between personas, models, and picker
-- **Key Features**:
-  - Personas determine default model type (Anthropic/non-Anthropic)
-  - Models can be overridden via picker
-  - Display updates automatically via events
-  - Clean separation with event-driven updates
-  - No tight coupling between atoms
-- **Interaction Flow**:
-  1. Persona selection determines base model type
-  2. User can override with specific model via picker
-  3. ModelStateService tracks overrides
-  4. ModelDisplayService observes and formats display
-  5. All coordinated via StateBus and EventBus
-- **Assessment Results**:
-  - ✅ Swifty: Combine observers, reactive patterns
-  - ✅ Atomic LEGO: Each atom maintains single responsibility
-  - ✅ Configuration: No hardcoded interaction logic
-  - ✅ Easy removal: Components function independently
-  - ✅ No damage: Services coordinate without interference
-  - ✅ Occam's Razor: Simple, clear interaction pattern
-  - ✅ Bus integration: StateBus for state, EventBus for notifications
+#### Structure
+```
+ATOM-11-EventBus/
+├── Core/
+│   ├── EventBus.swift              # Main event router implementation
+│   ├── EventBusProtocol.swift      # Protocol definition for testability
+│   ├── Event.swift                 # Base event protocol
+│   └── EventSubscription.swift     # Subscription management
+├── Events/
+│   ├── SystemEvents.swift          # App lifecycle events
+│   ├── ConversationEvents.swift    # Message/conversation events
+│   ├── InputEvents.swift           # User input events
+│   └── NavigationEvents.swift      # Navigation/UI events
+├── Models/
+│   └── EventBusConfiguration.swift # Configuration model
+└── Wire/
+    └── EventBusWire.swift          # Integration documentation
+```
 
-### ATOM 12: Keyboard Behavior - Smart Return Key Handling ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - KeyboardBehavior/Models/KeyboardConfiguration.swift - Configuration model
-  - KeyboardBehavior/Services/KeyboardService.swift - Keyboard handling service
-  - KeyboardBehavior/Services/SmartReturnKeyModifier.swift - SwiftUI view modifier
-  - KeyboardBehavior/Wire/KeyboardWire.swift - Integration documentation
-  - aetherVault/Config/KeyboardBehavior.json - Behavior configuration
-- **Description**: Smart Enter key behavior for submit vs newline
-- **Key Features**:
-  - Enter → Submit message
-  - Shift+Enter → New line (ChatGPT style)
-  - Option+Enter → New line (Claude style)
-  - Configuration-driven behavior
-  - SwiftUI view modifier pattern
-  - Clear removal instructions in Wire file
-- **Assessment Results**:
-  - ✅ Swifty: Native view modifier pattern, proper key handling
-  - ✅ Atomic LEGO: Clean Model/Service/UI separation with Wire documentation
-  - ✅ Configuration: All strings and behavior externalized
-  - ✅ Easy removal: Wire file documents exact removal steps
-  - ✅ No damage: Pure keyboard handling logic
-  - ✅ Occam's Razor: Simple modifier pattern with clear logic
-  - ✅ Bus integration: Uses ConfigBus for configuration
+#### Key Features
+- **Zero Coupling**: Atoms don't know about each other, only events
+- **Type-Safe Events**: Swift enums ensure compile-time safety
+- **Async Support**: Modern `AsyncStream` for async/await patterns
+- **Hot-Reload Config**: Debug mode and event history via ConfigBus
+- **Weak References**: Prevents memory leaks in subscriptions
+- **Multiple Event Types**: Can subscribe to multiple event types at once
 
-### ATOM 13: API Key Storage - Keychain Integration ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - Keychain/Services/KeychainService.swift - Secure storage service
-  - Keychain/Views/APIKeySetupView.swift - Setup UI
-  - Services/EnvLoader.swift - Integration with environment loading
-- **Description**: Secure API key storage using macOS Keychain
-- **Key Features**:
-  - Native macOS Keychain integration
-  - Batch operations to minimize password prompts
-  - Fallback to .env files
-  - Auto-migration from .env to Keychain
-  - Setup UI for key management
-  - Service name from Bundle.main.bundleIdentifier
-- **Keychain Password Issue**:
-  - During development, macOS prompts for keychain access
-  - Using kSecAttrAccessibleAfterFirstUnlock for security
-  - Will improve when app is properly signed
-  - Can add app to "Always Allow" in Keychain Access
-- **Assessment Results**:
-  - ✅ Swifty: Native Security framework, static utility pattern
-  - ✅ Atomic LEGO: Clean service/UI separation
-  - ✅ Configuration: UI strings in view, service uses bundle ID
-  - ✅ Easy removal: Falls back to env vars if removed
-  - ✅ No damage: Secure storage doesn't affect other features
-  - ✅ Occam's Razor: Simple static utility class
-  - ✅ Bus integration: None needed - pure utility service
+#### Usage Example
+```swift
+// Publishing an event
+eventBus.publish(PersonaSwitchedEvent(
+    fromPersona: "claude",
+    toPersona: "samara"
+))
 
-### ATOM 14: ConversationFlow - Request Orchestration and Stream Processing ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - ConversationFlow/Services/ConversationOrchestrator.swift - Main orchestration service
-  - ConversationFlow/Services/StreamProcessor.swift - Stream handling service
-  - ConversationFlow/Models/ConversationRequest.swift - Request model
-  - ConversationFlow/Models/ConversationContext.swift - Context tracking
-  - ConversationFlow/Models/ConversationConfiguration.swift - Configuration model
-  - ConversationFlow/Events/ConversationFlowEvents.swift - Event definitions
-  - aetherVault/Config/ConversationFlow.json - Configuration file
-- **Description**: Central conversation orchestration handling request flow and streaming
-- **Key Features**:
-  - Coordinates persona detection, model selection, and LLM calls
-  - Handles streaming and non-streaming responses
-  - Maintains conversation context and history
-  - Publishes events for conversation lifecycle
-  - Configuration-driven behavior
-  - Clean separation of orchestration and stream processing
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, async/await, proper Swift patterns
-  - ✅ Atomic LEGO: Clean Service/Model/Event separation
-  - ✅ Configuration: Fixed hardcoded values (user speaker name, session timeout)
-  - ✅ Easy removal: Other atoms can function without orchestration
-  - ✅ No damage: Pure orchestration service
-  - ✅ Occam's Razor: Simple request flow with clear responsibilities
-  - ✅ Bus integration: Uses ConfigBus, EventBus, ErrorBus, and integrates with multiple services
+// Subscribing to events
+eventBus.subscribe(to: PersonaSwitchedEvent.self) { event in
+    print("Switched from \(event.fromPersona) to \(event.toPersona)")
+}
+.store(in: &cancellables)
 
-### ATOM 15: Scrollback - Message Display System ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - Scrollback/Views/ScrollbackView.swift - Main scrollback container
-  - Scrollback/Views/MessageRow.swift - Individual message display
-  - Scrollback/Views/SpeakerLabel.swift - Speaker label component
-  - Scrollback/Models/Message.swift - Message data model
-  - Scrollback/Models/ScrollbackAppearance.swift - Appearance configuration model
-  - Scrollback/Models/Persona.swift - Legacy persona model
-  - Scrollback/Services/MessageStore.swift - Message storage service
-  - Scrollback/Services/PersonaService.swift - Persona configuration service
-  - aetherVault/Config/ScrollbackAppearance.json - UI configuration
-- **Description**: Message display system with speaker labels and streaming support
-- **Key Features**:
-  - 700px width centered layout matching input bar
-  - Speaker labels with colored borders and gradient lines
-  - Message grouping by speaker
-  - Streaming message support with progress indicator
-  - Persona-based colors and display names
-  - Configuration-driven appearance
-  - Compatibility with both legacy and new persona formats
-- **Assessment Results**:
-  - ✅ Swifty: Uses SwiftUI patterns, @EnvironmentObject, proper view composition
-  - ✅ Atomic LEGO: Clean Model/View/Service separation
-  - ✅ Configuration: Fixed all hardcoded values (opacities, sizes, paddings)
-  - ✅ Easy removal: Display layer can be replaced independently
-  - ✅ No damage: Pure presentation layer
-  - ✅ Occam's Razor: Simple message display with clear responsibilities
-  - ✅ Bus integration: Uses ConfigBus for configuration, integrates with MessageStore
+// Async subscription
+for await event in eventBus.asyncSubscribe(to: MessageAddedEvent.self) {
+    await processMessage(event.message)
+}
+```
 
-### ATOM 16: ModelDisplay - Visual Model Indicators ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - ModelDisplay/Services/ModelDisplayService.swift - Display formatting service
-  - ModelDisplay/UI/ModelIndicatorView.swift - Reusable UI component
-  - ModelDisplay/Models/ModelDisplayConfiguration.swift - Configuration model
-  - aetherVault/Config/ModelDisplay.json - Display name mappings
-- **Description**: Service to track and display the current AI model
-- **Key Features**:
-  - Observes PersonaStateService for model changes
-  - Tracks manually selected models via ModelSelectedEvent
-  - Formats model names for user-friendly display
-  - Configuration-driven display names and formatting
-  - Reusable ModelIndicatorView component
-  - Support for provider names, model short names, and pattern replacements
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, ObservableObject, Combine subscriptions
-  - ✅ Atomic LEGO: Clean Service/UI/Model separation
-  - ✅ Configuration: Fixed hardcoded provider and model names
-  - ✅ Easy removal: Display component can be removed without affecting functionality
-  - ✅ No damage: Pure display service
-  - ✅ Occam's Razor: Simple formatting logic with configuration lookup
-  - ✅ Bus integration: Uses ConfigBus, EventBus, and observes multiple services
+#### Configuration (EventBus.json)
+```json
+{
+  "enableDebugMode": false,
+  "maxEventHistory": 100,
+  "eventHistoryEnabled": false
+}
+```
 
-### ATOM 17: ModelState - State Management for Selected Models ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - ModelState/Services/ModelStateService.swift - Core state management service
-  - ModelState/Models/ModelStateConfiguration.swift - Configuration model
-  - ModelState/Models/ModelStateKeys.swift - StateBus keys and events
-  - ModelState/UI/ModelStateDebugView.swift - Debug UI component
-  - aetherVault/Config/ModelState.json - Default models and settings
-- **Description**: Manages model selection state with defaults and overrides
-- **Key Features**:
-  - Tracks default models for Anthropic/non-Anthropic personas
-  - Manages user overrides via model picker
-  - Resolves current model based on persona type
-  - Persists selections via StateBus
-  - Model selection history tracking
-  - Dynamic model detection for unknown models
-  - Optional debug view for testing
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, ObservableObject, Combine patterns
-  - ✅ Atomic LEGO: Clean Service/Model/UI separation with StateBus integration
-  - ✅ Configuration: Fixed hardcoded values (defaults, history size, prefixes, UI dimensions)
-  - ✅ Easy removal: State management can be replaced with simpler logic
-  - ✅ No damage: Pure state management service
-  - ✅ Occam's Razor: Simple override pattern with defaults
-  - ✅ Bus integration: Uses ConfigBus, StateBus, EventBus, ErrorBus appropriately
+#### Why It's Essential
+Without EventBus, every atom would need to directly import and depend on other atoms, creating a tangled web of dependencies. EventBus allows atoms to communicate through events without knowing who's listening or who's publishing, enabling true plug-and-play architecture.
 
-### ATOM 19: Theme System - Design Tokens and Theme Service ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Files**:
-  - Services/ThemeService.swift - Theme management service
-  - Models/Theme.swift - Theme data model
-  - Models/DesignTokens.swift - Design tokens configuration model
-  - UI/ThemedContainer.swift - Container view that applies theme
-  - aetherVault/Config/DesignTokens.json - Theme configuration
-- **Description**: Configuration-driven theme system with design tokens
-- **Key Features**:
-  - ConfigBus integration for hot-reloading themes
-  - Design tokens for colors and spacing
-  - Simple Theme model with essential colors
-  - ThemedContainer wrapper for applying theme
-  - Black background with white text default theme
-  - Reactive updates via Combine
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, ObservableObject, ViewBuilder patterns
-  - ✅ Atomic LEGO: Clean Service/Model/UI separation
-  - ✅ Configuration: All theme values in DesignTokens.json
-  - ✅ Easy removal: ThemedContainer can be removed, content still renders
-  - ✅ No damage: Pure presentation layer
-  - ✅ Occam's Razor: Simple theme application with minimal complexity
-  - ✅ Bus integration: Uses ConfigBus for configuration loading
+#### Removal Instructions
+```swift
+// EventBusWire.swift
+/*
+ To remove EventBus completely:
+ 1. Delete ATOM-11-EventBus folder
+ 2. Remove eventBus from app initialization
+ 3. Remove all .publish() and .subscribe() calls
+ 4. Convert to direct method calls (breaks Atomic LEGO)
+ 
+ WARNING: Without EventBus, atoms must directly couple to each other
+ */
+```
 
-### ATOM 20: Environment Loader - .env File Parsing ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: atom-20-env-loader (post-audit: post-audit-atom-20)
-- **Files**:
-  - EnvLoader/Services/EnvLoader.swift - Environment loading service
-  - EnvLoader/Models/Environment.swift - Environment data model
-  - EnvLoader/Models/EnvLoaderConfiguration.swift - Configuration model
-  - EnvLoader/Events/EnvLoaderEvents.swift - Event definitions
-  - aetherVault/Config/EnvLoader.json - Loader configuration
-- **Description**: Loads API keys with priority: Keychain → Process env → .env file
-- **Key Features**:
-  - Three-tier loading strategy (Keychain, process env, .env file)
-  - Auto-migration from .env to Keychain for security
-  - Batch Keychain operations to minimize password prompts
-  - Configuration-driven key names and file paths
-  - Relative path searching instead of hardcoded paths
-  - Event publishing for load status
-  - Support for comments and quoted values in .env files
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, ObservableObject, proper error handling
-  - ✅ Atomic LEGO: Proper Model/Service/Events structure in dedicated folder
-  - ✅ Configuration: No hardcoded paths, all settings externalized
-  - ✅ Easy removal: Falls back to manual key entry if removed
-  - ✅ No damage: Pure loading service
-  - ✅ Occam's Razor: Simple three-tier loading strategy
-  - ✅ Bus integration: Uses ConfigBus, ErrorBus, and EventBus appropriately
-- **Post-Audit Fix**: 
-  - Reorganized from scattered files to proper atom structure
-  - Fixed hardcoded absolute path to use relative search paths
-  - Added event publishing for all load scenarios (tag: post-audit-atom-20)
+### ATOM 12: ErrorBus
+**Purpose**: Centralized error handling with toast UI display  
+**Dependencies**: EventBus, ConfigBus  
+**Used by**: Most atoms for error reporting  
+**Wire**: Delete ErrorBus folder → errors just don't display
 
-### ATOM 21: Message Store - Message Persistence and Management ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Tag**: atom-21-message-store (post-audit: passed all rules - no fixes needed)
-- **Files**:
-  - MessageStore/Services/MessageStore.swift - Core storage service
-  - MessageStore/Models/Message.swift - Message data model
-  - MessageStore/Models/MessageStoreConfiguration.swift - Configuration model
-  - MessageStore/Models/MessageStoreEvents.swift - Event definitions
-  - aetherVault/Config/MessageStore.json - Storage configuration
-- **Description**: Central message storage with configurable limits and events
-- **Key Features**:
-  - Maximum message limit to prevent unbounded growth
-  - Optional event publishing for message operations
-  - Simple CRUD operations for messages
-  - Streaming message update support
-  - Clean separation from UI (Scrollback)
-  - Configuration-driven behavior
-- **Assessment Results**:
-  - ✅ Swifty: Uses @MainActor, ObservableObject, proper Swift patterns
-  - ✅ Atomic LEGO: Extracted into own atom with clean separation
-  - ✅ Configuration: Added max messages, event publishing options
-  - ✅ Easy removal: Can be replaced with alternative storage
-  - ✅ No damage: Pure storage service with optional events
-  - ✅ Occam's Razor: Simple array-based storage with limits
-  - ✅ Bus integration: Uses ConfigBus and EventBus for events
+### ATOM 12: ErrorBus - Centralized Error Handling
 
-## Phase II Atoms Documentation
+ErrorBus provides a unified error handling system that collects errors from all atoms and displays them as non-intrusive toast notifications. It ensures consistent error presentation while keeping error handling completely optional.
 
-### ATOM 22: Response Parser - Two-Part Response Handler ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-23-response-parser (post-audit: passed all rules - no fixes needed)
-- **Files**:
-  - ResponseParser/Models/ResponseSection.swift - Data models for parsed sections
-  - ResponseParser/Models/ResponseParserConfiguration.swift - Configuration model
-  - ResponseParser/Services/ResponseParserService.swift - Core parsing service
-  - ResponseParser/Events/ResponseParserEvents.swift - Event definitions
-  - aetherVault/Config/ResponseParser.json - Section markers configuration
-- **Description**: Parses streaming LLM responses with two-part format (normal + machine trim)
-- **Key Features**:
-  - Detects section markers while streaming
-  - Routes normal response to display immediately
-  - Captures machine trim with inferability support
-  - Handles mixed content ([INFERABLE] markers within trim)
-  - Simple string-based parsing
-  - Buffer management for marker detection
-- **Integration**:
-  - Wired into StreamProcessor to receive tokens
-  - Publishes events for Journal Service to consume
-  - No UI needed - pure service layer
-- **Assessment Results**:
-  - ✅ Swifty: Native String parsing, @MainActor, ObservableObject
-  - ✅ Atomic LEGO: Clean Model/Service/Events separation
-  - ✅ Configuration: All markers externalized to JSON
-  - ✅ Easy removal: Delete folder + remove 3 wire points
-  - ✅ No damage: Streaming continues without parsing if removed
-  - ✅ Occam's Razor: Simple string detection, no regex
-  - ✅ Bus integration: ConfigBus for config, EventBus for parsed sections
+#### Structure
+```
+ATOM-12-ErrorBus/
+├── Core/
+│   └── ErrorBus.swift              # Main error handling service
+├── Models/
+│   ├── ErrorContext.swift          # Error context with metadata
+│   ├── ErrorSeverity.swift         # Severity levels (info/warning/error/critical)
+│   ├── ErrorHandlingConfig.swift   # Configuration model
+│   └── AetherError.swift          # Custom error types
+├── UI/
+│   └── ErrorToast.swift           # Toast UI component and view modifier
+└── Wire/
+    └── ErrorBusWire.swift         # Integration documentation
+```
 
-### ATOM 23: Journal Service - Living Memory Persistence ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-24-journal-service (post-audit: post-audit-atom-24)
-- **Files**:
-  - Journal/Models/JournalEntry.swift - Entry data model with dual timestamps
-  - Journal/Models/JournalConfiguration.swift - Configuration model
-  - Journal/Services/JournalService.swift - Core journal service
-  - Journal/Events/JournalEvents.swift - Event definitions
-  - aetherVault/Config/Journal.json - Journal configuration
-- **Description**: Persists machine-trimmed conversations to disk with inferability support
-- **Key Features**:
-  - Subscribes to ResponseParserEvent.machineTrimComplete
-  - Basic machine trim parsing (awaiting final format)
-  - Berlin time for internal sorting (handles timezone travel)
-  - Local time display for user context
-  - Appends to ~/Documents/code/atomic-aether/aetherVault/journal/journal.md (fixed from ~/Documents/code/atomic-aether/aetherVault/)
-  - Maintains up to 10,000 entries in memory
-  - Creates journal directory if missing
-- **Storage Format**:
-  - Single append-only markdown file
-  - Entry format: `2025-08-04 05:59:00 IST: [content]`
-  - Optional sentiment prefix when present
-  - Delimiter between entries: `\n\n---\n\n`
-- **Integration**:
-  - Provides getJournalForPrompt() for system prompt inclusion
-  - Publishes JournalEvent.entryAdded on new entries
-  - Error reporting via ErrorBus
-- **Assessment Results**:
-  - ✅ Swifty: @MainActor, async/await, native FileHandle APIs
-  - ✅ Atomic LEGO: Clean Model/Service/Events separation
-  - ✅ Configuration: All settings externalized to Journal.json
-  - ✅ Easy removal: Delete folder + remove 2 wire points
-  - ✅ No damage: Other atoms continue without persistence
-  - ✅ Occam's Razor: Simple file append, no database
-  - ✅ Bus integration: ConfigBus, EventBus, ErrorBus appropriately
-- **Post-Audit Fix**: Updated path configuration from ~/Documents/code/atomic-aether/aetherVault/ to ~/Documents/code/atomic-aether/aetherVault/ (tag: post-audit-atom-24)
+#### Key Features
+- **Centralized Collection**: Single point for all error reporting
+- **Toast UI**: Non-blocking, auto-dismissing notifications
+- **Severity Levels**: Different display times based on severity
+- **Error History**: Tracks recent errors for debugging
+- **Configuration**: Customizable dismiss times and appearance
+- **Event Publishing**: Notifies when errors are reported/cleared
 
-### ATOM 24: SuperJournal Service - Complete Scrollback Persistence ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-25-superjournal-service
-- **Files**:
-  - SuperJournal/Models/SuperJournalEntry.swift - Entry model
-  - SuperJournal/Models/SuperJournalConfiguration.swift - Configuration model
-  - SuperJournal/Services/SuperJournalService.swift - Core service
-  - SuperJournal/Events/SuperJournalEvents.swift - Event definitions
-  - aetherVault/Config/SuperJournal.json - SuperJournal configuration
-- **Description**: Saves complete conversations exactly as displayed in scrollback
-- **Key Features**:
-  - Subscribes to MessageAddedEvent for real-time persistence
-  - Berlin time for filenames (2025-08-04_15-30-45.md)
-  - Local timezone in file content headers
-  - Rotates files at 2000 messages
-  - Creates ~/Documents/code/atomic-aether/aetherVault/superjournal/ directory
-  - Real-time append with FileHandle
-- **File Format**:
-  ```markdown
-  # Conversation Log
-  
-  Started: 2025-08-04 15:30:45 IST
-  
-  ---
-  
-  **Boss**: What is a red dwarf star?
-  
-  **Samara**: A red dwarf is...
-  ```
-- **Integration**:
-  - No changes needed to MessageStore
-  - Publishes file operation events
-  - Error reporting via ErrorBus
-- **Assessment Results**:
-  - ✅ Swifty: FileHandle for efficiency, async/await, @MainActor
-  - ✅ Atomic LEGO: Clean Model/Service/Events separation
-  - ✅ Configuration: All settings externalized to SuperJournal.json
-  - ✅ Easy removal: Delete folder + remove 2 wire points
-  - ✅ No damage: MessageStore continues without persistence
-  - ✅ Occam's Razor: Simple file append, no database
-  - ✅ Bus integration: ConfigBus, EventBus, ErrorBus appropriately
-- **Post-Audit Fix**:
-  - Path was incorrect (saving to ~/Documents/ instead of code folder)
-  - Fixed to: ~/Documents/code/atomic-aether/aetherVault/superjournal/
-  - Also fixed ScrollbackHistory to read from correct path
-  - Tagged: `post-audit-atom-25`
+#### Usage Example
+```swift
+// Report an error
+errorBus.report(
+    message: "Failed to load persona configuration",
+    from: "PersonaService",
+    severity: .error,
+    error: underlyingError  // Optional NSError
+)
 
-### ATOM 25: Boss Profile Service - Folder-Based User Context ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-26-boss-profile
-- **Files**:
-  - BossProfile/Models/BossProfileConfiguration.swift - Configuration model
-  - BossProfile/Services/BossProfileService.swift - Core service
-  - BossProfile/Events/BossProfileEvents.swift - Event definitions
-  - aetherVault/Config/BossProfile.json - Boss profile configuration
-- **Description**: Reads all files from boss folder as user context for system prompts
-- **Key Features**:
-  - Reads ~/Documents/code/atomic-aether/aetherVault/Boss/ folder
-  - Includes all text files (.md, .txt, .markdown, .text)
-  - Excludes system files (.DS_Store, .gitignore)
-  - Concatenates with file headers
-  - Creates folder if missing
-  - Caches content for performance
-- **Output Format**:
-  ```
-  === Boss.md ===
-  
-  [content of Boss.md]
-  
-  === current-projects.md ===
-  
-  [content of current-projects.md]
-  ```
-- **Philosophy**:
-  - The boss folder IS the profile
-  - No structured data, no JSON parsing
-  - Just drop files in the folder
-  - Maximum flexibility and simplicity
-- **Assessment Results**:
-  - ✅ Swifty: FileManager, URL APIs, String(contentsOf:)
-  - ✅ Atomic LEGO: Minimal Model/Service/Events structure
-  - ✅ Configuration: File types and paths externalized
-  - ✅ Easy removal: Delete folder + remove 1 wire point
-  - ✅ No damage: System prompts work without profile
-  - ✅ Occam's Razor: Just read files, no complexity
-  - ✅ Bus integration: ConfigBus, EventBus, ErrorBus only
-- **Post-Audit Fix**:
-  - Path was misconfigured pointing to wrong location
-  - Fixed from: ~/Documents/code/atomic-aether/aetherVault/boss/
-  - Fixed to: ~/Documents/code/atomic-aether/aetherVault/Boss/
-  - Now properly reads Boss.md and Boss's expectations.md
-  - Tagged: `post-audit-atom-26`
+// Report with different severities
+errorBus.report("Info message", from: "SomeService", severity: .info)
+errorBus.report("Warning!", from: "AnotherService", severity: .warning)
+errorBus.report("Critical failure", from: "CoreService", severity: .critical)
 
-### ATOM 26: Persona Profile Service - Per-Persona Context Folders ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-27-persona-profile
-- **Files**:
-  - PersonaProfile/Models/PersonaProfileConfiguration.swift - Configuration model
-  - PersonaProfile/Services/PersonaProfileService.swift - Core service
-  - PersonaProfile/Events/PersonaProfileEvents.swift - Event definitions
-  - aetherVault/Config/PersonaProfile.json - Persona profile configuration
-- **Description**: Reads persona-specific context from individual folders
-- **Key Features**:
-  - Each persona has a folder: ~/Documents/code/atomic-aether/aetherVault/playbook/personas/[persona-name]/
-  - Reads all text files per persona (.md, .txt, .markdown, .text)
-  - Lazy loading - only loads when requested
-  - Per-persona caching
-  - Creates personas directory if missing
-  - Same logic as Boss Profile Service
-- **Folder Structure**:
-  ```
-  personas/
-  ├── samara/
-  │   ├── personality.md
-  │   └── creative-approach.txt
-  ├── vanessa/
-  │   └── business-expertise.md
-  └── apollo/
-      └── technical-focus.md
-  ```
-- **Usage**:
-  ```swift
-  let samaraProfile = personaProfileService.getProfileForPrompt(personaId: "samara")
-  ```
-- **Assessment Results**:
-  - ✅ Swifty: Same FileManager patterns as Boss Profile
-  - ✅ Atomic LEGO: Minimal Model/Service/Events structure
-  - ✅ Configuration: File types and paths externalized
-  - ✅ Easy removal: Delete folder + remove 1 wire point
-  - ✅ No damage: Personas work without additional profiles
-  - ✅ Occam's Razor: Reused Boss Profile logic
-  - ✅ Bus integration: ConfigBus, EventBus, ErrorBus only
-- **Post-Audit Fix**:
-  - Path was misconfigured pointing to wrong location
-  - Fixed from: ~/Documents/code/atomic-aether/aetherVault/personas/
-  - Fixed to: ~/Documents/code/atomic-aether/aetherVault/playbook/personas/
-  - Now properly reads custom persona descriptions (Claude.md, Samara.md, etc.)
-  - Tagged: `post-audit-atom-27`
+// Apply toast UI to view
+ContentView()
+    .errorToast()  // Shows error toasts
+```
 
-### ATOM 27: System Prompt Builder - Complete Context Assembly ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-28-system-prompt-builder
-- **Files**:
-  - SystemPromptBuilder/Models/SystemPromptConfiguration.swift - Configuration model
-  - SystemPromptBuilder/Services/SystemPromptBuilderService.swift - Core service
-  - SystemPromptBuilder/Events/SystemPromptEvents.swift - Event definitions
-  - aetherVault/Config/SystemPromptBuilder.json - Builder configuration
-- **Description**: Assembles complete system prompts from multiple context sources
-- **Key Features**:
-  - Combines 4 sections in configurable order
-  - Section types: persona, bossProfile, personaProfile, journal
-  - Optional section headers with separators
-  - Journal truncation at 10,000 characters
-  - Graceful handling of missing sections
-  - Events for omitted sections
-- **Configuration**:
-  ```json
-  {
-    "sectionOrder": ["persona", "bossProfile", "personaProfile", "journal"],
-    "sectionSeparator": "\n\n---\n\n",
-    "includeHeaders": true,
-    "sectionHeaders": {
-      "persona": "=== PERSONA ===",
-      "bossProfile": "=== USER CONTEXT ===",
-      "personaProfile": "=== PERSONA CONTEXT ===",
-      "journal": "=== CONVERSATION MEMORY ==="
+#### Configuration (ErrorHandling.json)
+```json
+{
+  "autoDismissTimes": {
+    "info": 3.0,
+    "warning": 5.0,
+    "error": 8.0,
+    "critical": -1.0  // Never auto-dismiss
+  },
+  "maxVisibleErrors": 3,
+  "toastPosition": "top",
+  "animationDuration": 0.3
+}
+```
+
+#### Error Severity Guidelines
+- **`.info`**: Informational messages, quick dismiss (3s)
+- **`.warning`**: Something unexpected but recoverable (5s)
+- **`.error`**: Operation failed, user should know (8s)
+- **`.critical`**: Requires user attention, manual dismiss
+
+#### Why It's Essential
+Without ErrorBus, every atom would need its own error UI, leading to:
+- Inconsistent error presentation
+- Duplicate error handling code
+- Poor user experience with multiple error styles
+- No central place to configure error behavior
+
+ErrorBus provides a single, consistent way to handle errors while remaining completely optional.
+
+#### Removal Instructions
+```swift
+// ErrorBusWire.swift
+/*
+ To remove ErrorBus completely:
+ 1. Delete ATOM-12-ErrorBus folder
+ 2. Remove errorBus from app initialization (line ~95)
+ 3. Remove errorBus environment object (line ~196)
+ 4. Remove .errorToast() from ContentView (line ~29)
+ 5. Remove all errorBus.report() calls
+ 
+ The app continues working - errors are just silently ignored
+ */
+```
+
+### ATOM 13: StateBus
+**Purpose**: Type-safe key-value storage for shared state  
+**Dependencies**: EventBus, ConfigBus  
+**Used by**: ModelState, PersonaState, and pickers  
+**Wire**: Delete StateBus folder → atoms can't share state but still function
+
+### ATOM 13: StateBus - Type-Safe Shared State
+
+StateBus provides a type-safe key-value store that allows atoms to share state without direct dependencies. Using strongly-typed keys prevents runtime errors and makes state access compile-time safe.
+
+#### Structure
+```
+ATOM-13-StateBus/
+├── Core/
+│   └── StateBus.swift              # Main state storage service
+├── Models/
+│   ├── StateKey.swift              # Type-safe key definitions
+│   ├── StateChange.swift           # State change event model
+│   └── StateBusConfiguration.swift # Configuration model
+├── Services/                       # Empty (for completeness)
+├── UI/                            # Empty (for completeness)
+└── Wire/
+    └── StateBusWire.swift         # Integration documentation
+```
+
+#### Key Features
+- **Type-Safe Keys**: Generic `StateKey<T>` ensures compile-time type safety
+- **Shared State**: Atoms can share state without knowing about each other
+- **Change Events**: Publishes events when state values change
+- **FIFO Eviction**: Automatic cleanup when storage limit reached
+- **Debug Logging**: Optional logging of all state changes
+- **Reactive Updates**: Triggers objectWillChange for SwiftUI
+
+#### Usage Example
+```swift
+// Define type-safe keys
+extension StateKey {
+    static let currentPersona = StateKey<String>("currentPersona")
+    static let modelHistory = StateKey<[String]>("modelHistory")
+    static let devModeEnabled = StateKey<Bool>("devModeEnabled")
+}
+
+// Set values
+stateBus.set(.currentPersona, value: "samara")
+stateBus.set(.modelHistory, value: ["gpt-4", "claude-3"])
+stateBus.set(.devModeEnabled, value: true)
+
+// Get values
+let persona: String? = stateBus.get(.currentPersona)
+let history = stateBus.get(.modelHistory) ?? []
+let devMode = stateBus.get(.devModeEnabled) ?? false
+
+// Listen for changes
+eventBus.subscribe(to: StateValueChanged.self) { event in
+    if event.key == "currentPersona" {
+        print("Persona changed to: \(event.newValue ?? "nil")")
+    }
+}
+```
+
+#### Configuration (StateBus.json)
+```json
+{
+  "maxStorageEntries": 100,
+  "enableDebugLogging": false,
+  "logStateChanges": false,
+  "persistToDisk": false  // Future feature
+}
+```
+
+#### Common State Keys
+- **`.currentPersona`**: Currently active persona ID
+- **`.currentAnthropicModel`**: Selected Anthropic model
+- **`.currentNonAnthropicModel`**: Selected non-Anthropic model
+- **`.modelSelectionHistory`**: Recent model selections
+- **`.personaConversationHistory`**: Persona usage timestamps
+- **`.devModeEnabled`**: Developer mode toggle
+
+#### Why It's Essential
+Without StateBus, atoms would need to:
+- Pass state through complex prop drilling
+- Create direct dependencies between atoms
+- Use global singletons (anti-pattern)
+- Duplicate state management logic
+
+StateBus provides clean, type-safe state sharing while maintaining loose coupling.
+
+#### Removal Instructions
+```swift
+// StateBusWire.swift
+/*
+ To remove StateBus completely:
+ 1. Delete ATOM-13-StateBus folder
+ 2. Remove stateBus from app initialization (line ~96)
+ 3. Remove stateBus environment object (line ~197)
+ 4. Replace stateBus.set() with local @State
+ 5. Replace stateBus.get() with @Binding or props
+ 
+ Atoms must then pass state directly or use tight coupling
+ */
+```
+
+### ATOM 14: ConfigBus
+**Purpose**: JSON config loading with hot-reload  
+**Dependencies**: EventBus (for change notifications)  
+**Used by**: ALL atoms for configuration  
+**Wire**: Delete ConfigBus folder → atoms use hardcoded defaults
+
+### ATOM 14: ConfigBus - Configuration-Driven Development
+
+ConfigBus loads JSON configuration files from the bundle and provides hot-reload capability during development. It's the foundation of Boss Rule #3 (Configuration-Driven), ensuring every setting lives in external files rather than hardcoded in source.
+
+#### Structure
+```
+ATOM-14-ConfigBus/
+├── Core/
+│   └── ConfigBus.swift              # Configuration loader with file watching
+├── Models/
+│   └── ConfigBusConfiguration.swift # ConfigBus's own configuration
+├── Events/
+│   └── ConfigBusEvents.swift       # Configuration change events
+├── Services/                       # Empty (for completeness)
+├── UI/                            # Empty (for completeness)
+└── Wire/
+    └── ConfigBusWire.swift         # Integration documentation
+```
+
+#### Key Features
+- **JSON Loading**: Type-safe loading with Codable
+- **Hot-Reload**: File watching in development mode
+- **Caching**: Configs loaded once and cached
+- **Event Publishing**: Notifies when configs change
+- **Bootstrap**: Can load its own configuration
+- **Bundle Support**: Works with app bundle in production
+- **Error Handling**: Graceful fallback to defaults
+
+#### Usage Example
+```swift
+// Load a configuration
+let personaConfig = configBus.load("Personas", as: PersonaConfiguration.self)
+
+// Load with default fallback
+let themeConfig = configBus.load("Theme", as: ThemeConfig.self) ?? .default
+
+// Check if configuration exists
+if configBus.hasConfiguration("FeatureFlags") {
+    let flags = configBus.load("FeatureFlags", as: FeatureFlags.self)
+}
+
+// React to configuration changes
+eventBus.subscribe(to: ConfigurationChangedEvent.self) { event in
+    if event.configName == "InputBarAppearance" {
+        // Reload UI settings
+    }
+}
+```
+
+#### Configuration Location
+```
+aetherVault/Config/
+├── EventBus.json           # Event system settings
+├── ErrorHandling.json      # Error display config
+├── StateBus.json          # State storage limits
+├── ConfigBus.json         # ConfigBus's own config
+├── LLMProviders.json      # AI provider settings
+├── Personas.json          # Persona definitions
+├── InputBarAppearance.json # UI appearance
+└── ... (one per atom)
+```
+
+#### Configuration (ConfigBus.json)
+```json
+{
+  "enableHotReload": true,
+  "fileExtension": ".json",
+  "configDirectory": "Config",
+  "cacheConfigurations": true,
+  "publishChangeEvents": true
+}
+```
+
+#### Hot-Reload Behavior
+- **Development**: Watches files with DispatchSource
+- **Production**: Loads once from bundle
+- **File Changes**: Automatic reload and event publishing
+- **Performance**: Minimal overhead with caching
+
+#### Why It's Essential
+Without ConfigBus:
+- Every setting would be hardcoded
+- Changes require recompilation
+- No A/B testing capability
+- No per-environment configuration
+- Violates Boss Rule #3 completely
+
+ConfigBus enables true configuration-driven development where behavior can be modified without touching code.
+
+#### Removal Instructions
+```swift
+// ConfigBusWire.swift
+/*
+ To remove ConfigBus completely:
+ 1. Delete ATOM-14-ConfigBus folder
+ 2. Remove configBus initialization (line ~72)
+ 3. Remove configBus environment object (line ~190)
+ 4. Remove configBus assignment to eventBus (line ~76)
+ 5. Replace all configBus.load() with hardcoded values
+ 
+ WARNING: Violates Boss Rule #3 - Configuration-Driven
+ */
+```
+
+## Model/LLM System (20s)
+
+### ATOM 21: Model Picker
+**Purpose**: Dropdown menu UI for selecting AI models  
+**Dependencies**: ModelState, EventBus  
+**Used by**: InputBar  
+**Wire**: Delete ModelPicker folder → remove from InputBar line 76
+
+### ATOM 21: Model Picker - Interactive Model Selection UI
+
+Model Picker provides a dropdown menu UI component for selecting AI models from different providers. It groups models by provider, shows visual indicators, and integrates with the model state system for persistence.
+
+#### Structure
+```
+ATOM-21-ModelPicker/
+├── Models/
+│   └── ModelPickerConfiguration.swift # UI and behavior configuration
+├── Services/
+│   └── ModelPickerService.swift      # Selection logic and state management
+├── UI/
+│   └── ModelPickerView.swift         # SwiftUI Menu component
+└── Wire/
+    └── ModelPickerWire.swift         # Integration documentation
+```
+
+#### Key Features
+- **Provider Grouping**: Models organized by provider (Anthropic, OpenAI, etc.)
+- **Visual Indicators**: SF Symbol icons for each provider
+- **Current Selection**: Checkmark shows active model
+- **Auto-Persona Switching**: Optional persona switch on model change
+- **Event Publishing**: Notifies system of model selection
+- **Configuration-Driven**: All UI strings and behavior in JSON
+
+#### Usage Example
+```swift
+// In InputBarView
+HStack {
+    Button("+", action: handleAddButton)
+        .buttonStyle(.plain)
+    
+    ModelPickerView(
+        modelPickerService: modelPickerService,
+        selectedModel: $selectedModel,
+        isExpanded: $isExpanded
+    )
+    .fixedSize()  // Prevents size jumps
+    
+    PersonaPickerView()
+        .fixedSize()
+}
+```
+
+#### Configuration (ModelPicker.json)
+```json
+{
+  "providerOrder": ["anthropic", "openai", "fireworks"],
+  "providerIcons": {
+    "anthropic": "atom",
+    "openai": "circle",
+    "fireworks": "flame"
+  },
+  "displayNames": {
+    "anthropic": "Anthropic",
+    "openai": "OpenAI",
+    "fireworks": "Fireworks"
+  },
+  "autoSwitchPersona": true,
+  "insertPersonaName": true,
+  "typography": {
+    "sectionHeaderFont": "system",
+    "sectionHeaderSize": 12,
+    "itemFont": "system",
+    "itemSize": 14
+  }
+}
+```
+
+#### Model Selection Flow
+1. User clicks picker → Menu appears with grouped models
+2. User selects model → ModelPickerService updates selection
+3. Service calls ModelStateService.selectModel()
+4. If autoSwitchPersona enabled → PersonaStateService switches
+5. InsertTextEvent published → Persona name appears in input
+6. ModelDisplayService updates → Shows new model name
+
+#### Auto-Persona Switching
+When `autoSwitchPersona` is enabled:
+- Selecting Anthropic model → Switches to default Anthropic persona
+- Selecting non-Anthropic model → Switches to default non-Anthropic persona
+- Persona name inserted into input field for context
+
+#### Why It's Essential
+Without Model Picker:
+- No UI for model selection
+- Users stuck with default model
+- No way to compare different AI providers
+- Poor user experience
+
+Model Picker provides clean, consistent model selection that integrates seamlessly with the state system.
+
+#### Removal Instructions
+```swift
+// ModelPickerWire.swift
+/*
+ To remove ModelPicker completely:
+ 1. Delete ATOM-21-ModelPicker folder
+ 2. Remove modelPickerService initialization (line ~160)
+ 3. Remove modelPickerService environment object (line ~202)
+ 4. Remove ModelPickerView from InputBarView (line ~76)
+ 5. Remove modelPickerService @EnvironmentObject (line ~25)
+ 
+ Users can no longer select models via UI
+ */
+```
+
+### ATOM 22: LLM System
+**Purpose**: Protocol-based LLM provider implementations with request/response models  
+**Dependencies**: ConfigBus, EventBus, EnvLoader  
+**Used by**: ConversationOrchestrator, ModelStateService  
+**One-line**: Unified protocol for all AI providers with streaming responses
+
+#### Why It Deserves to Be an Atom
+The LLM System merges two closely related concepts (Models and LLM Services) into a single cohesive atom. It provides:
+- Unified LLMService protocol for all providers
+- Type-safe request/response models
+- Streaming response support
+- Model validation and registry
+- Clean separation between data models and service implementations
+
+#### Structure
+```
+ATOM-22-Models/
+├── Core/                           # Empty (models are the core)
+├── Models/
+│   ├── LLMProvider.swift          # Provider enumeration
+│   ├── LLMConfiguration.swift     # Configuration structures
+│   ├── LLMRequest.swift          # Request model
+│   ├── LLMResponse.swift         # Response and error models
+│   └── MessageRole.swift         # Message role enum
+├── Services/
+│   └── ModelRegistryService.swift # Model validation service
+├── Events/
+│   └── ModelEvents.swift         # Model loading events
+└── UI/
+    └── ModelDebugView.swift      # Optional debug view
+
+ATOM-22-LLMServices/
+├── Protocols/
+│   └── LLMService.swift          # Service protocol definition
+├── Services/
+│   ├── LLMRouter.swift           # Request router
+│   ├── AnthropicService.swift    # Anthropic provider
+│   ├── OpenAIService.swift       # OpenAI provider
+│   └── FireworksService.swift    # Fireworks provider
+└── Wire/
+    └── LLMSystemWire.swift       # Integration documentation
+```
+
+#### Key Features
+- **Protocol-Based**: All providers implement LLMService protocol
+- **Streaming Responses**: AsyncThrowingStream for real-time tokens
+- **Router Pattern**: LLMRouter selects provider based on request
+- **Model Registry**: Validates model strings against configuration
+- **Type-Safe Messages**: MessageRole enum for system/user/assistant
+- **Error Handling**: Comprehensive error types and reporting
+- **Configuration-Driven**: All endpoints and models in JSON
+
+#### Usage Example
+```swift
+// Create a request
+let request = LLMRequest(
+    messages: [
+        LLMMessage(role: .system, content: systemPrompt),
+        LLMMessage(role: .user, content: userMessage)
+    ],
+    modelString: "anthropic/claude-3-5-sonnet",
+    provider: .anthropic
+)
+
+// Route to appropriate service
+let stream = try await llmRouter.route(request)
+
+// Process streaming response
+for try await response in stream {
+    switch response {
+    case .token(let token):
+        // Append token to UI
+    case .complete(let fullResponse):
+        // Handle completion
+    case .error(let error):
+        // Report error
+    }
+}
+```
+
+#### Provider Configuration (LLMProviders.json)
+```json
+{
+  "providers": {
+    "anthropic": {
+      "baseURL": "https://api.anthropic.com/v1",
+      "models": {
+        "claude-3-5-sonnet": {
+          "apiName": "claude-3-5-sonnet-20241022",
+          "displayName": "Claude 3.5 Sonnet",
+          "maxTokens": 8192,
+          "contextWindow": 200000
+        }
+      }
+    },
+    "openai": {
+      "baseURL": "https://api.openai.com/v1",
+      "models": {
+        "gpt-4": {
+          "apiName": "gpt-4-turbo-preview",
+          "displayName": "GPT-4 Turbo",
+          "maxTokens": 4096
+        }
+      }
     }
   }
-  ```
-- **Integration**:
-  - Replaces simple persona prompt in ConversationOrchestrator
-  - Falls back to basic prompt if builder unavailable
-  - One-line change to enable/disable
-- **Assessment Results**:
-  - ✅ Swifty: String concatenation, switch statement
-  - ✅ Atomic LEGO: Clean Model/Service/Events separation
-  - ✅ Configuration: All formatting options externalized
-  - ✅ Easy removal: Change one line to revert
-  - ✅ No damage: Graceful fallback to basic prompt
-  - ✅ Occam's Razor: Simple string joining approach
-  - ✅ Bus integration: ConfigBus, EventBus only (no errors expected)
+}
+```
 
-### ATOM 28: System Prompt Manifest
-- **Status**: Active
-- **Description**: System prompt debugging and manifest generation
-- **Note**: Reinstated as ATOM 28
+#### API Key Loading Priority
+1. **DevKeys** (development only) → UserDefaults
+2. **Keychain** → Secure storage
+3. **Process Environment** → Runtime variables
+4. **.env File** → Development fallback
 
-### ATOM 29: Machine Trim Instructions ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-30-machine-trim-instructions
-- **Files**:
-  - MachineTrimInstructions/Models/MachineTrimInstructionsConfiguration.swift - Configuration model
-  - MachineTrimInstructions/Services/MachineTrimInstructionsService.swift - Core service
-  - MachineTrimInstructions/Events/MachineTrimInstructionsEvents.swift - Event definitions
-  - aetherVault/Config/MachineTrimInstructions.json - Instruction configuration
-- **Description**: Provides instructions to LLMs for two-part response format
-- **Key Features**:
-  - Appends format instructions to system prompt
-  - Includes response examples
-  - Defines inferability guidelines
-  - Configurable markers matching ResponseParser
-  - Template-based instruction generation
-  - Per-persona customization support
-- **Configuration**:
-  ```json
-  {
-    "enabled": true,
-    "instructionTemplate": "You must respond in a two-part format...",
-    "normalResponseMarker": "---NORMAL_RESPONSE---",
-    "machineTrimMarker": "---MACHINE_TRIM---",
-    "inferableMarker": "[INFERABLE]",
-    "inferableOnlyMarker": "[INFERABLE - NOT STORED]",
-    "includeExamples": true,
-    "examples": [...],
-    "inferabilityGuidelines": [...]
+#### Adding New Providers
+1. Add provider to LLMProvider enum
+2. Create service implementing LLMService protocol
+3. Register in LLMRouter.setupServices()
+4. Add configuration to LLMProviders.json
+
+#### Protocol Definition
+```swift
+protocol LLMService {
+    var provider: LLMProvider { get }
+    
+    func sendRequest(_ request: LLMRequest) async throws -> AsyncThrowingStream<LLMResponse, Error>
+    func validateModel(_ modelString: String) -> Bool
+}
+```
+
+#### Why This Architecture
+- **Flexibility**: Easy to add new providers
+- **Consistency**: Same interface for all providers
+- **Performance**: Streaming for better UX
+- **Type Safety**: Enums and structs prevent errors
+- **Testing**: Mock services can implement protocol
+
+#### Removal Instructions
+```swift
+// LLMSystemWire.swift
+/*
+ To remove LLM System completely:
+ 1. Delete ATOM-22-LLMServices folder
+ 2. Delete ATOM-22-Models folder
+ 3. Remove llmRouter initialization (line ~109)
+ 4. Remove modelRegistry initialization (line ~102)
+ 5. Remove llmRouter environment object (line ~187)
+ 6. Remove llmRouter.setupServices() call (line ~219)
+ 7. Remove modelRegistry from dependencies
+ 8. Replace LLM calls with mock responses
+ 
+ WARNING: No AI communication without this atom
+ */
+```
+
+### ATOM 23: ModelDisplay
+**Purpose**: Service that formats and displays the current model name  
+**Dependencies**: ConfigBus, EventBus, ModelStateService, PersonaStateService  
+**Used by**: InputBarView, ModelPickerView  
+**One-line**: Formats raw model IDs into user-friendly display names
+
+#### Why It Deserves to Be an Atom
+ModelDisplay provides a single source of truth for how model names are displayed throughout the app. Without it, every UI component would need its own formatting logic, leading to inconsistency and duplication. It observes model changes from multiple sources and maintains the current display state.
+
+#### Structure
+```
+ATOM-23-ModelDisplay/
+├── Models/
+│   └── ModelDisplayConfiguration.swift    # Display name mappings
+├── Services/
+│   └── ModelDisplayService.swift         # Formatting and state service
+├── UI/
+│   └── ModelIndicatorView.swift         # Reusable display component
+└── Wire/
+    └── ModelDisplayWire.swift           # Integration documentation
+```
+
+#### Key Features
+- **Observer Pattern**: Watches PersonaStateService and ModelStateService
+- **Configuration-Driven**: All display names in JSON
+- **Formatting Hierarchy**: Custom names → short names → patterns → generic
+- **Reusable Component**: ModelIndicatorView for consistent display
+- **Event Listening**: Updates on PersonaSwitched and ModelSelected events
+- **Smart Formatting**: Removes dates, capitalizes, handles separators
+- **Provider Display**: Optional provider prefix with custom names
+
+#### Usage Example
+```swift
+// In a view
+ModelIndicatorView(
+    modelDisplayService: modelDisplayService,
+    fontSize: 12,
+    opacity: 0.7
+)
+
+// Service automatically formats:
+// "anthropic:claude-3-5-sonnet-20241022" → "Claude 3.5 Sonnet"
+// "openai:gpt-4-turbo-preview" → "GPT-4 Turbo"
+// "fireworks:llama-v3-70b-instruct" → "Llama V3 70B Instruct"
+```
+
+#### Configuration (ModelDisplay.json)
+```json
+{
+  "modelDisplayNames": {
+    "anthropic:claude-3-5-sonnet": "Claude 3.5 Sonnet",
+    "openai:gpt-4": "GPT-4 Turbo"
+  },
+  "showProvider": false,
+  "providerSeparator": " ",
+  "providerDisplayNames": {
+    "anthropic": "Anthropic",
+    "openai": "OpenAI",
+    "fireworks": "Fireworks"
+  },
+  "modelShortNames": {
+    "gpt-4": "GPT-4",
+    "claude-3-5-sonnet": "Claude 3.5 Sonnet",
+    "llama-v3-70b": "Llama 3 70B"
+  },
+  "modelPatternReplacements": {
+    "claude-3-5": "Claude 3.5",
+    "gpt-": "GPT-",
+    "-instruct": " Instruct"
   }
-  ```
-- **Bug Fixes Included**:
-  - ResponseParser string index out of bounds crash
-  - Section markers appearing in UI
-  - StreamProcessor using raw instead of parsed tokens
-  - Personas self-introducing (updated prompts)
-  - UI width increased to 1400px
-- **Assessment Results**:
-  - ✅ Swifty: Template strings, proper optionals
-  - ✅ Atomic LEGO: Single wire to SystemPromptBuilder
-  - ✅ Configuration: All text externalized to JSON
-  - ✅ Easy removal: Delete folder + 1 setup line
-  - ✅ No damage: Optional parameter, graceful fallback
-  - ✅ Occam's Razor: Simple string template approach
-  - ✅ Bus integration: ConfigBus, EventBus only
+}
+```
 
-### ATOM 30: Scrollback History Loader ✅
-- **Status**: Complete and assessed against 7 BOSS RULES
-- **Phase**: II
-- **Tag**: atom-31-scrollback-history-loader
-- **Files**:
-  - ScrollbackHistory/Models/HistoricalMessage.swift - Message model for SuperJournal
-  - ScrollbackHistory/Models/ScrollbackHistoryConfiguration.swift - Configuration model
-  - ScrollbackHistory/Services/ScrollbackHistoryLoaderService.swift - Core loader service
-  - ScrollbackHistory/Events/ScrollbackHistoryEvents.swift - Event definitions
-  - ScrollbackHistory/Views/ScrollbackHistoryTriggerView.swift - UI trigger button
-  - aetherVault/Config/ScrollbackHistory.json - Loader configuration
-- **Description**: Loads historical messages from SuperJournal for infinite scrollback
-- **Key Features**:
-  - Reads messages from SuperJournal session files
-  - Batch loading (100 messages per load)
-  - Trigger button appears at top of scrollback
-  - Loading state with progress indicator
-  - "No more history" state when complete
-  - Error handling with retry capability
-  - Fixed color references with colorFromString helper
-- **Configuration**:
-  ```json
-  {
-    "enabled": true,
-    "messagesPerBatch": 100,
-    "superJournalPath": "~/Documents/code/atomic-aether/aetherVault/superjournal/",
-    "showLoadingIndicator": true,
-    "loadingText": "Loading earlier messages...",
-    "loadMoreButtonText": "Load Earlier Messages",
-    "noMoreHistoryText": "Beginning of conversation history"
+#### Display Priority
+1. **Exact Match**: modelDisplayNames["anthropic:claude-3-5-sonnet"]
+2. **Short Name**: modelShortNames["claude-3-5-sonnet"]
+3. **Pattern Replace**: Replace patterns in model name
+4. **Generic Format**: Capitalize words, remove dates
+
+#### Integration Flow
+```
+PersonaStateService → currentPersona changes
+                   ↓
+ModelDisplayService → observes change
+                   ↓
+                   → gets model from PersonaStateService
+                   → formats using configuration
+                   → updates currentModelDisplay
+                   ↓
+ModelIndicatorView → displays formatted name
+```
+
+#### Why This Architecture
+- **Single Responsibility**: Only handles display formatting
+- **Reactive Updates**: Automatically updates when model changes
+- **Configuration Control**: Marketing can update names without code changes
+- **Consistency**: Same display everywhere in the app
+- **Testability**: Pure formatting logic easy to test
+
+#### Removal Instructions
+```swift
+// ModelDisplayWire.swift
+/*
+ To remove ModelDisplay completely:
+ 1. Delete ATOM-23-ModelDisplay folder
+ 2. Remove modelDisplayService initialization (line ~151)
+ 3. Remove modelDisplayService environment object (line ~195)
+ 4. Remove modelDisplayService.setup() call (line ~231)
+ 5. Remove from ModelPickerService dependencies
+ 6. Remove from InputBarView @EnvironmentObject
+ 7. Replace ModelIndicatorView with hardcoded text
+ 
+ Model names will show as raw IDs
+ */
+```
+
+### ATOM 24: ModelState
+**Purpose**: Manages model selection state, defaults, and overrides  
+**Dependencies**: ConfigBus, StateBus, EventBus, ErrorBus, LLMRouter  
+**Used by**: PersonaSystem, ModelDisplayService, ModelPickerService  
+**One-line**: Central state management for model selection with defaults and user overrides
+
+#### Why It Deserves to Be an Atom
+ModelState provides the single source of truth for which AI model is currently active. It handles the complex logic of:
+- Default models for different persona types (Anthropic vs non-Anthropic)
+- User overrides when manually selecting models
+- Persistence across sessions
+- Validation against available models
+Without this atom, every component would need its own model selection logic, leading to inconsistency and bugs.
+
+#### Structure
+```
+ATOM-24-ModelState/
+├── Models/
+│   ├── ModelStateConfiguration.swift    # Configuration and defaults
+│   └── ModelStateKeys.swift            # StateBus keys and events
+├── Services/
+│   └── ModelStateService.swift         # Core state management
+├── UI/
+│   └── ModelStateDebugView.swift       # Optional debug view
+└── Wire/
+    └── ModelStateWire.swift            # Integration documentation
+```
+
+#### Key Features
+- **Dual Defaults**: Separate defaults for Anthropic and non-Anthropic personas
+- **Override Management**: User can override defaults via model picker
+- **State Persistence**: Selections saved via StateBus
+- **Model Validation**: Checks models against LLMRouter availability
+- **History Tracking**: Maintains selection history for analytics
+- **Dynamic Classification**: Unknown models classified by provider prefix
+- **Event Publishing**: Notifies system of model changes
+
+#### State Resolution Logic
+```swift
+// For Anthropic personas:
+if let override = currentAnthropicModel {
+    return override  // User selected specific model
+} else {
+    return defaultAnthropicModel  // Use default
+}
+
+// For non-Anthropic personas:
+if let override = currentNonAnthropicModel {
+    return override  // User selected specific model
+} else {
+    return defaultNonAnthropicModel  // Use default
+}
+```
+
+#### Configuration (ModelState.json)
+```json
+{
+  "defaultAnthropicModel": "anthropic:claude-3-5-sonnet",
+  "defaultNonAnthropicModel": "openai:gpt-4",
+  "anthropicModels": [
+    "anthropic:claude-3-5-sonnet",
+    "anthropic:claude-3-opus",
+    "anthropic:claude-3-haiku"
+  ],
+  "nonAnthropicModels": [
+    "openai:gpt-4",
+    "openai:gpt-3.5-turbo",
+    "fireworks:llama-v3-70b-instruct"
+  ],
+  "maxHistorySize": 50,
+  "anthropicProviderPrefix": "anthropic:",
+  "debugView": {
+    "width": 400,
+    "height": 600
   }
-  ```
-- **Integration**:
-  - MessageStore.prependHistoricalMessages() for adding loaded messages
-  - ScrollbackHistoryTriggerView integrated in ScrollbackView
-  - Follows event-driven architecture with proper state management
-- **Assessment Results**:
-  - ✅ Swifty: Async/await, proper SwiftUI patterns
-  - ✅ Atomic LEGO: Self-contained with event-based integration
-  - ✅ Configuration: All settings externalized to JSON
-  - ✅ Easy removal: Delete folder + remove trigger view
-  - ✅ No damage: Graceful fallback if disabled
-  - ✅ Occam's Razor: Simple file reading and batch loading
-  - ✅ Bus integration: ConfigBus, EventBus, ErrorBus
-- **Post-Audit Enhancement**: 
-  - Added auto-load on scroll via .onAppear
-  - Configuration option: `autoLoadOnScroll: true`
-  - Maintains button as fallback control
-  - Tagged: `post-audit-atom-31`
+}
+```
 
-### ATOM 31: PersonaPicker - Interactive Persona Selection Menu ✅
-- **Status**: Complete (extracted from PersonaSystem)
-- **Phase**: I (UI component)
-- **Tag**: atom-31-persona-picker
-- **Files**:
-  - PersonaPicker/Core/PersonaPicker.swift - Atom coordinator
-  - PersonaPicker/UI/PersonaPickerView.swift - SwiftUI menu component
-  - PersonaPicker/Wire/PersonaPickerWire.swift - Integration documentation
-  - PersonaUIConfiguration model (shared with PersonaSystem)
-  - aetherVault/Config/PersonaUI.json - UI configuration (shared)
-- **Description**: Dropdown menu for selecting AI personas
-- **Key Features**:
-  - Groups personas by category (Functional Experts, Cognitive Voices)
-  - Shows current selection with chevron indicator
-  - Displays persona names and roles with different styling
-  - Integrates with PersonaStateService for selection
-  - Inserts persona name into input field
-  - Full configuration-driven appearance
-- **Integration**:
-  - Used in InputBarView alongside ModelPicker
-  - Depends on PersonaStateService from PersonaSystem atom
-  - Shares PersonaUIConfiguration with PersonaSystem
-- **Assessment Results**:
-  - ✅ Swifty: Native Menu component, proper SwiftUI patterns
-  - ✅ Atomic LEGO: Proper Core/UI/Wire structure
-  - ✅ Configuration: All values externalized to PersonaUI.json
-  - ✅ Easy removal: Delete folder + remove from InputBarView
-  - ✅ No damage: Pure UI component, optional feature
-  - ✅ Occam's Razor: Simple menu implementation
-  - ✅ Bus integration: Uses ConfigBus for configuration only
+#### State Persistence
+Uses StateBus with type-safe keys:
+```swift
+// Model overrides
+StateKey.currentAnthropicModel → "anthropic:claude-3-opus"
+StateKey.currentNonAnthropicModel → "openai:gpt-4"
 
-### ATOM 32: DevKeys - Development-Only API Key Storage ✅
-- **Status**: Complete
-- **Phase**: I (developer experience)
-- **Tag**: no-more-password-prompts
-- **Files**:
-  - DevKeys/Core/DevKeys.swift - Atom coordinator
-  - DevKeys/Models/DevKeysConfiguration.swift - Configuration model
-  - DevKeys/Services/DevKeysService.swift - UserDefaults storage service
-  - DevKeys/UI/DevKeysToggleView.swift - Toggle UI component
-  - DevKeys/Events/DevKeysEvents.swift - Event definitions
-  - DevKeys/Wire/DevKeysWire.swift - Integration documentation
-  - aetherVault/Config/DevKeys.json - Configuration file
-- **Description**: Eliminates Keychain password prompts during development
-- **Key Features**:
-  - Stores API keys in UserDefaults (no password required)
-  - Auto-enabled in DEBUG builds
-  - Auto-migrates keys from Keychain on first run
-  - Visual toggle in API Key Setup view
-  - Clear warning when active (insecure storage)
-  - Disabled in production builds for security
-- **Integration**:
-  - EnvLoader checks DevKeys first before Keychain
-  - APIKeySetupView includes toggle and dual-save logic
-  - Graceful fallback to Keychain if DevKeys disabled
-- **Security Note**: UserDefaults storage is intentionally insecure for development convenience. Never use in production.
+// UI state
+StateKey.lastSelectedModel → "anthropic:claude-3-5-sonnet"
+StateKey.modelSelectionHistory → ["model1", "model2", ...]
+```
 
-## Architecture Principles
+#### Events Published
+```swift
+// When user selects a model
+ModelSelectedEvent(model: "anthropic:claude-3-5-sonnet")
 
-Each ATOM follows these principles:
-1. **Single Responsibility** - One feature, one purpose
-2. **Zero Dependencies** - Components communicate only through EventBus
-3. **Configuration-Driven** - Behavior defined in JSON files
-4. **Easy Removal** - Delete the atom's files and the app still works
-5. **Swifty** - Native Swift patterns and idioms
+// When defaults change
+ModelDefaultsChangedEvent(
+    anthropic: "anthropic:claude-3-5-sonnet",
+    nonAnthropic: "openai:gpt-4"
+)
 
-## Adding New Atoms
+// When override is cleared
+ModelOverrideClearedEvent(isAnthropic: true)
+```
 
-To add a new ATOM:
-1. Create Models for data structures
-2. Create Services for business logic
-3. Create Views for UI components
-4. Wire together via EventBus events
-5. Add configuration files if needed
-6. Update this roadmap
+#### Usage Example
+```swift
+// Select a model (auto-detects type)
+modelStateService.selectModel("anthropic:claude-3-opus")
 
+// Get current model for persona type
+let model = modelStateService.resolvedAnthropicModel
+
+// Clear user override
+modelStateService.clearAnthropicOverride()
+
+// Check available models
+let anthropicModels = modelStateService.availableModels(anthropic: true)
+```
+
+#### Dynamic Model Handling
+When encountering unknown models:
+```swift
+"anthropic:new-model" → Added to anthropicModels
+"openai:new-model" → Added to nonAnthropicModels
+"custom:model" → Added to nonAnthropicModels (default)
+```
+
+#### Why This Architecture
+- **Separation of Concerns**: Model state separate from UI and personas
+- **Flexibility**: Easy to add new model types or providers
+- **User Control**: Overrides respect user choice
+- **Persistence**: Selections survive app restarts
+- **Validation**: Ensures only available models are selected
+
+#### Removal Instructions
+```swift
+// ModelStateWire.swift
+/*
+ To remove ModelState completely:
+ 1. Delete ATOM-24-ModelState folder
+ 2. Remove modelStateService initialization (line ~117)
+ 3. Remove modelStateService environment object (line ~192)
+ 4. Remove modelStateService.setup() call (line ~222)
+ 5. Remove from PersonaSystem dependencies
+ 6. Remove from ModelDisplayService dependencies
+ 7. Remove from ModelPickerService dependencies
+ 8. Replace with hardcoded model selection
+ 
+ Model selection and persistence will be broken
+ */
+```
+
+### ATOM 25: API Key Storage - Secure Keychain Integration
+
+**One-Line**: Provides secure API key storage using macOS Keychain with setup UI
+
+#### Why API Key Storage Deserves to be an Atom
+API keys are the gateway to LLM functionality, and storing them securely is critical. This atom provides a production-grade solution using macOS Keychain, eliminating plaintext storage while offering a smooth setup experience. It handles the complexity of Keychain APIs, batch operations, and auto-migration from .env files.
+
+#### Architecture
+```
+Keychain/
+├── Models/          # Empty (no models needed)
+├── Services/
+│   └── KeychainService.swift    # Static utility for Keychain operations
+├── Views/
+│   └── APIKeySetupView.swift    # Setup UI for missing keys
+└── Wire/
+    └── KeychainWire.swift       # Integration docs
+```
+
+#### Key Features
+1. **Secure Storage**: Uses macOS Security framework
+2. **Batch Operations**: Save/load multiple keys with one password prompt
+3. **Auto-Migration**: Moves keys from .env to Keychain automatically
+4. **Setup UI**: Clean interface for entering API keys
+5. **Error Handling**: Clear messages for common Keychain issues
+
+#### Loading Priority
+```
+1. DevKeys (if DEBUG)
+      ↓
+2. Keychain ← This Atom
+      ↓
+3. Process Environment
+      ↓
+4. .env file
+      ↓
+5. Auto-migrate to Keychain
+```
+
+#### Keychain Structure
+```swift
+Service: "com.atomic.aether" // Bundle ID
+Accounts:
+- ANTHROPIC_API_KEY → sk-ant-api03-...
+- OPENAI_API_KEY → sk-proj-...
+- FIREWORKS_API_KEY → fw_3Tv9...
+```
+
+#### Batch Operations
+```swift
+// Save all keys at once - single password prompt
+KeychainService.saveAPIKeys([
+    "ANTHROPIC_API_KEY": anthropicKey,
+    "OPENAI_API_KEY": openAIKey,
+    "FIREWORKS_API_KEY": fireworksKey
+])
+
+// Load all keys at once
+let keys = KeychainService.loadAPIKeys([
+    "ANTHROPIC_API_KEY",
+    "OPENAI_API_KEY", 
+    "FIREWORKS_API_KEY"
+])
+```
+
+#### Security Configuration
+```swift
+// Keys available after first unlock
+kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock
+
+// Allows background access while maintaining security
+// Keys encrypted until user logs in
+```
+
+#### Setup UI Flow
+```
+App launches → EnvLoader checks for keys
+           ↓
+Keys missing? → Show APIKeySetupView sheet
+           ↓
+User enters keys → Test connections
+           ↓
+Save to Keychain → Dismiss sheet
+           ↓
+App continues with secured keys
+```
+
+#### Password Prompt Handling
+- macOS prompts for Keychain access
+- Frequency depends on code signing
+- Users can add app to "Always Allow"
+- DevKeys atom eliminates prompts during development
+
+#### Integration Points
+- **EnvLoader**: Primary consumer, checks Keychain first
+- **APIKeySetupView**: Presented when keys missing
+- **atomic_aetherApp**: Manages setup sheet presentation
+- **LLM Services**: Use loaded keys for API calls
+
+#### Error Cases
+```swift
+enum KeychainError: Error {
+    case itemNotFound         // Key doesn't exist
+    case duplicateItem        // Key already exists
+    case invalidData          // Corrupted data
+    case authenticationFailed // User denied access
+    case unhandledError(OSStatus) // Other errors
+}
+```
+
+#### Why This Architecture
+- **Static Utility**: No state needed, pure functions
+- **Batch Operations**: Minimize password prompts
+- **Auto-Migration**: Smooth transition from .env files
+- **Type Safety**: Strongly typed key names
+- **Error Recovery**: Graceful fallbacks
+
+#### Removal Instructions
+```swift
+// KeychainWire.swift
+/*
+ To remove API Key Storage:
+ 1. Delete ATOM-25-Keychain folder
+ 2. Update EnvLoader to skip Keychain
+ 3. Remove APIKeySetupView sheet
+ 4. API keys in .env files only
+ 
+ WARNING: Plaintext storage only!
+ */
+```
+
+### ATOM 26: Environment Loader - Multi-Source API Key Loading
+
+**One-Line**: Loads API keys from DevKeys, Keychain, environment variables, or .env files with auto-migration
+
+#### Why Environment Loader Deserves to be an Atom
+Environment Loader solves the complex problem of API key management across different environments (development, testing, production) with a smart fallback chain. It seamlessly integrates with DevKeys for development, Keychain for security, and .env files for simplicity, while auto-migrating keys to secure storage. Without this atom, each service would implement its own key loading logic, leading to inconsistency and security vulnerabilities.
+
+#### Architecture
+```
+EnvLoader/
+├── Models/
+│   ├── Environment.swift               # Core environment model
+│   └── EnvLoaderConfiguration.swift    # Configuration structure
+├── Services/
+│   └── EnvLoader.swift                 # Multi-source loader
+├── Events/
+│   └── EnvLoaderEvents.swift          # Loading events
+└── Wire/
+    └── EnvLoaderWire.swift            # Integration docs
+```
+
+#### Loading Priority Chain
+```
+1. DevKeys (if DEBUG)
+      ↓ not found
+2. Keychain
+      ↓ not found
+3. Process Environment
+      ↓ not found
+4. .env file
+      ↓ found!
+5. Auto-migrate to Keychain
+      ↓
+   Return key
+```
+
+#### Configuration (EnvLoader.json)
+```json
+{
+  "apiKeyNames": {
+    "anthropic": "ANTHROPIC_API_KEY",
+    "openai": "OPENAI_API_KEY",
+    "fireworks": "FIREWORKS_API_KEY"
+  },
+  "envFilePaths": [
+    ".env",
+    "../.env", 
+    "~/.env"
+  ],
+  "autoMigrateToKeychain": true,
+  "logLevel": "info"
+}
+```
+
+#### .env File Format
+```bash
+# .env file in project root
+ANTHROPIC_API_KEY=sk-ant-api03-...
+OPENAI_API_KEY=sk-proj-...
+FIREWORKS_API_KEY=fw_3Tv9...
+
+# Comments and blank lines ignored
+# Quotes optional: KEY="value" or KEY=value
+```
+
+#### API Key Access
+```swift
+// Load all keys on startup
+envLoader.loadAPIKeys()
+
+// Get specific key
+if let anthropicKey = envLoader.apiKey(for: .anthropic) {
+    // Configure Anthropic service
+}
+
+// Check availability
+if envLoader.hasAPIKey(for: .openai) {
+    // Enable OpenAI features
+}
+
+// Get all loaded providers
+let providers = envLoader.loadedKeys // [.anthropic, .openai]
+```
+
+#### Auto-Migration Flow
+```
+Found key in .env?
+      ↓
+Already in Keychain?
+      ↓ No
+Save to Keychain
+      ↓
+Delete from memory
+      ↓
+Future loads use Keychain
+```
+
+#### Integration Points
+- **atomic_aetherApp**: Initializes and calls loadAPIKeys()
+- **LLM Services**: Retrieve keys via apiKey(for:)
+- **DevKeys**: First check if enabled (ATOM 27)
+- **KeychainService**: Second check for secure storage (ATOM 25)
+- **ConfigBus**: Loads configuration
+
+#### Error Handling
+```swift
+// Missing .env - Silent, not an error
+// Malformed .env - Log warning, continue
+// Keychain locked - Fall back to .env
+// No keys found - Return nil, let services handle
+```
+
+#### Security Best Practices
+1. **Never commit .env files** - Add to .gitignore
+2. **Use DevKeys in development** - No password prompts
+3. **Auto-migrate to Keychain** - Secure production keys
+4. **Validate keys** - Check format before use
+5. **Clear from memory** - After migration
+
+#### Why This Architecture
+- **Flexibility**: Works in any environment
+- **Security**: Auto-upgrades to secure storage
+- **Developer Experience**: Multiple fallback options
+- **Zero Configuration**: Works with defaults
+- **Observable**: Events for monitoring
+
+#### Removal Instructions
+```swift
+// EnvLoaderWire.swift
+/*
+ To remove Environment Loader:
+ 1. Delete ATOM-26-EnvLoader folder
+ 2. Remove loadAPIKeys() call
+ 3. Hardcode keys in services
+ 4. Delete .env file
+ 
+ WARNING: No automatic key loading!
+ */
+```
+
+### ATOM 27: DevKeys - Password-Free Development
+
+**One-Line**: Eliminates Keychain password prompts during development by storing API keys in UserDefaults
+
+#### Why DevKeys Deserves to be an Atom
+DevKeys solves a specific developer pain point: constant macOS Keychain password prompts during development. Every app restart, every test run, every debugging session triggers multiple password dialogs. This atom provides a secure-enough alternative for development while maintaining production security. Without it, developers face constant interruptions or resort to dangerous practices like hardcoding keys.
+
+#### Architecture
+```
+DevKeys/
+├── Core/
+│   └── DevKeys.swift                   # Atom coordinator
+├── Models/
+│   └── DevKeysConfiguration.swift      # Configuration model
+├── Services/
+│   └── DevKeysService.swift           # UserDefaults storage
+├── UI/
+│   └── DevKeysToggleView.swift        # Toggle UI component
+├── Events/
+│   └── DevKeysEvents.swift            # State change events
+└── Wire/
+    └── DevKeysWire.swift              # Integration docs
+```
+
+#### The Problem It Solves
+```
+Without DevKeys:
+Start app → Password prompt
+Test API → Password prompt  
+Debug code → Password prompt
+Switch models → Password prompt
+😤 Frustrated developer
+
+With DevKeys:
+Start app → No prompt ✓
+Test API → No prompt ✓
+Debug code → No prompt ✓  
+Switch models → No prompt ✓
+😊 Happy developer
+```
+
+#### Configuration (DevKeys.json)
+```json
+{
+  "autoEnableInDebug": true,
+  "clearOnDisable": true,
+  "showMigrationButton": true,
+  "storage": {
+    "suiteName": null,
+    "keyPrefix": "DevKeys_"
+  },
+  "ui": {
+    "warningText": "⚠️ DevKeys Active - Insecure Storage",
+    "warningColor": "#FF6B6B",
+    "toggleLabel": "Use DevKeys (Development Only)",
+    "showInRelease": false
+  }
+}
+```
+
+#### How It Works
+```swift
+// In DEBUG builds, automatically enabled
+#if DEBUG
+if configuration.autoEnableInDebug {
+    isEnabled = true
+}
+#endif
+
+// Storage in UserDefaults (no password needed)
+UserDefaults.standard.set(apiKey, forKey: "DevKeys_ANTHROPIC_API_KEY")
+
+// EnvLoader checks DevKeys first
+if devKeysService.isEnabled {
+    if let key = devKeysService.getKey(keyName) {
+        return key  // No Keychain access needed!
+    }
+}
+```
+
+#### Integration with EnvLoader
+```
+EnvLoader Priority:
+1. DevKeys (if enabled) ← This Atom
+2. Keychain
+3. Environment
+4. .env file
+```
+
+#### Visual Warning
+```swift
+if devKeysService.isEnabled {
+    HStack {
+        Image(systemName: "exclamationmark.triangle.fill")
+        Text("⚠️ DevKeys Active - Insecure Storage")
+    }
+    .foregroundColor(Color(hex: "#FF6B6B"))
+    .padding()
+    .background(Color(hex: "#FF6B6B").opacity(0.1))
+    .cornerRadius(8)
+}
+```
+
+#### Migration Feature
+```swift
+Button("Migrate from Keychain") {
+    // Load all keys from Keychain
+    let keys = KeychainService.loadAPIKeys(keyNames)
+    
+    // Save to DevKeys
+    for (name, value) in keys {
+        devKeysService.saveKey(name, value: value)
+    }
+    
+    // Single password prompt for all keys!
+}
+```
+
+#### Security Boundaries
+```swift
+// Production safety
+#if !DEBUG
+if configuration.ui.showInRelease == false {
+    // Toggle hidden in release builds
+    return EmptyView()
+}
+#endif
+
+// Clear on disable
+if !isEnabled && configuration.clearOnDisable {
+    clearAllKeys()  // Remove from UserDefaults
+}
+```
+
+#### Integration Points
+- **EnvLoader**: Checks DevKeys before Keychain
+- **APIKeySetupView**: Shows toggle and migration UI
+- **atomic_aetherApp**: Initializes service
+- **Configuration**: Hot-reload settings
+
+#### Developer Experience
+1. **Zero Friction**: No password prompts during development
+2. **Quick Toggle**: Enable/disable with one click
+3. **Batch Migration**: Move all keys from Keychain at once
+4. **Visual Feedback**: Clear warning when active
+5. **Auto-Enable**: Starts enabled in DEBUG builds
+
+#### Why This Architecture
+- **Minimal Surface**: Only touches EnvLoader's loading chain
+- **Clear Boundaries**: DEBUG-only by default
+- **User Control**: Explicit toggle and migration
+- **Safety First**: Visual warnings and auto-clear
+- **Zero Config**: Works out of the box
+
+#### Removal Instructions
+```swift
+// DevKeysWire.swift
+/*
+ To remove DevKeys:
+ 1. Delete ATOM-27-DevKeys folder
+ 2. Remove from EnvLoader checks
+ 3. Remove toggle from APIKeySetupView
+ 4. Delete DevKeys.json
+ 
+ Back to password prompts!
+ */
+```
+
+### ATOM 28: Models - LLM Model Definitions and Registry
+
+**One-Line**: Provides core data structures and registry service for LLM model definitions and validation
+
+#### Why Models Deserves to be an Atom
+Models atom is the "data dictionary" for LLM interactions. It centralizes model definitions, validation logic, and role types that are used across multiple atoms. Without it, model strings would be scattered throughout the codebase with no validation, leading to runtime errors from typos and inconsistent role handling. It's the foundation that makes model management reliable and configuration-driven.
+
+#### Architecture
+```
+Models/
+├── Core/
+├── Models/
+│   └── MessageRole.swift              # Role enumeration
+├── Services/
+│   └── ModelRegistryService.swift     # Model validation
+├── Events/
+│   └── ModelEvents.swift              # Model lifecycle events
+├── UI/
+│   └── ModelDebugView.swift           # Debug interface
+└── Wire/
+    └── ModelsWire.swift               # Integration docs
+```
+
+#### Core Data Structures
+```swift
+// Type-safe message roles
+enum MessageRole: String, Codable {
+    case system = "system"
+    case user = "user"
+    case assistant = "assistant"
+}
+
+// Used throughout the system
+let message = LLMMessage(
+    role: MessageRole.user,  // Type-safe, no strings
+    content: "Hello"
+)
+```
+
+#### Model Registry Service
+```swift
+@MainActor
+class ModelRegistryService: ObservableObject {
+    // Validate model strings
+    func isValidModel(_ modelString: String) -> Bool {
+        // Checks against LLMProviders.json
+        // "anthropic/claude-3-opus" → true
+        // "anthropic/invalid-model" → false
+    }
+    
+    // Get available models
+    func availableModels(for provider: LLMProvider) -> [String] {
+        // Returns ["claude-3-opus", "claude-3-sonnet", ...]
+    }
+}
+```
+
+#### Configuration Integration
+Models are defined in `LLMProviders.json`:
+```json
+{
+  "providers": {
+    "anthropic": {
+      "models": {
+        "claude-3-opus": {
+          "displayName": "Claude 3 Opus",
+          "maxTokens": 200000
+        },
+        "claude-3-sonnet": {
+          "displayName": "Claude 3 Sonnet",
+          "maxTokens": 200000
+        }
+      }
+    }
+  }
+}
+```
+
+#### Events Published
+```swift
+// When models are loaded from config
+ModelsLoadedEvent(providers: [.anthropic, .openai, .fireworks])
+
+// When validation fails
+ModelValidationFailedEvent(modelString: "invalid/model")
+```
+
+#### Who Depends on Models
+1. **LLM Services**: Use MessageRole for API formatting
+2. **Model Picker**: Uses registry to show available models
+3. **Model State**: Validates selections against registry
+4. **Conversation Flow**: Constructs messages with roles
+5. **System Prompt Builder**: Uses system role for prompts
+
+#### Validation Flow
+```swift
+// User selects a model
+let selectedModel = "anthropic/claude-3-opus"
+
+// ModelState validates via registry
+if modelRegistry.isValidModel(selectedModel) {
+    // Safe to use
+    modelStateService.setCurrentModel(selectedModel)
+} else {
+    // Show error
+    errorBus.report(ModelError.invalidModel)
+}
+```
+
+#### Debug Interface
+```swift
+ModelDebugView(modelRegistry: modelRegistry)
+// Shows:
+// • Anthropic
+//   - claude-3-opus
+//   - claude-3-sonnet
+// • OpenAI
+//   - gpt-4
+//   - gpt-3.5-turbo
+```
+
+#### Why This Architecture
+- **Type Safety**: MessageRole enum prevents role typos
+- **Centralized Validation**: One place to check model validity
+- **Configuration-Driven**: Add models without code changes
+- **Event Notifications**: Other atoms react to model changes
+- **Clean Separation**: Model definitions separate from services
+
+## 300 Series - Input System
+
+### ATOM 31: Input Bar
+**Purpose**: Text input system with views, models, and appearance services  
+**Dependencies**: ConversationOrchestrator, ModelPickerService, PersonaStateService, SlashCommandDetector, KeyboardService, ConfigBus, EventBus  
+**Used by**: ContentView (main UI)  
+**One-line**: Comprehensive text input with expandable TextEditor, integrated pickers, and command support
+
+#### Why It Deserves to Be an Atom
+Input Bar is the primary user interaction point that orchestrates multiple complex features:
+- Multiline text input with dynamic expansion
+- Real-time persona switching by typing names
+- Integrated model and persona picker menus
+- Slash command detection and processing
+- Smart keyboard handling for different submission patterns
+Without this atom, users have no way to communicate with the AI system.
+
+#### Structure
+```
+ATOM-31-InputBar/
+├── Models/
+│   └── InputBarAppearance.swift          # Complete UI configuration
+├── Services/
+│   └── InputBarAppearanceService.swift   # Hot-reload appearance
+├── Views/
+│   └── InputBarView.swift               # Main input component
+└── Wire/
+    └── InputBarWire.swift               # Integration documentation
+```
+
+#### Key Features
+- **Expandable TextEditor**: Grows from 1 to 34 lines
+- **Glassmorphic Design**: Semi-transparent with gradient borders
+- **Model/Persona Pickers**: Integrated selection menus
+- **Slash Commands**: /journal expands to 34 lines
+- **Real-time Persona Switch**: Type persona name to switch
+- **Smart Return Keys**: Configurable submit behavior
+- **Event-based Text Insertion**: Pickers insert via events
+- **Focus Management**: Auto-focus with @FocusState
+- **Configuration-Driven**: All appearance externalized
+
+#### Input Processing Flow
+```
+User types → SlashCommandDetector checks
+           → PersonaStateService checks first word
+           → KeyboardService handles return keys
+           → Submit → ConversationOrchestrator
+```
+
+#### Configuration (InputBarAppearance.json)
+```json
+{
+  "dimensions": {
+    "width": 700,
+    "defaultHeight": 60,
+    "bottomMargin": 20,
+    "cornerRadius": 18,
+    "textFieldMinHeight": 28
+  },
+  "multiline": {
+    "enabled": true,
+    "maxLines": 34,
+    "lineHeight": 22
+  },
+  "glassmorphic": {
+    "backgroundOpacity": 0.85,
+    "borderTopOpacity": 0.25,
+    "borderBottomOpacity": 0.1,
+    "blurRadius": 20
+  },
+  "controls": {
+    "spacing": 12,
+    "plusButton": {
+      "iconName": "plus",
+      "size": 16,
+      "opacity": 0.5
+    },
+    "modelPicker": {
+      "fontSize": 12,
+      "opacity": 0.7
+    },
+    "greenIndicator": {
+      "size": 6,
+      "color": "green",
+      "glowRadius1": 2,
+      "glowRadius2": 5,
+      "glowOpacity": 0.5
+    }
+  },
+  "textField": {
+    "textColor": "white",
+    "fontSize": 14,
+    "fontFamily": "system"
+  }
+}
+```
+
+#### Slash Command Integration
+```swift
+// Detects commands in real-time
+slashCommandDetector.handleTextChange(text)
+
+// /journal command:
+- Expands input to 34 lines
+- Clears text after detection
+- Escape key collapses
+- Maintains expanded state during typing
+```
+
+#### Persona Switching
+```swift
+// First word detection
+"Claude hello" → Switches to Claude persona
+"samara think about" → Switches to Samara persona
+
+// Case-insensitive, real-time
+// Works alongside picker selection
+```
+
+#### Keyboard Shortcuts
+- **Enter**: Submit (default)
+- **Shift+Enter**: New line (ChatGPT style)
+- **Option+Enter**: New line (Claude style)
+- **Cmd+Enter**: Always submit
+- **Escape**: Collapse if expanded
+
+#### Event Integration
+```swift
+// Listen for text insertion from pickers
+eventBus.subscribe(to: InputEvent.self) { event in
+    if case .insertText(let newText, _) = event {
+        text = newText
+        isTextFieldFocused = true
+    }
+}
+```
+
+#### Submit Logic
+```swift
+private func handleSubmit() {
+    // Validate non-empty
+    guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+    
+    // Prevent double-submit
+    guard !conversationOrchestrator.isProcessing else { return }
+    
+    // Clear immediately for responsiveness
+    let message = text
+    text = ""
+    
+    // Process asynchronously
+    Task {
+        await conversationOrchestrator.processMessage(message)
+    }
+}
+```
+
+#### Why This Architecture
+- **Centralized Input**: All user text flows through one component
+- **Modular Integration**: Each feature (pickers, commands) is separate
+- **Event-Driven**: Loose coupling via EventBus
+- **Configuration Control**: UI team can tweak without code
+- **Responsive Design**: Immediate feedback on all actions
+
+#### Removal Instructions
+```swift
+// InputBarWire.swift
+/*
+ To remove Input Bar completely:
+ 1. Delete ATOM-31-InputBar folder
+ 2. Remove InputBarView() from ContentView (line ~27)
+ 3. Remove modelPickerService dependencies
+ 4. Remove personaStateService dependencies
+ 5. Remove conversationOrchestrator dependencies
+ 
+ Users cannot send messages without alternative input
+ */
+```
+
+### ATOM 32: /journal Slash Command
+**Purpose**: Expands input to 34 lines when /journal typed  
+**Dependencies**: SlashCommandDetector (ATOM 33)  
+**Used by**: InputBar  
+**One-line**: Pure configuration that transforms input into a full-page journal editor
+
+#### Why It Deserves to Be an Atom
+The /journal command is the perfect example of a configuration-only atom. It requires:
+- Zero code changes
+- Zero new files
+- Just one JSON entry
+Yet it provides a complete user feature: the ability to write long-form journal entries. This demonstrates the power of configuration-driven development (Boss Rule #3).
+
+#### Implementation
+Located in `SlashCommandDetector.json`:
+```json
+{
+  "trigger": "/journal",
+  "expandToLines": 34,
+  "description": "Expand input for journal entry"
+}
+```
+
+#### How It Works
+1. User types "/journal" in input bar
+2. SlashCommandDetector detects the trigger
+3. Input expands to 34 lines (748px height)
+4. Text is cleared automatically
+5. User writes long-form content
+6. Escape key collapses back to normal
+
+#### Configuration Details
+- **trigger**: "/journal" - The command to detect
+- **expandToLines**: 34 - Number of visible lines
+- **description**: User-facing description
+- **Case-insensitive**: Controlled by detector config
+- **Auto-clear**: Text cleared after detection
+
+#### Related Commands
+The configuration includes other commands:
+- **/note**: 10 lines for quick notes
+- **/code**: 20 lines for code snippets
+- **/todo**: 5 lines for task lists
+- **/clear**: Clears conversation (no expansion)
+- **/help**: Shows commands (no expansion)
+
+#### User Experience
+```
+Type: /journal
+Result: Input expands to full height
+Action: Write multi-paragraph entries
+Exit: Press Escape to collapse
+```
+
+#### Why 34 Lines?
+- Provides ~750px of vertical space
+- Fits most laptop screens without scrolling
+- Matches typical journal entry length
+- Leaves room for other UI elements
+
+#### Adding New Commands
+Simply add to the commands array:
+```json
+{
+  "trigger": "/essay",
+  "expandToLines": 40,
+  "description": "Write a full essay"
+}
+```
+
+#### Removal Instructions
+```json
+// To remove /journal command:
+// 1. Delete the /journal entry from commands array
+// That's it - no code changes needed
+```
+
+This atom perfectly embodies the Atomic LEGO philosophy: maximum user value with minimum complexity.
+
+### ATOM 33: Slash Command Detector
+**Purpose**: Detects and processes slash commands  
+**Dependencies**: ConfigBus, EventBus  
+**Used by**: InputBar  
+**One-line**: Configurable command detection engine that enables features like /journal
+
+#### Why It Deserves to Be an Atom
+Slash Command Detector is the foundation that makes configuration-only atoms like /journal possible. It provides:
+- Reusable command detection logic
+- Expansion state management  
+- Event-driven command lifecycle
+- Complete configuration control
+Without this atom, each command would need custom code, violating the DRY principle and Boss Rule #3.
+
+#### Structure
+```
+ATOM-33-SlashCommandDetector/
+├── Models/
+│   ├── SlashCommand.swift                    # Command data model
+│   └── SlashCommandDetectorConfiguration.swift # Configuration model
+├── Services/
+│   └── SlashCommandDetector.swift            # Core detection service
+├── Events/
+│   └── SlashCommandEvents.swift              # Command lifecycle events
+└── Wire/
+    └── SlashCommandDetectorWire.swift        # Integration documentation
+```
+
+#### Key Features
+- **Text-based Detection**: Checks each keystroke for commands
+- **Case-insensitive Matching**: Configurable sensitivity
+- **Expansion Management**: Tracks active command and expanded state
+- **Auto-clear Text**: Optional clearing after command detection
+- **Collapse Logic**: Escape key handling with validation
+- **Event Publishing**: Full lifecycle events
+- **Hot-reload Config**: Commands update without restart
+- **Legacy Compatibility**: Publishes InputEvent for older code
+
+#### Detection Flow
+```
+User types → handleTextChange(text)
+           → detectCommand(text)
+           → Match found?
+           → Publish commandDetected
+           → Set activeCommand
+           → Set isExpanded = true
+           → Return clearText flag
+           → TextEditor expands
+```
+
+#### Configuration (SlashCommandDetector.json)
+```json
+{
+  "commands": [
+    {
+      "trigger": "/journal",
+      "expandToLines": 34,
+      "description": "Expand input for journal entry"
+    },
+    {
+      "trigger": "/note",
+      "expandToLines": 10,
+      "description": "Quick note with medium expansion"
+    },
+    {
+      "trigger": "/code",
+      "expandToLines": 20,
+      "description": "Code snippet with syntax highlighting"
+    },
+    {
+      "trigger": "/clear",
+      "expandToLines": null,
+      "description": "Clear the conversation"
+    }
+  ],
+  "detectCaseSensitive": false,
+  "clearTextOnExpand": true
+}
+```
+
+#### Events Published
+```swift
+enum SlashCommandEvent {
+    case commandDetected(command)      // Command recognized
+    case commandExpanded(command, lines) // Input expanded
+    case commandCollapsed              // Input collapsed
+    case commandExecuted(command, text) // Command submitted
+}
+```
+
+#### State Management
+```swift
+@Published var activeCommand: SlashCommand?  // Current command
+@Published var isExpanded = false           // Expansion state
+
+// Collapse validation
+func shouldAllowCollapse(text: String) -> Bool {
+    activeCommand != nil && text.isEmpty && isExpanded
+}
+```
+
+#### Integration with InputBar
+```swift
+// Detect on each keystroke
+let shouldClear = slashCommandDetector.handleTextChange(text)
+if shouldClear {
+    text = ""
+}
+
+// Calculate expansion
+let maxLines = slashCommandDetector.activeCommand?.expandToLines 
+    ?? appearance.multiline.maxLines
+
+// Handle escape key
+.onKeyPress(.escape) {
+    if slashCommandDetector.shouldAllowCollapse(text: text) {
+        slashCommandDetector.collapse()
+        return .handled
+    }
+    return .ignored
+}
+```
+
+#### Adding New Commands
+```json
+{
+  "trigger": "/essay",
+  "expandToLines": 50,
+  "description": "Write a full essay"
+}
+```
+No code changes needed - just add to JSON and reload.
+
+#### Why This Architecture
+- **Separation of Concerns**: Detection logic separate from UI
+- **Configuration-Driven**: New commands without code
+- **Event-Based**: Loose coupling with other atoms
+- **State Management**: Clear ownership of expansion state
+- **Extensibility**: Easy to add command types
+
+#### Removal Instructions
+```swift
+// SlashCommandDetectorWire.swift
+/*
+ To remove Slash Command Detector:
+ 1. Delete ATOM-33-SlashCommandDetector folder
+ 2. Remove slashCommandDetector from InputBarView
+ 3. Remove handleTextChange() calls
+ 4. Remove expansion logic
+ 5. Remove escape key handlers
+ 
+ No slash commands will work
+ */
+```
+
+### ATOM 34: Keyboard Behavior - Smart Return Key Handling
+
+**One-Line**: Provides ChatGPT and Claude-style keyboard shortcuts for newlines vs submit
+
+#### Why Keyboard Behavior Deserves to be an Atom
+Different users have different muscle memory - ChatGPT users press Shift+Enter for newlines, Claude users press Option+Enter. This atom makes atomic-aether feel native to both user groups by supporting both patterns simultaneously. It's a perfect example of a small, focused feature that dramatically improves user experience.
+
+#### Architecture
+```
+KeyboardBehavior/
+├── Models/
+│   └── KeyboardConfiguration.swift      # Config structure
+├── Services/
+│   ├── KeyboardService.swift           # Configuration loader
+│   └── SmartReturnKeyModifier.swift    # ViewModifier implementation
+└── Wire/
+    └── KeyboardWire.swift              # Integration docs
+```
+
+#### Key Behavior
+```
+Enter alone      → Submit message
+Shift + Enter    → Insert newline (ChatGPT style)
+Option + Enter   → Insert newline (Claude style)
+```
+
+#### Implementation Pattern
+```swift
+// ViewModifier approach for clean integration
+TextEditor(text: $text)
+    .modifier(SmartReturnKeyModifier(
+        text: $text,
+        keyboardService: keyboardService,
+        onSubmit: handleSubmit
+    ))
+```
+
+#### Configuration (KeyboardBehavior.json)
+```json
+{
+  "enableSmartReturn": true,
+  "submitOnReturn": true,
+  "newlineModifiers": {
+    "shift": true,      // ChatGPT users
+    "option": true,     // Claude users
+    "command": false,   // Could enable for power users
+    "control": false    // Windows/Linux compatibility
+  },
+  "messages": {
+    "submitHint": "Press Enter to send",
+    "newlineHint": "Shift+Enter or Option+Enter for new line"
+  }
+}
+```
+
+#### How It Works
+```swift
+.onKeyPress(.return) { keyPress in
+    // Check for modifier keys
+    if keyPress.modifiers.contains(.shift) && config.newlineModifiers.shift {
+        text.append("\n")
+        return .handled
+    } 
+    
+    if keyPress.modifiers.contains(.option) && config.newlineModifiers.option {
+        text.append("\n")
+        return .handled
+    }
+    
+    // No modifiers = submit
+    if config.submitOnReturn {
+        onSubmit()
+        return .handled
+    }
+    
+    return .ignored
+}
+```
+
+#### User Experience Benefits
+1. **Familiar to Everyone**: Works like ChatGPT AND Claude
+2. **No Learning Curve**: Use whichever style you prefer
+3. **Configurable**: Disable styles you don't use
+4. **Future-Proof**: Easy to add new modifier combinations
+
+#### Integration Points
+- **InputBarView**: Applies the modifier to TextEditor
+- **KeyboardService**: Loads configuration
+- **ConfigBus**: Hot-reload keyboard preferences
+
+#### Edge Cases Handled
+```swift
+// Empty text - prevent accidental submits
+if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+    return .ignored
+}
+
+// Maximum length - prevent newlines at limit
+if text.count >= maxLength {
+    return .ignored
+}
+```
+
+#### Why This Architecture
+- **ViewModifier**: Clean, reusable, SwiftUI-native
+- **Configuration-Driven**: Users can customize behavior
+- **Non-Invasive**: Easy to add/remove without breaking TextEditor
+- **Event-Based**: Uses SwiftUI's onKeyPress for proper handling
+
+#### Removal Instructions
+```swift
+// KeyboardWire.swift
+/*
+ To remove KeyboardBehavior:
+ 1. Delete ATOM-34-KeyboardBehavior folder
+ 2. Remove SmartReturnKeyModifier from TextEditor
+ 3. Add standard .onSubmit { handleSubmit() }
+ 4. Delete KeyboardBehavior.json
+ 
+ App reverts to Enter = submit only
+ */
+```
+
+### ATOM 35: JournalCommand - Enhanced /journal Slash Command
+
+**One-Line**: Transforms the /journal command into a rich journal entry experience with timestamps and formatting
+
+#### Why JournalCommand Deserves to be an Atom
+While SlashCommandDetector (ATOM 33) handles generic command detection, JournalCommand provides the specific, rich behavior that makes journaling delightful. It auto-inserts formatted headers with dates/times, positions the cursor intelligently, and prepares the input for long-form writing. Without this atom, /journal would just expand the input box with no context or structure.
+
+#### Architecture
+```
+JournalCommand/
+├── Models/
+│   └── JournalCommandConfiguration.swift  # Rich configuration
+├── Services/
+│   └── JournalCommandService.swift       # Command handler
+├── Events/
+│   └── JournalCommandEvents.swift        # Command lifecycle
+└── Wire/
+    └── JournalCommandWire.swift          # Integration docs
+```
+
+#### Command Enhancement
+```
+User types: /journal
+           ↓
+Result:    ## Journal Entry - Thursday, August 10, 2025 - 14:30
+           
+           [cursor positioned here, ready to type]
+           
+           [input expanded to 34 lines]
+```
+
+#### Configuration (JournalCommand.json)
+```json
+{
+  "expandToLines": 34,
+  "clearTextOnExpand": true,
+  "autoInsertPrefix": true,
+  "prefixTemplate": "## Journal Entry - {date}",
+  "dateFormat": "EEEE, MMMM d, yyyy",
+  "insertCursorPosition": "newLine",
+  "enableTimestamp": true,
+  "timestampFormat": "HH:mm"
+}
+```
+
+#### Prefix Templates
+- `{date}` - Replaced with formatted date
+- `{time}` - Replaced with formatted time (future)
+- `{mood}` - Mood selector (future)
+- `{weather}` - Weather info (future)
+
+#### Cursor Positioning Options
+```swift
+enum InsertPosition {
+    case afterPrefix  // "## Entry|"
+    case newLine     // "## Entry\n\n|"
+    case end         // "## Entry\n\n\n|"
+}
+```
+
+#### Event Flow
+```swift
+// Detection
+SlashCommandDetector → SlashCommandEvent.detected("/journal")
+                    ↓
+// Processing
+JournalCommandService → Expands input (StateBus)
+                     → Inserts prefix (InputEvent)
+                     → Publishes JournalCommandExpanded
+                    ↓
+// User writes and submits
+ConversationOrchestrator → JournalCommandCompleted event
+```
+
+#### Integration Points
+- **SlashCommandDetector**: Detects "/journal" trigger
+- **InputBar**: Responds to expansion and text insertion
+- **StateBus**: Shares expansion state
+- **EventBus**: Coordinates all interactions
+- **Future**: Could integrate with Journal atom for auto-save
+
+#### Why Separate from Detector
+1. **Single Responsibility**: Detector detects, command executes
+2. **Extensibility**: Each command gets its own rich behavior
+3. **Configuration**: Command-specific settings
+4. **Future Commands**: /todo, /note can have own atoms
+5. **Clean Architecture**: No coupling between detection and execution
+
+#### Future Enhancements
+```swift
+// Planned features
+- Entry templates (gratitude, reflection, daily)
+- Mood/energy level selectors
+- Auto-save to journal with proper formatting
+- Voice dictation trigger
+- Entry preview/formatting
+- Tag suggestions based on content
+```
+
+## 400 Series - Personas
+
+### ATOM 41: Personas
+**Purpose**: Complete persona system with detection, state management, and indicators  
+**Dependencies**: ConfigBus, StateBus, EventBus, ErrorBus, ModelStateService  
+**Used by**: ConversationOrchestrator, InputBar, various UI components  
+**One-line**: Multi-personality AI system with folder-based definitions and real-time switching
+
+#### Why It Deserves to Be an Atom
+PersonaSystem transforms the AI from a single voice into a cast of distinct personalities, each with:
+- Unique system prompts and expertise
+- Appropriate model defaults (Anthropic vs non-Anthropic)
+- Visual indicators and UI integration
+- Real-time switching via typing or menu
+- Folder-based extensibility
+Without this atom, users get a single, static AI personality with no variation.
+
+#### Structure
+```
+ATOM-41-PersonaSystem/
+├── Core/
+│   └── PersonaSystem.swift              # Central coordinator
+├── Models/
+│   ├── PersonaDefinition.swift         # Core persona model
+│   ├── PersonaConfiguration.swift      # JSON configuration
+│   ├── PersonaFolder.swift            # Folder-based model
+│   ├── PersonaStateConfiguration.swift # State defaults
+│   ├── PersonaUIConfiguration.swift    # UI strings
+│   └── PersonaFolderConfiguration.swift # Folder settings
+├── Services/
+│   ├── PersonaStateService.swift       # State management
+│   ├── PersonaDetector.swift          # Message detection
+│   ├── PersonaFolderWatcher.swift     # Folder monitoring
+│   └── FrontmatterParser.swift        # YAML parsing
+├── Events/
+│   ├── PersonaEvents.swift            # State events
+│   └── PersonaFolderEvents.swift      # Folder events
+├── Extensions/
+│   └── PersonaStateKeys.swift         # StateBus keys
+├── UI/
+│   └── PersonaIndicator.swift         # Visual indicators
+└── Wire/
+    ├── PersonaSystemWire.swift        # System integration
+    └── PersonaFolderWire.swift        # Folder docs
+
+Note: PersonaPickerView is a separate atom (ATOM 42)
+```
+
+#### Key Features
+- **10+ Pre-configured Personas**: Claude, Samara, Vlad, Eva, etc.
+- **Two-tier System**: Functional Experts & Cognitive Voices
+- **Folder-based Definitions**: Drop markdown files to add personas
+- **YAML Frontmatter**: Metadata in markdown files
+- **Real-time Detection**: Type persona name to switch
+- **Model Integration**: Each persona has appropriate model type
+- **Visual Indicators**: Color-coded UI elements
+- **State Persistence**: Remembers last persona
+- **Hot-reload**: Folder changes update immediately
+
+#### Persona Definition
+```swift
+struct PersonaDefinition {
+    let id: String              // "claude"
+    let displayName: String     // "Claude"
+    let role: String?          // "7 Boss Rules Architect"
+    let isAnthropic: Bool      // true
+    let systemPrompt: String   // Full prompt
+    let color: String          // "#FF5733"
+    let group: PersonaGroup    // .functionalExperts
+}
+```
+
+#### Folder Structure
+```
+aetherVault/Personas/
+├── Claude/
+│   └── Claude.md    # YAML frontmatter + prompt
+├── Samara/
+│   └── Samara.md
+├── Vlad/
+│   └── Vlad.md
+└── Eva/
+    └── Eva.md
+```
+
+#### YAML Frontmatter Example
+```yaml
+---
+displayName: Claude
+role: 7 Boss Rules Architect
+isAnthropic: true
+group: functionalExperts
+color: "#FF5733"
 ---
 
-*Building Atomic Aether one ATOM at a time*
+You are Claude, the architect of the 7 Boss Rules...
+[Rest of system prompt]
+```
+
+#### Configuration Files
+1. **Personas.json** - Built-in persona definitions
+2. **PersonaUI.json** - UI labels and typography
+3. **PersonaState.json** - Default personas and settings
+4. **PersonaFolders.json** - Folder watching configuration
+
+#### Persona Switching Methods
+```swift
+// 1. Via PersonaPickerView
+Menu selection → switchToPersona("claude")
+
+// 2. By typing name
+"Claude hello" → Detects "claude" → Switches → "hello"
+
+// 3. Programmatically
+personaSystem.switchToPersona("samara")
+
+// 4. Auto-switch on model change
+Non-Anthropic model → Default non-Anthropic persona
+```
+
+#### Message Detection Flow
+```swift
+// Input: "Samara think about this problem"
+let (persona, content) = personaSystem.processMessage(text)
+// Result: persona = "samara", content = "think about this problem"
+
+// Detection is case-insensitive and works with display names
+"CLAUDE" → "claude"
+"Claude" → "claude"
+```
+
+#### Events Published
+```swift
+// When persona changes
+PersonaSwitchedEvent(personaId: "claude", source: "PersonaPicker")
+
+// When persona detected in message
+PersonaDetectedEvent(personaId: "samara", message: "Samara help")
+
+// When folder changes
+PersonaFolderChangedEvent(personaId: "eva", changeType: .modified)
+```
+
+#### State Management
+```swift
+// Current persona stored in StateBus
+StateKey.currentPersona → "claude"
+
+// Defaults by type
+StateKey.defaultAnthropicPersona → "claude"
+StateKey.defaultNonAnthropicPersona → "samara"
+```
+
+#### Integration with Models
+```swift
+// Each persona specifies model type
+claude.isAnthropic = true  → Uses Anthropic models
+samara.isAnthropic = false → Uses OpenAI/Fireworks
+
+// Model selection flow
+PersonaStateService → isAnthropic flag
+                  → ModelStateService
+                  → Appropriate default model
+```
+
+#### Why This Architecture
+- **Extensibility**: Add personas via folders or JSON
+- **Hot-reload**: Changes without restart
+- **Type Safety**: Enums and structs throughout
+- **Event-Driven**: Loose coupling between components
+- **User Control**: Multiple switching methods
+
+#### Removal Instructions
+```swift
+// PersonaSystemWire.swift
+/*
+ To remove PersonaSystem completely:
+ 1. Delete ATOM-41-PersonaSystem folder
+ 2. Remove personaSystem initialization (line ~127)
+ 3. Remove from all dependencies
+ 4. Remove PersonaPickerView from InputBar
+ 5. Use default prompts in ConversationOrchestrator
+ 
+ App will work with single personality
+ */
+```
+
+### ATOM 42: PersonaPicker
+**Purpose**: Interactive persona selection menu  
+**Dependencies**: PersonaStateService, ConfigBus, EventBus  
+**Used by**: InputBar  
+**One-line**: Dropdown menu UI for persona selection matching ModelPicker style
+
+#### Why It Deserves to Be an Atom
+PersonaPicker is separated from PersonaSystem to follow the Atomic LEGO principle. It's a pure UI component that:
+- Can be placed anywhere in the UI
+- Removed without breaking persona functionality 
+- Has single responsibility: visual selection
+- Matches ModelPicker for consistency
+Without this atom, users can still switch personas by typing names, but lose the convenient menu interface.
+
+#### Structure
+```
+ATOM-42-PersonaPicker/
+├── Core/
+│   └── PersonaPicker.swift         # Atom coordinator
+├── UI/
+│   └── PersonaPickerView.swift    # SwiftUI Menu component
+└── Wire/
+    └── PersonaPickerWire.swift    # Integration documentation
+```
+
+#### Key Features
+- **Menu Organization**: Functional Experts & Cognitive Voices sections
+- **Role Display**: Shows roles in grey (Menlo font, 90% size)
+- **Visual Feedback**: Checkmark for current selection
+- **Text Insertion**: Inserts persona name on selection
+- **Style Matching**: Identical to ModelPickerView
+- **Fixed Sizing**: Prevents layout jumps
+- **Event Publishing**: Uses InsertTextEvent
+- **Configuration-Driven**: All text from PersonaUI.json
+
+#### UI Implementation
+```swift
+PersonaPickerView(
+    fontSize: appearance.controls.modelPicker.fontSize,
+    opacity: appearance.controls.modelPicker.opacity,
+    focusState: $isTextFieldFocused
+)
+.fixedSize()  // Critical for consistent spacing
+```
+
+#### Menu Structure
+```
+┌─────────────────────────┐
+│ Claude ▾                │  ← Current persona with chevron
+└─────────────────────────┘
+        ↓ Click
+┌─────────────────────────┐
+│ FUNCTIONAL EXPERTS      │  ← Section header (uppercase)
+│ ✓ Claude — 7 Boss Rules │  ← Checkmark + role in grey
+│   Vlad — Business Strat │
+│   Gunnar — Engineering  │
+│                         │
+│ COGNITIVE VOICES        │
+│   Samara — Depth & Joy  │
+│   Vanessa — Bold Truth  │
+└─────────────────────────┘
+```
+
+#### Configuration (PersonaUI.json excerpt)
+```json
+{
+  "menuItemLayout": {
+    "roleSpacing": " — ",
+    "checkmarkIcon": "checkmark"
+  },
+  "typography": {
+    "personaRole": {
+      "fontName": "menlo",
+      "sizeMultiplier": 0.9,
+      "weight": "regular",
+      "opacityMultiplier": 0.7
+    },
+    "sectionHeader": {
+      "fontName": "system",
+      "sizeMultiplier": 0.9,
+      "weight": "medium",
+      "opacityMultiplier": 0.6
+    }
+  }
+}
+```
+
+#### Selection Flow
+```
+User clicks menu
+    ↓
+Dropdown appears
+    ↓
+User selects "Samara — Depth & Joy"
+    ↓
+1. personaStateService.switchToPersona("samara")
+2. eventBus.publish(InputEvent.insertText("Samara ", source: "PersonaPicker"))
+3. Menu closes
+4. Input shows: "Samara |" (cursor after space)
+```
+
+#### Visual Consistency with ModelPicker
+```swift
+// Both pickers use identical:
+fontSize: appearance.controls.modelPicker.fontSize
+opacity: appearance.controls.modelPicker.opacity
+.fixedSize() modifier
+Same chevron icon
+UPPERCASE section headers
+Consistent spacing (12pt between pickers)
+```
+
+#### Event Integration
+```swift
+// When persona selected:
+eventBus.publish(InputEvent.insertText(
+    text: "\(persona.displayName) ",
+    source: "PersonaPicker"
+))
+
+// InputBar listens and updates:
+eventBus.subscribe(to: InputEvent.self) { event in
+    if case .insertText(let newText, _) = event {
+        text = newText
+        isTextFieldFocused = true
+    }
+}
+```
+
+#### Why This Architecture
+- **Separation**: UI separate from persona logic
+- **Reusability**: Can add picker anywhere
+- **Consistency**: Matches ModelPicker exactly
+- **Event-Driven**: Loose coupling via events
+- **Configuration**: All strings externalized
+
+#### Removal Instructions
+```swift
+// PersonaPickerWire.swift
+/*
+ To remove PersonaPicker:
+ 1. Delete ATOM-42-PersonaPicker folder
+ 2. Remove PersonaPickerView from InputBar (line ~85)
+ 3. Remove .fixedSize() modifier
+ 4. Remove menuItemLayout from PersonaUI.json
+ 
+ Personas work via typing names only
+ */
+```
+
+## 500 Series - Conversations
+
+### ATOM 51: ConversationFlow - The Heart of Conversation
+
+**One-Line**: Orchestrates the entire conversation flow from user input to LLM response
+
+#### Why ConversationFlow Deserves to be an Atom
+ConversationFlow is the central nervous system of conversations, coordinating personas, models, messages, and LLM calls. It brings together all the other atoms into a cohesive conversation experience. Without it, you have components but no actual AI conversations.
+
+#### Architecture
+```
+ConversationFlow/
+├── Core/                    # Empty (services are the core)
+├── Models/
+│   ├── ConversationRequest.swift    # Request structure
+│   ├── ConversationContext.swift    # Session tracking
+│   └── ConversationConfiguration.swift
+├── Services/
+│   ├── ConversationOrchestrator.swift  # Main coordinator
+│   └── StreamProcessor.swift           # Real-time streaming
+├── Events/
+│   └── ConversationFlowEvents.swift    # Lifecycle events
+└── Wire/
+    └── ConversationFlowWire.swift      # Integration docs
+```
+
+#### Core Responsibilities
+1. **Message Processing Pipeline**
+   ```swift
+   await conversationOrchestrator.processMessage(text)
+   // 1. Persona detection
+   // 2. Context management  
+   // 3. Message storage
+   // 4. LLM request building
+   // 5. Stream handling
+   // 6. Event publishing
+   ```
+
+2. **Stream Management**
+   ```swift
+   StreamProcessor handles:
+   - Real-time chunk accumulation
+   - Message updates during streaming
+   - Progress events every 10 chunks
+   - Error recovery with clear messages
+   - Final message state
+   ```
+
+3. **Context Tracking**
+   ```swift
+   struct ConversationContext {
+       let sessionId: UUID
+       let currentPersona: String
+       let currentModel: String
+       var lastActivity: Date
+   }
+   ```
+
+#### Configuration (ConversationFlow.json)
+```json
+{
+  "userSpeakerName": "Boss",
+  "maxContextMessages": 20,
+  "streamingEnabled": true,
+  "sessionActiveTimeoutSeconds": 3600
+}
+```
+
+#### Event Flow
+```
+User types message
+    ↓
+ConversationStartedEvent (new session)
+    ↓
+ConversationMessageSentEvent
+    ↓
+ConversationStreamingEvent (every 10 chunks)
+    ↓
+ConversationResponseReceivedEvent
+    ↓
+ConversationCompletedEvent
+    |
+    └→ ConversationErrorEvent (on failure)
+```
+
+#### Error Handling Excellence
+```swift
+// API key missing
+"⚠️ API key missing. Please set up your API keys in Settings (Cmd+Shift+,)"
+
+// Network error
+"⚠️ Network error: [description]"
+
+// Rate limit
+"⚠️ Rate limit exceeded. Please try again later."
+
+// Model error
+"⚠️ Invalid model: [model]"
+```
+
+#### Integration Points
+- **InputBar**: Calls processMessage() on submit
+- **PersonaStateService**: Provides persona and model
+- **LLMRouter**: Routes to appropriate provider
+- **MessageStore**: Persists all messages
+- **ConfigBus**: Loads configuration
+- **EventBus**: Publishes lifecycle events
+- **ErrorBus**: Reports processing errors
+
+#### How It Works
+```swift
+// 1. User submits message
+processMessage("Tell me about red dwarf stars")
+
+// 2. Persona detection
+let (persona, cleanedMessage) = personaStateService.processMessage(text)
+// persona: "samara", cleanedMessage: "Tell me about red dwarf stars"
+
+// 3. Create context (or reuse existing)
+currentContext = ConversationContext(
+    persona: "samara",
+    model: "claude-3-5-sonnet-20241022"
+)
+
+// 4. Add user message
+messageStore.addMessage(Message(
+    speaker: "Boss",
+    content: cleanedMessage
+))
+
+// 5. Build LLM request
+let request = ConversationRequest(
+    userMessage: cleanedMessage,
+    persona: persona,
+    systemPrompt: personaPrompt,
+    model: model,
+    conversationHistory: lastMessages,
+    streamingEnabled: true
+)
+
+// 6. Stream response
+let stream = try await llmRouter.sendMessage(request.toLLMRequest())
+await streamProcessor.processStream(stream, messageId: responseId)
+```
+
+#### Streaming Magic
+```swift
+// StreamProcessor accumulates chunks:
+"A red"
+"A red dwarf"
+"A red dwarf is"
+"A red dwarf is a"
+"A red dwarf is a small"
+...
+
+// Each update:
+messageStore.updateMessage(id, content: accumulated, isStreaming: true)
+
+// When done:
+messageStore.updateMessage(id, content: fullText, isStreaming: false)
+eventBus.publish(ConversationCompletedEvent(...))
+```
+
+#### Why This Architecture
+- **Orchestration**: Central coordinator prevents spaghetti
+- **Streaming**: Real-time feedback during generation
+- **Context**: Maintains conversation state
+- **Events**: Observable lifecycle for extensions
+- **Error Recovery**: Graceful failure handling
+
+#### Removal Instructions
+```swift
+// ConversationFlowWire.swift
+/*
+ To remove ConversationFlow:
+ 1. Delete ATOM-51-ConversationFlow folder
+ 2. Remove orchestrator from atomic_aetherApp.swift
+ 3. Remove processMessage from InputBar
+ 4. Replace with simple messageStore.addMessage()
+ 
+ WARNING: No AI responses without this atom!
+ */
+```
+
+### ATOM 52: Scrollback - The Conversation Canvas
+
+**One-Line**: Displays conversation messages with speaker labels, streaming support, and beautiful formatting
+
+#### Why Scrollback Deserves to be an Atom
+Scrollback is the visual heart of atomic-aether, presenting conversations in a clean, readable format. It handles complex UI concerns like message grouping, streaming indicators, speaker labels with persona colors, and empty message filtering. Without it, you have messages in memory but no way to see them.
+
+#### Architecture
+```
+Scrollback/
+├── Core/
+│   └── ScrollbackCoordinator.swift     # State management
+├── Models/
+│   └── ScrollbackAppearance.swift      # UI configuration
+├── Views/
+│   ├── ScrollbackView.swift            # Main container
+│   ├── MessageRow.swift                # Individual messages
+│   └── SpeakerLabel.swift              # Speaker indicators
+└── Wire/
+    └── ScrollbackWire.swift            # Integration docs
+```
+
+#### Visual Design
+```
+█ Boss         Tell me about red dwarf stars
+
+█ Samara       A red dwarf is the smallest and coolest
+               type of star on the main sequence...
+               
+               Red dwarfs make up about 75% of all stars
+               in our galaxy. They burn their fuel very
+               slowly, which means they can live for
+               trillions of years.
+```
+
+#### Key Features
+1. **Speaker Labels**
+   - 2px colored left border (persona color)
+   - Fixed 120px width for alignment
+   - Speaker name with subtle background
+   - Only shown for first message in group
+
+2. **Message Alignment**
+   ```
+   [120px label] [16px gap] [message content]
+   [empty space] [16px gap] [continuation...]
+   ```
+
+3. **Message Grouping**
+   ```swift
+   // Consecutive messages from same speaker:
+   showSpeakerLabel = currentSpeaker != previousSpeaker
+   bottomPadding = isLastFromSpeaker ? 16 : 4
+   ```
+
+4. **Streaming Support**
+   ```swift
+   if message.isStreaming {
+       ProgressView()
+           .scaleEffect(0.5)
+           .padding(.top, 4)
+   }
+   ```
+
+#### Configuration (ScrollbackAppearance.json)
+```json
+{
+  "width": 1400,
+  "padding": 20,
+  "messageSpacing": 4,
+  "speakerLabel": {
+    "fontSize": 13,
+    "borderWidth": 2,
+    "nameOpacity": 0.85,
+    "backgroundOpacity": 0.05,
+    "namePaddingHorizontal": 8,
+    "namePaddingVertical": 3,
+    "cornerRadius": 4,
+    "stackSpacing": 0,
+    "labelWidth": 120
+  },
+  "message": {
+    "fontSize": 13,
+    "contentOpacity": 0.9,
+    "contentLeadingPadding": 16,
+    "lastMessageBottomPadding": 16,
+    "progressIndicatorScale": 0.5,
+    "progressIndicatorPadding": 4,
+    "unknownSpeakerColor": "#808080"
+  }
+}
+```
+
+#### Message Flow
+```
+MessageStore adds message
+         ↓
+ScrollbackView observes change
+         ↓
+Determines speaker label visibility
+         ↓
+Renders MessageRow with label/empty space
+         ↓
+Applies appropriate bottom padding
+```
+
+#### Speaker Label Design
+```swift
+struct SpeakerLabel {
+    // Visual structure:
+    // [█] [Speaker Name]
+    //  ↑        ↑
+    //  |        +-- Subtle background (5% opacity)
+    //  +-- 2px colored border (persona color)
+}
+```
+
+#### Performance Optimizations
+1. **Lazy Loading**: Uses ScrollView with LazyVStack
+2. **Message Limit**: Only renders visible messages
+3. **Efficient Updates**: Only re-renders changed messages
+4. **Memory Management**: Old messages can be purged
+
+#### Integration Points
+- **MessageStore**: Source of messages to display
+- **ConfigBus**: Loads appearance configuration
+- **ScrollbackCoordinator**: Manages scroll position and state
+- **ContentView**: Contains ScrollbackView as main content
+
+#### Why This Architecture
+- **Separation**: Display logic separate from message storage
+- **Flexibility**: Easy to swap different UI styles
+- **Performance**: Efficient rendering of long conversations
+- **Customization**: All visuals configurable via JSON
+- **Accessibility**: Supports text selection and VoiceOver
+
+#### Removal Instructions
+```swift
+// ScrollbackWire.swift
+/*
+ To remove Scrollback:
+ 1. Delete ATOM-52-Scrollback folder
+ 2. Remove from ContentView.swift
+ 3. Remove coordinator from app init
+ 4. Delete ScrollbackAppearance.json
+ 
+ WARNING: No message display without this!
+ */
+```
+
+### ATOM 53: Message Store - Central Message Repository
+
+**One-Line**: Single source of truth for all conversation messages with streaming support
+
+#### Why Message Store Deserves to be an Atom
+Message Store is the data backbone of the conversation system. It bridges the gap between ConversationFlow (which generates messages) and Scrollback (which displays them). Without this central repository, each component would manage its own message state, leading to synchronization nightmares and duplicated data. It provides clean separation of concerns: storage logic stays in one place while display and generation logic live elsewhere.
+
+#### Architecture
+```
+MessageStore/
+├── Models/
+│   ├── Message.swift                    # Core message model
+│   ├── MessageStoreConfiguration.swift  # Configuration model
+│   └── MessageStoreEvents.swift         # Event definitions
+├── Services/
+│   └── MessageStore.swift              # Central storage service
+└── Wire/
+    └── MessageStoreWire.swift          # Integration docs
+```
+
+#### Core Message Model
+```swift
+struct Message: Identifiable, Equatable {
+    let id = UUID()
+    let speaker: String       // "Boss", "Claude", "Samara", etc.
+    var content: String       // Mutable for streaming updates
+    let timestamp = Date()
+    var isStreaming: Bool     // Shows progress indicator
+    let modelUsed: String?    // "claude-3-5-sonnet", etc.
+}
+```
+
+#### Key Responsibilities
+1. **Message Storage**: Maintains ordered array of all messages
+2. **Streaming Updates**: Handles real-time content updates
+3. **Memory Management**: Enforces message limits
+4. **Change Notifications**: @Published for automatic UI updates
+5. **Event Publishing**: Lifecycle events for other atoms
+
+#### Configuration (MessageStore.json)
+```json
+{
+  "maxMessages": 1000,
+  "enableEvents": true,
+  "trimStrategy": "removeOldest",
+  "persistence": {
+    "enabled": false,
+    "path": null
+  },
+  "streamingUpdateInterval": 0.1
+}
+```
+
+#### Message Flow
+```
+User Message:
+ConversationOrchestrator → addMessage() → MessageAddedEvent → ScrollbackView
+
+AI Response:
+addMessage(isStreaming: true) → Placeholder appears
+     ↓
+updateMessage(content: chunk1) → UI updates
+     ↓
+updateMessage(content: chunk2) → UI updates
+     ↓
+updateMessage(isStreaming: false) → Complete
+```
+
+#### API Surface
+```swift
+@MainActor
+class MessageStore: ObservableObject {
+    @Published private(set) var messages: [Message] = []
+    
+    // Add new message
+    func addMessage(_ message: Message)
+    
+    // Update for streaming
+    func updateMessage(
+        _ id: UUID, 
+        content: String,
+        isStreaming: Bool
+    )
+    
+    // Remove message
+    func deleteMessage(_ id: UUID)
+    
+    // Clear all
+    func clearAllMessages()
+    
+    // Find message
+    func message(withId id: UUID) -> Message?
+}
+```
+
+#### Streaming Message Support
+```swift
+// 1. Add placeholder
+let aiMessage = Message(
+    speaker: currentPersona,
+    content: "",
+    isStreaming: true,
+    modelUsed: selectedModel
+)
+messageStore.addMessage(aiMessage)
+
+// 2. Update as chunks arrive
+func processStream(_ chunk: String) {
+    accumulated += chunk
+    messageStore.updateMessage(
+        aiMessage.id,
+        content: accumulated,
+        isStreaming: true
+    )
+}
+
+// 3. Finalize
+messageStore.updateMessage(
+    aiMessage.id,
+    content: finalContent,
+    isStreaming: false
+)
+```
+
+#### Memory Management
+```swift
+private func enforceMessageLimit() {
+    guard messages.count > configuration.maxMessages else { return }
+    
+    let removeCount = messages.count - configuration.maxMessages
+    messages.removeFirst(removeCount)
+    
+    if configuration.enableEvents {
+        eventBus.publish(MessageLimitReachedEvent(
+            removedCount: removeCount
+        ))
+    }
+}
+```
+
+#### Events Published
+- **MessageAddedEvent**: New message added
+- **MessageUpdatedEvent**: Content or streaming state changed
+- **MessageDeletedEvent**: Message removed
+- **MessagesCleared**: All messages removed
+- **MessageLimitReached**: Old messages trimmed
+
+#### Integration Points
+- **ConversationOrchestrator**: Writes messages
+- **StreamProcessor**: Updates streaming content
+- **ScrollbackView**: Observes and displays
+- **ConfigBus**: Loads configuration
+- **EventBus**: Publishes events
+
+#### Why This Architecture
+- **Single Source of Truth**: One place for all message data
+- **Reactive Updates**: @Published drives UI automatically
+- **Clean Boundaries**: Storage logic isolated from display/generation
+- **Streaming-First**: Built for real-time updates
+- **Memory Safe**: Prevents unbounded growth
+
+#### Removal Instructions
+```swift
+// MessageStoreWire.swift
+/*
+ To remove Message Store:
+ 1. Delete ATOM-53-MessageStore folder
+ 2. Remove from ConversationOrchestrator
+ 3. Remove from ScrollbackView
+ 4. Remove from StreamProcessor
+ 
+ WARNING: No message storage or display!
+ */
+```
+
+## 600 Series - App Theme
+
+### ATOM 61: Theme System - Configuration-Driven Visual Consistency
+
+**One-Line**: Provides app-wide theming through design tokens loaded from JSON configuration
+
+#### Why Theme System Deserves to be an Atom
+Theme System eliminates hardcoded colors and spacing throughout the codebase, replacing them with a centralized, configuration-driven approach. It enables instant theme changes without recompilation, ensures visual consistency across all components, and makes the app ready for features like dark/light mode switching. Without this atom, every view would define its own colors, making theme changes a nightmare.
+
+#### Architecture
+```
+ThemeSystem/
+├── Models/
+│   ├── Theme.swift              # Core theme data model
+│   └── DesignTokens.swift       # Configuration structure
+├── Services/
+│   └── ThemeService.swift       # ConfigBus integration
+├── UI/
+│   └── ThemedContainer.swift    # View wrapper component
+└── Wire/
+    └── ThemeSystemWire.swift    # Integration docs
+```
+
+#### Core Theme Model
+```swift
+struct Theme: Equatable {
+    let background: Color      // App background (#000000)
+    let primaryText: Color     // Main text (#FFFFFF)
+    let secondaryText: Color   // Subdued text (#B0B0B0)
+    let accent: Color         // Interactive elements (#3B82F6)
+}
+```
+
+#### Configuration (DesignTokens.json)
+```json
+{
+  "colors": {
+    "background": "#000000",
+    "primaryText": "#FFFFFF",
+    "secondaryText": "#B0B0B0",
+    "accent": "#3B82F6",
+    "border": "#333333",
+    "surface": "#1A1A1A",
+    "error": "#EF4444",
+    "warning": "#F59E0B",
+    "success": "#10B981"
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32
+  },
+  "typography": {
+    "bodySize": 15,
+    "headingSize": 20,
+    "captionSize": 13,
+    "lineHeight": 1.5
+  },
+  "animation": {
+    "quick": 0.15,
+    "normal": 0.3,
+    "slow": 0.5
+  }
+}
+```
+
+#### Integration Pattern
+```swift
+// In ContentView.swift
+ThemedContainer { theme in
+    VStack {
+        // All child views automatically receive theme
+        Text("Hello")
+            .foregroundColor(theme.primaryText)
+        
+        Button("Action") { }
+            .accentColor(theme.accent)
+    }
+    .background(theme.background)
+}
+```
+
+#### Hot Reload Flow
+```
+Edit DesignTokens.json
+        ↓
+ConfigBus detects change
+        ↓
+ThemeService reloads
+        ↓
+Theme @Published updates
+        ↓
+UI refreshes instantly
+```
+
+#### Usage Guidelines
+```swift
+// ❌ Never hardcode colors
+Text("Hello").foregroundColor(.white)
+Rectangle().fill(Color(hex: "#3B82F6"))
+
+// ✅ Always use theme
+Text("Hello").foregroundColor(theme.primaryText)
+Rectangle().fill(theme.accent)
+
+// ✅ Or use environment
+@Environment(\.theme) var theme
+```
+
+#### Design Token Benefits
+1. **Consistency**: Single source of truth for all visual values
+2. **Flexibility**: Change entire app appearance via JSON
+3. **Scalability**: Easy to add new color roles or themes
+4. **Maintenance**: Find and update any color in one place
+5. **Collaboration**: Designers can modify without code knowledge
+
+#### Spacing Scale
+```swift
+// Consistent spacing throughout app
+.padding(.horizontal, tokens.spacing.md)  // 16
+.spacing(tokens.spacing.sm)               // 8
+.offset(y: tokens.spacing.xs)             // 4
+```
+
+#### Future Extensions
+```swift
+// Multiple themes
+enum ThemeVariant {
+    case dark       // Current default
+    case light      // Future addition
+    case highContrast // Accessibility
+}
+
+// Dynamic sizing
+@ScaledMetric var bodySize = tokens.typography.bodySize
+```
+
+#### Integration Points
+- **ContentView**: Wraps entire app in ThemedContainer
+- **ConfigBus**: Loads and watches DesignTokens.json
+- **All UI Components**: Access theme via environment
+- **Custom Views**: Can define additional theme properties
+
+#### Why This Architecture
+- **Separation**: Visual design separate from logic
+- **Reactivity**: Automatic UI updates on theme change
+- **Simplicity**: One wrapper provides theme everywhere
+- **Performance**: Minimal overhead with environment
+- **Extensibility**: Easy to add new token categories
+
+#### Removal Instructions
+```swift
+// ThemeSystemWire.swift
+/*
+ To remove Theme System:
+ 1. Delete ATOM-61-ThemeSystem folder
+ 2. Remove ThemedContainer wrapper
+ 3. Remove themeService initialization
+ 4. Delete DesignTokens.json
+ 
+ App reverts to SwiftUI defaults
+ */
+```
+
+### ATOM 62: [Next Infrastructure Service]
+**Purpose**: [To be determined]  
+**Dependencies**: [TBD]  
+**Used by**: [TBD]  
+**Wire**: [TBD]
+
+### ATOM 63: [Next Infrastructure Service]
+**Purpose**: [To be determined]  
+**Dependencies**: [TBD]  
+**Used by**: [TBD]  
+**Wire**: [TBD]
+
+## 700 Series - Developer Tools
+
+### ATOM 71: Boss Profile Service - User Context Loader
+
+**One-Line**: Reads all text files from the Boss folder to provide user context for system prompts
+
+#### Why Boss Profile Service Deserves to be an Atom
+Boss Profile Service embodies the philosophy that "the folder IS the profile." It provides a zero-friction way for users to maintain their context - just drop text files in a folder. No JSON schemas, no structured data, no special formats. This simplicity makes it incredibly powerful: users can update their context with any text editor, and the AI immediately has access to the latest information. Without this atom, users would need to manually update prompts or use complex configuration.
+
+#### Architecture
+```
+BossProfile/
+├── Models/
+│   └── BossProfileConfiguration.swift   # Configuration model
+├── Services/
+│   └── BossProfileService.swift        # File loading service
+├── Events/
+│   └── BossProfileEvents.swift         # Profile change events
+└── Wire/
+    └── BossProfileWire.swift           # Integration docs
+```
+
+#### The Folder IS The Profile
+```
+aetherVault/Boss/
+├── Boss.md                    # Who you are
+├── Boss's expectations.md     # What you expect
+├── current-projects.md        # What you're working on
+├── preferences.txt            # How you like things
+└── [any .md or .txt file]     # Anything else relevant
+```
+
+#### Configuration (BossProfile.json)
+```json
+{
+  "folderPath": "~/Documents/code/atomic-aether/aetherVault/Boss",
+  "fileExtensions": [".md", ".txt", ".markdown", ".text"],
+  "excludePatterns": [".DS_Store", ".gitignore", "*.tmp"],
+  "displayName": "Boss",
+  "displayColor": "#FFD700",
+  "cacheEnabled": true,
+  "maxFileSize": 1048576,
+  "includeFilenames": true,
+  "sortAlphabetically": true
+}
+```
+
+#### How It Works
+```swift
+func loadProfile() -> String {
+    // 1. Find all text files
+    let files = FileManager.default
+        .contentsOfDirectory(at: bossFolder)
+        .filter { fileExtensions.contains($0.pathExtension) }
+        .filter { !excludePatterns.contains($0.lastPathComponent) }
+    
+    // 2. Sort if configured
+    if configuration.sortAlphabetically {
+        files.sort { $0.lastPathComponent < $1.lastPathComponent }
+    }
+    
+    // 3. Read and concatenate
+    return files.compactMap { file in
+        guard let content = try? String(contentsOf: file) else { return nil }
+        return """
+        === \(file.lastPathComponent) ===
+        
+        \(content)
+        """
+    }.joined(separator: "\n\n")
+}
+```
+
+#### Output Format
+```
+=== Boss.md ===
+
+# About Me
+I'm building atomic-aether to...
+
+=== Boss's expectations.md ===
+
+## Code Quality
+- Follow the 7 Boss Rules religiously
+- No comments unless critical...
+
+=== current-projects.md ===
+
+## Active Work
+1. Implementing ATOM 71-73...
+```
+
+#### Integration Points
+- **SystemPromptBuilder**: Includes profile in system prompts
+- **MessageRow**: Uses displayName and color for "Boss" speaker
+- **ConfigBus**: Loads configuration
+- **Future**: File watcher for hot-reload
+
+#### Display Customization
+```swift
+// In MessageRow
+if speaker.lowercased() == "boss" {
+    name = bossProfileService.bossDisplayName  // "Boss"
+    color = bossProfileService.bossColor       // Gold
+}
+```
+
+#### Usage Philosophy
+1. **No Structure Required**: Any text file works
+2. **Instant Updates**: Edit files, AI sees changes
+3. **Version Control Friendly**: Plain text files
+4. **Editor Agnostic**: Use VS Code, vim, TextEdit
+5. **Cumulative Context**: All files concatenated
+
+#### File Management
+```swift
+// Size limits
+if fileSize > configuration.maxFileSize {
+    // Skip file, log warning
+    eventBus.publish(BossProfileEvent.fileTooLarge(filename))
+}
+
+// Error handling
+do {
+    content = try String(contentsOf: url)
+} catch {
+    // Log error, continue with other files
+    errorBus.report(error, from: "BossProfile")
+}
+```
+
+#### Caching Strategy
+```swift
+private var cachedProfile: String?
+private var cacheTimestamp: Date?
+
+func getProfileForPrompt() -> String {
+    if cacheEnabled && cachedProfile != nil {
+        return cachedProfile!
+    }
+    
+    let profile = loadProfile()
+    cachedProfile = profile
+    cacheTimestamp = Date()
+    return profile
+}
+```
+
+#### Why This Architecture
+- **Zero Friction**: Drop files and go
+- **Human Readable**: Plain text, no encoding
+- **Flexible**: Any file organization works
+- **Discoverable**: See all context in Finder
+- **Maintainable**: Edit with any tool
+
+#### Future Enhancements
+```swift
+// File watching
+let watcher = FileWatcher(path: bossFolder)
+watcher.onchange = { [weak self] in
+    self?.clearCache()
+    self?.eventBus.publish(BossProfileChangedEvent())
+}
+
+// Selective loading
+func loadProfile(matching: String) -> String {
+    // Load only files containing keyword
+}
+```
+
+#### Removal Instructions
+```swift
+// BossProfileWire.swift
+/*
+ To remove Boss Profile Service:
+ 1. Delete ATOM-71-BossProfile folder
+ 2. Remove from atomic_aetherApp init
+ 3. Remove from SystemPromptBuilder
+ 4. Delete BossProfile.json
+ 
+ No user context in prompts!
+ */
+```
+
+### ATOM 72: Persona Profile Service - Extensible Persona Knowledge
+
+**One-Line**: Loads persona-specific context files from individual folders to extend each persona's knowledge base
+
+#### Why Persona Profile Service Deserves to be an Atom
+Persona Profile Service extends the "folder IS the profile" philosophy to personas, enabling them to evolve beyond their static base prompts. While the base persona definition handles personality and communication style, this atom adds domain knowledge, guidelines, and evolving context. Each persona can grow its expertise by simply adding text files to its folder. Without this atom, personas are frozen in time with only their initial prompts.
+
+#### Architecture
+```
+PersonaProfile/
+├── Models/
+│   └── PersonaProfileConfiguration.swift  # Configuration model
+├── Services/
+│   └── PersonaProfileService.swift       # Lazy-loading service
+├── Events/
+│   └── PersonaProfileEvents.swift        # Profile change events
+└── Wire/
+    └── PersonaProfileWire.swift          # Integration docs
+```
+
+#### Persona Knowledge Structure
+```
+aetherVault/Personas/
+├── Claude/
+│   ├── 7-boss-rules-deep-dive.md        # Detailed coding philosophy
+│   ├── swift-best-practices.md          # Swift expertise
+│   └── architecture-patterns.txt        # Design patterns
+├── Samara/
+│   ├── creative-techniques.md           # Creative methods
+│   ├── empathy-guidelines.md            # Communication style
+│   └── storytelling-framework.txt       # Narrative structures
+├── Vlad/
+│   ├── startup-playbook.md              # Business strategies
+│   └── market-analysis-framework.txt    # Analysis methods
+└── [any-persona]/
+    └── [knowledge-files.md]              # Extensible
+```
+
+#### Configuration (PersonaProfile.json)
+```json
+{
+  "baseFolderPath": "~/Documents/code/atomic-aether/aetherVault/Personas",
+  "fileExtensions": [".md", ".txt", ".markdown", ".text"],
+  "excludePatterns": [".DS_Store", ".gitignore", "*.tmp"],
+  "cacheEnabled": true,
+  "maxFileSize": 524288,
+  "includeFilenames": true,
+  "sortAlphabetically": true,
+  "lazyLoading": true,
+  "fallbackToEmpty": true
+}
+```
+
+#### Lazy Loading Strategy
+```swift
+private var profileCache: [String: String] = [:]
+
+func getProfileForPrompt(personaId: String) -> String {
+    // Check cache first
+    if cacheEnabled, let cached = profileCache[personaId] {
+        return cached
+    }
+    
+    // Load only when needed
+    let personaFolder = baseFolderPath
+        .appendingPathComponent(personaId.capitalized)
+    
+    guard FileManager.default.fileExists(atPath: personaFolder.path) else {
+        return ""  // No profile folder = no extended context
+    }
+    
+    let profile = loadProfile(from: personaFolder)
+    profileCache[personaId] = profile
+    return profile
+}
+```
+
+#### Profile Loading
+```swift
+func loadProfile(from folder: URL) -> String {
+    let files = try? FileManager.default
+        .contentsOfDirectory(at: folder, includingPropertiesForKeys: nil)
+        .filter { url in
+            fileExtensions.contains(url.pathExtension) &&
+            !excludePatterns.contains(url.lastPathComponent)
+        }
+        .sorted { $0.lastPathComponent < $1.lastPathComponent }
+    
+    return files?.compactMap { file in
+        guard let content = try? String(contentsOf: file),
+              file.fileSize <= maxFileSize else { return nil }
+              
+        return """
+        === \(file.lastPathComponent) ===
+        
+        \(content)
+        """
+    }.joined(separator: "\n\n") ?? ""
+}
+```
+
+#### Integration with System Prompts
+```swift
+// In SystemPromptBuilder
+let basePrompt = persona.systemPrompt  // Personality
+let profile = personaProfileService
+    .getProfileForPrompt(personaId: currentPersona)  // Knowledge
+
+let fullPrompt = """
+\(basePrompt)
+
+\(profile.isEmpty ? "" : "ADDITIONAL CONTEXT:\n\n\(profile)")
+"""
+```
+
+#### Separation of Concerns
+```
+Base Prompt (Personas.json):
+- Personality traits
+- Communication style  
+- Core behaviors
+- Identity
+
+Profile (Folder files):
+- Domain knowledge
+- Specific guidelines
+- Evolving context
+- Reference materials
+```
+
+#### Usage Examples
+
+**Claude's Extended Knowledge**:
+```markdown
+=== 7-boss-rules-deep-dive.md ===
+
+# Deep Dive: The 7 Boss Rules
+
+## Rule 1: Swifty - Detailed Examples
+When we say "Swifty," we mean...
+
+## Rule 2: Atomic LEGO - Architecture Patterns
+The key to atomic design is...
+```
+
+**Samara's Creative Framework**:
+```markdown
+=== storytelling-framework.md ===
+
+# Narrative Structures I Use
+
+## Three-Act Structure
+1. Setup: Establish the world...
+2. Confrontation: Challenge appears...
+3. Resolution: Transformation occurs...
+```
+
+#### Cache Management
+```swift
+// Clear specific persona
+func clearCache(for personaId: String) {
+    profileCache.removeValue(forKey: personaId)
+    eventBus.publish(PersonaProfileClearedEvent(personaId))
+}
+
+// Clear all
+func clearAllCaches() {
+    profileCache.removeAll()
+    eventBus.publish(AllPersonaProfilesClearedEvent())
+}
+
+// Preload specific personas
+func preloadProfiles(for personaIds: [String]) {
+    personaIds.forEach { _ = getProfileForPrompt(personaId: $0) }
+}
+```
+
+#### Why This Architecture
+- **Lazy Loading**: Only loads what's needed
+- **Extensible**: Add knowledge without code changes
+- **Organized**: Each persona has its own space
+- **Versioned**: Text files work with Git
+- **Discoverable**: Browse knowledge in Finder
+
+#### Best Practices
+1. **Base vs Profile**: Personality in base, knowledge in profile
+2. **File Naming**: Clear, descriptive names
+3. **File Size**: Keep individual files focused
+4. **Organization**: Group related concepts
+5. **Evolution**: Update profiles as personas learn
+
+#### Future Enhancements
+```swift
+// Selective loading
+func getProfile(personaId: String, topic: String) -> String {
+    // Load only files matching topic
+}
+
+// Profile metrics
+func profileStats(personaId: String) -> ProfileStats {
+    // File count, total size, last modified
+}
+
+// Hot reload
+FileWatcher(path: personaFolder).onChange = {
+    clearCache(for: personaId)
+}
+```
+
+#### Removal Instructions
+```swift
+// PersonaProfileWire.swift
+/*
+ To remove Persona Profile Service:
+ 1. Delete ATOM-72-PersonaProfile folder
+ 2. Remove from atomic_aetherApp init
+ 3. Remove from SystemPromptBuilder
+ 4. Delete PersonaProfile.json
+ 
+ Personas limited to base prompts only!
+ */
+```

@@ -5,8 +5,8 @@
 //  Created by Deepak Patnaik on 29.07.25.
 //
 //  Main app view with dark theme
-//  ATOM 4: ConfigBus - Wires up configuration services
-//  ATOM 15: Scrollback - Displays messages
+//  ATOM 104: ConfigBus - Wires up configuration services
+//  ATOM 502: Scrollback - Displays messages
 //
 
 import SwiftUI
@@ -26,7 +26,7 @@ struct ContentView: View {
             // Input Bar
             InputBarView()
         }
-        .errorToast() // ATOM 2: ErrorBus toast overlay
+        .errorToast() // ATOM 102: ErrorBus toast overlay
         .onAppear {
             // Setup services with ConfigBus
             themeService.setupWithConfigBus(configBus)

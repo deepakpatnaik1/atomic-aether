@@ -1,17 +1,12 @@
 {
-  "width": 1400,
+  "width": 700,
   "padding": 20,
   "messageSpacing": 4,
   "speakerLabel": {
     "fontSize": 13,
     "borderWidth": 2,
-    "gradientLineHeight": 1,
-    "gradientLinePadding": 112,
     "nameOpacity": 0.85,
     "backgroundOpacity": 0.05,
-    "gradientStartOpacity": 0.0,
-    "gradientMidOpacity": 0.3,
-    "gradientEndOpacity": 0.6,
     "namePaddingHorizontal": 8,
     "namePaddingVertical": 3,
     "cornerRadius": 4,
@@ -19,7 +14,7 @@
     "labelWidth": 120
   },
   "message": {
-    "fontSize": 15,
+    "fontSize": 13,
     "contentOpacity": 0.9,
     "topPadding": 8,
     "bottomPadding": 4,
