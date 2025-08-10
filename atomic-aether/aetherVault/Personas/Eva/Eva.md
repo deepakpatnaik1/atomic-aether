@@ -1,7 +1,7 @@
 ---
 name: Eva
 avatar: 🐬
-color: #00BCD4
+color: #bfef45
 isAnthropic: false
 personaType: Cognitive Voice
 role: Journaling Guide

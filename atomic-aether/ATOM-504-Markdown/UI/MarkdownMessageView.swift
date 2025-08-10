@@ -17,6 +17,7 @@ struct MarkdownMessageView: View {
     let content: String
     let fontSize: Double?
     let opacity: Double?
+    let textColor: Color?
     
     @EnvironmentObject var configBus: ConfigBus
     @State private var configuration: MarkdownConfiguration?
@@ -24,26 +25,28 @@ struct MarkdownMessageView: View {
     init(
         content: String,
         fontSize: Double? = nil,
-        opacity: Double? = nil
+        opacity: Double? = nil,
+        textColor: Color? = nil
     ) {
         self.content = content
         self.fontSize = fontSize
         self.opacity = opacity
+        self.textColor = textColor
     }
     
     var body: some View {
         Markdown(content)
             .markdownTextStyle(\.text) {
-                ForegroundColor(.white.opacity(effectiveOpacity))
+                ForegroundColor(effectiveTextColor.opacity(effectiveOpacity))
                 FontSize(effectiveFontSize)
             }
             .markdownTextStyle(\.strong) {
                 FontWeight(.bold)
-                ForegroundColor(.white.opacity(configuration?.text.boldOpacity ?? 0.95))
+                ForegroundColor(effectiveTextColor.opacity(configuration?.text.boldOpacity ?? 0.95))
             }
             .markdownTextStyle(\.emphasis) {
                 FontStyle(.italic)
-                ForegroundColor(.white.opacity(configuration?.text.italicOpacity ?? 0.85))
+                ForegroundColor(effectiveTextColor.opacity(configuration?.text.italicOpacity ?? 0.85))
             }
             .markdownTextStyle(\.link) {
                 ForegroundColor(MarkdownConfiguration.color(from: configuration?.links.color ?? "cyan"))
@@ -59,7 +62,7 @@ struct MarkdownMessageView: View {
                     .markdownTextStyle {
                         FontSize(self.configuration?.headings.h1.fontSize ?? 24)
                         FontWeight(.bold)
-                        ForegroundColor(.white.opacity(self.configuration?.headings.h1.opacity ?? 0.95))
+                        ForegroundColor(effectiveTextColor.opacity(self.configuration?.headings.h1.opacity ?? 0.95))
                     }
                     .padding(.top, self.configuration?.headings.h1.topPadding ?? 16)
                     .padding(.bottom, self.configuration?.headings.h1.bottomPadding ?? 8)
@@ -69,7 +72,7 @@ struct MarkdownMessageView: View {
                     .markdownTextStyle {
                         FontSize(self.configuration?.headings.h2.fontSize ?? 20)
                         FontWeight(.semibold)
-                        ForegroundColor(.white.opacity(self.configuration?.headings.h2.opacity ?? 0.9))
+                        ForegroundColor(effectiveTextColor.opacity(self.configuration?.headings.h2.opacity ?? 0.9))
                     }
                     .padding(.top, self.configuration?.headings.h2.topPadding ?? 12)
                     .padding(.bottom, self.configuration?.headings.h2.bottomPadding ?? 6)
@@ -79,7 +82,7 @@ struct MarkdownMessageView: View {
                     .markdownTextStyle {
                         FontSize(self.configuration?.headings.h3.fontSize ?? 17)
                         FontWeight(.medium)
-                        ForegroundColor(.white.opacity(self.configuration?.headings.h3.opacity ?? 0.9))
+                        ForegroundColor(effectiveTextColor.opacity(self.configuration?.headings.h3.opacity ?? 0.9))
                     }
                     .padding(.top, self.configuration?.headings.h3.topPadding ?? 8)
                     .padding(.bottom, self.configuration?.headings.h3.bottomPadding ?? 4)
@@ -108,6 +111,10 @@ struct MarkdownMessageView: View {
     
     private var effectiveOpacity: Double {
         opacity ?? configuration?.defaults.opacity ?? 0.9
+    }
+    
+    private var effectiveTextColor: Color {
+        textColor ?? .white
     }
 }
 

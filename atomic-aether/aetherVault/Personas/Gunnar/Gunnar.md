@@ -1,7 +1,7 @@
 ---
 name: Gunnar
 avatar: 🪼
-color: #FF6B35
+color: #3cb44b
 isAnthropic: false
 personaType: Functional Expert
 role: Startup Mentor

@@ -1,26 +1,11 @@
 {
   "colors": {
     "background": {
-      "primary": {
-        "red": 0.0,
-        "green": 0.0,
-        "blue": 0.0,
-        "alpha": 1.0
-      }
+      "primary": "#180A0A"
     },
     "text": {
-      "primary": {
-        "red": 1.0,
-        "green": 1.0,
-        "blue": 1.0,
-        "alpha": 1.0
-      },
-      "secondary": {
-        "red": 0.7,
-        "green": 0.7,
-        "blue": 0.7,
-        "alpha": 1.0
-      }
+      "primary": "#DCD7C9",
+      "secondary": "#B3B3B3"
     }
   },
   "spacing": {

@@ -1,7 +1,7 @@
 ---
 name: Alicja
 avatar: 🐞
-color: #FF1744
+color: #4363d8
 isAnthropic: false
 personaType: Functional Expert
 role: Digital Marketing

@@ -13,26 +13,14 @@
 import SwiftUI
 
 struct DesignTokens: Codable {
-    struct ColorComponents: Codable {
-        let red: Double
-        let green: Double
-        let blue: Double
-        let alpha: Double
-        
-        /// Convert to SwiftUI Color
-        var color: Color {
-            Color(red: red, green: green, blue: blue, opacity: alpha)
-        }
-    }
-    
     struct Colors: Codable {
         struct Background: Codable {
-            let primary: ColorComponents
+            let primary: String
         }
         
         struct Text: Codable {
-            let primary: ColorComponents
-            let secondary: ColorComponents
+            let primary: String
+            let secondary: String
         }
         
         let background: Background
@@ -52,11 +40,11 @@ struct DesignTokens: Codable {
     static let `default` = DesignTokens(
         colors: Colors(
             background: Colors.Background(
-                primary: ColorComponents(red: 0.0, green: 0.0, blue: 0.0, alpha: 1.0)
+                primary: "#000000"
             ),
             text: Colors.Text(
-                primary: ColorComponents(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0),
-                secondary: ColorComponents(red: 0.7, green: 0.7, blue: 0.7, alpha: 1.0)
+                primary: "#FFFFFF",
+                secondary: "#B3B3B3"
             )
         ),
         spacing: Spacing(small: 8, medium: 16, large: 24)

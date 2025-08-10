@@ -1,7 +1,7 @@
 ---
 name: Vlad
 avatar: 🦏
-color: #E74C3C
+color: #9A6324
 isAnthropic: false
 personaType: Cognitive Voice
 role: VC Partner

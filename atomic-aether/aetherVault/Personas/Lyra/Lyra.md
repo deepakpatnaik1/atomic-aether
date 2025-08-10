@@ -1,7 +1,7 @@
 ---
 name: Lyra
 avatar: 🦋
-color: #16A085
+color: #42d4f4
 isAnthropic: false
 personaType: Cognitive Voice
 role: Lateral Thinking

@@ -24,9 +24,9 @@ class ThemeService: ObservableObject {
         // Default theme from DesignTokens.default
         let defaultTokens = DesignTokens.default
         self.current = Theme(
-            backgroundColor: defaultTokens.colors.background.primary.color,
-            primaryTextColor: defaultTokens.colors.text.primary.color,
-            secondaryTextColor: defaultTokens.colors.text.secondary.color
+            backgroundColor: Color(hex: defaultTokens.colors.background.primary) ?? .black,
+            primaryTextColor: Color(hex: defaultTokens.colors.text.primary) ?? .white,
+            secondaryTextColor: Color(hex: defaultTokens.colors.text.secondary) ?? .gray
         )
     }
     
@@ -50,9 +50,9 @@ class ThemeService: ObservableObject {
     
     private func updateTheme(from tokens: DesignTokens) {
         current = Theme(
-            backgroundColor: tokens.colors.background.primary.color,
-            primaryTextColor: tokens.colors.text.primary.color,
-            secondaryTextColor: tokens.colors.text.secondary.color
+            backgroundColor: Color(hex: tokens.colors.background.primary) ?? .black,
+            primaryTextColor: Color(hex: tokens.colors.text.primary) ?? .white,
+            secondaryTextColor: Color(hex: tokens.colors.text.secondary) ?? .gray
         )
     }
 }

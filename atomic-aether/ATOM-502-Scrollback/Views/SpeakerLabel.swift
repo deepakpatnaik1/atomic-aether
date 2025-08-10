@@ -18,20 +18,24 @@ struct SpeakerLabel: View {
     let appearance: ScrollbackAppearance.SpeakerLabelAppearance
     
     var body: some View {
-        HStack(alignment: .top, spacing: appearance.stackSpacing) {
-            // Speaker name
+        HStack(spacing: 0) {
+            // Colored left border
+            Rectangle()
+                .fill(accentColor.opacity(appearance.borderOpacity))
+                .frame(width: appearance.borderWidth)
+            
+            // Speaker name with background
             Text(displayName)
                 .font(.system(size: appearance.fontSize, weight: .medium))
                 .foregroundColor(.white.opacity(appearance.nameOpacity))
                 .padding(.horizontal, appearance.namePaddingHorizontal)
                 .padding(.vertical, appearance.namePaddingVertical)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .background(
-                    RoundedRectangle(cornerRadius: appearance.cornerRadius)
-                        .fill(Color.white.opacity(appearance.backgroundOpacity))
+                    Color.white.opacity(appearance.backgroundOpacity)
                 )
-            
-            Spacer(minLength: 0)
         }
-        .frame(width: appearance.labelWidth, alignment: .topLeading)
+        .clipShape(RoundedRectangle(cornerRadius: appearance.cornerRadius))
+        .fixedSize(horizontal: true, vertical: true)
     }
 }

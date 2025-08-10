@@ -527,7 +527,158 @@ This system provides 99 slots per series, ensuring plenty of room for growth whi
 **Used by**: Scrollback, ConversationFlow  
 **Wire**: Delete MessageStore folder → no message storage
 
-## 600 Series - App Theme
+### ATOM 504: Markdown
+**Purpose**: Rich text message formatting with markdown support  
+**Dependencies**: ConfigBus, swift-markdown-ui package  
+**Used by**: MessageRow  
+**Wire**: Delete Markdown folder → messages display as plain text
+
+## 500 Series - Detailed Documentation
+
+### ATOM 502: Scrollback - Beautiful Message Display with Color Meteors
+
+**One-Line**: Displays conversation messages with speaker labels, colored borders, and animated meteor effects
+
+#### Why Scrollback Deserves to be an Atom
+Scrollback is the primary visual interface where users see their conversations. It transforms raw messages into a beautiful, readable format with visual indicators for each speaker. The atom includes the innovative ColorMeteor effect - horizontal gradient lines that extend from speaker names, creating a dynamic visual connection. Without this atom, messages would have no display mechanism.
+
+#### Architecture
+```
+ATOM-502-Scrollback/
+├── Core/
+│   └── ScrollbackCoordinator.swift  # Atom coordinator
+├── Models/
+│   └── ScrollbackAppearance.swift   # Comprehensive styling model
+├── Views/
+│   ├── ScrollbackView.swift         # Main container
+│   ├── MessageRow.swift             # Individual message display
+│   ├── SpeakerLabel.swift           # Speaker name with colored border
+│   └── ColorMeteor.swift            # Gradient line effect
+└── Wire/
+    └── ScrollbackWire.swift         # Integration documentation
+```
+
+#### Visual Design
+```
+┌─────────────────────────────────────────────┐
+│ ▌ Boss ════════════════════════════════════ │ ← Red meteor
+│   What is a red dwarf star?                 │
+│                                             │
+│ ▌ Samara ══════════════════════════════════ │ ← Orange meteor  
+│   A red dwarf is a small, cool star that.. │
+│   • Lower mass than our Sun                │
+│   • Surface temperature 2,500-4,000K        │
+│   • Most common type of star               │
+└─────────────────────────────────────────────┘
+```
+
+#### ColorMeteor Innovation
+The ColorMeteor creates a layered visual effect:
+1. **Background Layer**: Blurred gradient for glow effect
+2. **Foreground Layer**: Sharp line for definition
+
+```swift
+ZStack {
+    // Blurred background for glow
+    LinearGradient(...)
+        .blur(radius: appearance.blurRadius)
+    
+    // Sharp foreground line
+    LinearGradient(...)
+        .frame(height: appearance.sharpLineHeight)
+}
+```
+
+#### Configuration (ScrollbackAppearance.json)
+```json
+{
+  "padding": 20,
+  "messageSpacing": 4,
+  "speakerLabel": {
+    "fontSize": 13,
+    "borderWidth": 3,
+    "borderOpacity": 0.9,
+    "nameOpacity": 0.85,
+    "backgroundOpacity": 0.05,
+    "cornerRadius": 4,
+    "verticalSpacing": 4
+  },
+  "message": {
+    "fontSize": 13,
+    "contentOpacity": 1.0,
+    "textColor": "#DCD7C9",
+    "leftIndent": 24,
+    "lastMessageBottomPadding": 16
+  },
+  "colorMeteor": {
+    "height": 2,
+    "sharpLineHeight": 1,
+    "startOpacity": 1.0,
+    "midOpacity": 0.3,
+    "endOpacity": 0,
+    "blurRadius": 2
+  }
+}
+```
+
+#### Vertical Layout Structure
+Messages now use vertical stacking with speakers above content:
+```swift
+VStack(alignment: .leading) {
+    // Speaker row (when speaker changes)
+    HStack {
+        SpeakerLabel(...)     // Name with colored border
+        ColorMeteor(...)      // Gradient extending right
+    }
+    
+    // Message content (indented)
+    MarkdownMessageView(...)
+        .padding(.leading, leftIndent)
+}
+```
+
+#### Speaker Label Design
+- Colored left border using persona accent color
+- Rounded rectangle background
+- Fixed size to prevent layout jumps
+- Boss gets special red (#e6194B) treatment
+
+#### Responsive Width
+- Reads contentWidth from StateBus
+- 80% of window width (configurable)
+- Minimum 500px width
+- Centered in window
+
+#### Color Palette
+All personas use vibrant, distinct colors:
+- Boss: Red (#e6194B)
+- Samara: Orange (#f58231)  
+- Claude: Yellow (#ffe119)
+- Eva: Lime (#bfef45)
+- Gunnar: Green (#3cb44b)
+- Lyra: Cyan (#42d4f4)
+- Alicja: Blue (#4363d8)
+- Sonja: Purple (#911eb4)
+- Vanessa: Magenta (#f032e6)
+- Vlad: Brown (#9A6324)
+
+#### Integration Points
+- **MessageStore**: Provides messages to display
+- **PersonaStateService**: Persona colors and names
+- **BossProfileService**: Boss display customization
+- **MarkdownMessageView**: Rich text rendering
+- **ConfigBus**: All appearance configuration
+- **StateBus**: Responsive width sharing
+
+#### Easy Removal Test
+To remove ColorMeteor effect (3 steps):
+1. Delete `ColorMeteor.swift`
+2. Remove ColorMeteor usage from `MessageRow.swift` 
+3. Remove colorMeteor from config (optional)
+
+App continues working perfectly - just no meteors!
+
+### ATOM 504: Markdown
 
 ### ATOM 601: ThemeSystem
 **Purpose**: Design tokens and theme service  
@@ -4195,3 +4346,107 @@ extension StateKey where T == CGFloat {
 - **Configurable**: Easy to adjust ratio and minimum via JSON
 - **No Layout Breaks**: InputBar position unchanged
 - **Follows Boss Rules**: Clean separation, configuration-driven, simple solution
+
+## ATOM 504: Markdown - Rich Text Message Formatting
+
+The Markdown atom enables rich text formatting in messages using the swift-markdown-ui package. It provides a drop-in replacement for the Text view with full markdown support while maintaining the atomic-aether dark theme aesthetic.
+
+### Structure
+```
+ATOM-504-Markdown/
+├── Models/
+│   └── MarkdownConfiguration.swift    # Comprehensive styling configuration
+├── UI/
+│   └── MarkdownMessageView.swift      # Drop-in Text replacement component
+├── Wire/
+│   └── MarkdownWire.swift             # Integration documentation
+└── Config/
+    └── MarkdownAppearance.json        # All styling externalized
+```
+
+### Key Features
+- **Full Markdown Support**:
+  - Headings: # H1, ## H2, ### H3 (and H4-H6)
+  - Text formatting: **bold**, *italic*, ***bold italic***
+  - Lists: Bullet points and numbered lists
+  - Code: `inline code` and code blocks
+  - Links: [Clickable links](url)
+  - Blockquotes: > Quote blocks
+  - Tables: Basic table support
+
+- **Configuration-Driven Styling**:
+  - Heading sizes, weights, opacity, and padding
+  - Text opacity for normal, bold, and italic
+  - Code font, size, and background
+  - Link colors and underline style
+  - All values in MarkdownAppearance.json
+
+### Implementation
+```swift
+// Simple drop-in replacement in MessageRow.swift
+MarkdownMessageView(
+    content: message.content,
+    fontSize: appearance.message.fontSize,
+    opacity: appearance.message.contentOpacity
+)
+```
+
+### Configuration Example
+```json
+{
+  "headings": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "opacity": 0.95,
+      "topPadding": 16,
+      "bottomPadding": 8
+    },
+    "h2": {
+      "fontSize": 20,
+      "fontWeight": "semibold",
+      "opacity": 0.9,
+      "topPadding": 12,
+      "bottomPadding": 6
+    }
+  },
+  "text": {
+    "fontSize": 13,
+    "opacity": 0.9,
+    "boldOpacity": 0.95,
+    "italicOpacity": 0.85
+  }
+}
+```
+
+### Package Integration
+- **Package**: https://github.com/gonzalezreal/swift-markdown-ui
+- **Version**: 2.4.1
+- **Added via**: Xcode Package Manager
+- **Platforms**: iOS 15+, macOS 12+
+
+### Why This Architecture
+- **Simplicity**: Single UI component, no complex theming
+- **Configuration**: All styling externalized to JSON
+- **Performance**: Native SwiftUI rendering
+- **Compatibility**: Works with existing message system
+- **Easy Removal**: Delete folder and revert to Text view
+
+### Integration Steps
+1. Add swift-markdown-ui package in Xcode
+2. Replace Text with MarkdownMessageView in MessageRow
+3. All styling controlled via MarkdownAppearance.json
+
+### Removal Instructions
+```swift
+// MarkdownWire.swift
+/*
+ To remove Markdown support completely:
+ 1. Delete ATOM-504-Markdown folder
+ 2. Remove package dependency in Xcode
+ 3. Revert MessageRow to use Text view
+ 4. Delete MarkdownAppearance.json
+ 
+ Messages will display as plain text without formatting
+ */
+```

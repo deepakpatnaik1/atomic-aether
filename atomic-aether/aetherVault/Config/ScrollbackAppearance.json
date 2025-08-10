@@ -3,18 +3,21 @@
   "messageSpacing": 4,
   "speakerLabel": {
     "fontSize": 13,
-    "borderWidth": 2,
+    "borderWidth": 3,
+    "borderOpacity": 0.9,
     "nameOpacity": 0.85,
     "backgroundOpacity": 0.05,
     "namePaddingHorizontal": 8,
     "namePaddingVertical": 3,
     "cornerRadius": 4,
     "stackSpacing": 0,
-    "labelWidth": 120
+    "labelWidth": 120,
+    "verticalSpacing": 4
   },
   "message": {
     "fontSize": 13,
-    "contentOpacity": 0.9,
+    "contentOpacity": 1.0,
+    "textColor": "#DCD7C9",
     "topPadding": 8,
     "bottomPadding": 4,
     "leadingPadding": 8,
@@ -23,6 +26,17 @@
     "progressIndicatorScale": 0.5,
     "progressIndicatorPadding": 4,
     "stackSpacing": 2,
-    "unknownSpeakerColor": "#808080"
+    "unknownSpeakerColor": "#808080",
+    "leftIndent": 24
+  },
+  "colorMeteor": {
+    "height": 2,
+    "sharpLineHeight": 1,
+    "startOpacity": 1.0,
+    "midOpacity": 0.3,
+    "endOpacity": 0,
+    "midLocation": 0.5,
+    "blurRadius": 2,
+    "rightPadding": 0
   }
 }

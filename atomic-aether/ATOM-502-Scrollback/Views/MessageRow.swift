@@ -21,26 +21,32 @@ struct MessageRow: View {
     @EnvironmentObject var bossProfileService: BossProfileService
     
     var body: some View {
-        HStack(alignment: .top, spacing: appearance.message.contentLeadingPadding) {
-            // Speaker label column (always present for alignment)
+        VStack(alignment: .leading, spacing: 0) {
+            // Speaker label row with color meteor (only when speaker changes)
             if showSpeakerLabel {
-                SpeakerLabel(
-                    displayName: displayName(for: message.speaker),
-                    accentColor: accentColor(for: message.speaker),
-                    appearance: appearance.speakerLabel
-                )
-            } else {
-                // Empty spacer to maintain alignment when speaker label is hidden
-                Color.clear
-                    .frame(width: appearance.speakerLabel.labelWidth, height: 1)
+                HStack(spacing: 8) {
+                    SpeakerLabel(
+                        displayName: displayName(for: message.speaker),
+                        accentColor: accentColor(for: message.speaker),
+                        appearance: appearance.speakerLabel
+                    )
+                    
+                    ColorMeteor(
+                        accentColor: accentColor(for: message.speaker),
+                        appearance: appearance.colorMeteor
+                    )
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.bottom, appearance.speakerLabel.verticalSpacing)
             }
             
-            // Message content column
+            // Message content (indented)
             VStack(alignment: .leading, spacing: 0) {
                 MarkdownMessageView(
                     content: message.content,
                     fontSize: appearance.message.fontSize,
-                    opacity: appearance.message.contentOpacity
+                    opacity: appearance.message.contentOpacity,
+                    textColor: Color(hex: appearance.message.textColor)
                 )
                 
                 // Streaming indicator
@@ -50,6 +56,7 @@ struct MessageRow: View {
                         .padding(.top, appearance.message.progressIndicatorPadding)
                 }
             }
+            .padding(.leading, appearance.message.leftIndent)
         }
         .padding(.bottom, isLastFromSpeaker ? appearance.message.lastMessageBottomPadding : appearance.messageSpacing)
         .frame(maxWidth: .infinity, alignment: .leading)

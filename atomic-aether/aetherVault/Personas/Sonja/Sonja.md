@@ -1,7 +1,7 @@
 ---
 name: Sonja
 avatar: 🪲
-color: #F1C40F
+color: #911eb4
 isAnthropic: false
 personaType: Functional Expert
 role: Business in Germany
