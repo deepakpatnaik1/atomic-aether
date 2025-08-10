@@ -1,0 +1,94 @@
+{
+  "headings": {
+    "h1": {
+      "fontSize": 24,
+      "fontWeight": "bold",
+      "opacity": 0.95,
+      "topPadding": 16,
+      "bottomPadding": 8
+    },
+    "h2": {
+      "fontSize": 20,
+      "fontWeight": "semibold",
+      "opacity": 0.9,
+      "topPadding": 12,
+      "bottomPadding": 6
+    },
+    "h3": {
+      "fontSize": 17,
+      "fontWeight": "medium",
+      "opacity": 0.9,
+      "topPadding": 8,
+      "bottomPadding": 4
+    },
+    "h4": {
+      "fontSize": 15,
+      "fontWeight": "medium",
+      "opacity": 0.85,
+      "topPadding": 6,
+      "bottomPadding": 3
+    },
+    "h5": {
+      "fontSize": 14,
+      "fontWeight": "medium",
+      "opacity": 0.85,
+      "topPadding": 4,
+      "bottomPadding": 2
+    },
+    "h6": {
+      "fontSize": 13,
+      "fontWeight": "medium",
+      "opacity": 0.8,
+      "topPadding": 4,
+      "bottomPadding": 2
+    }
+  },
+  "text": {
+    "fontSize": 13,
+    "lineSpacing": 1.2,
+    "paragraphSpacing": 8,
+    "opacity": 0.9,
+    "boldOpacity": 0.95,
+    "italicOpacity": 0.85
+  },
+  "lists": {
+    "bulletIndent": 4,
+    "itemSpacing": 4,
+    "bulletOpacity": 0.6,
+    "bulletSize": 4,
+    "numberOpacity": 0.7
+  },
+  "code": {
+    "inlineFontSize": 12,
+    "inlineOpacity": 0.9,
+    "inlineBackgroundOpacity": 0.1,
+    "inlinePadding": 4,
+    "inlineCornerRadius": 4,
+    "blockFontSize": 12,
+    "blockOpacity": 0.9,
+    "blockBackgroundOpacity": 0.05,
+    "blockPadding": 12,
+    "blockCornerRadius": 6,
+    "fontName": "Menlo"
+  },
+  "links": {
+    "color": "cyan",
+    "underline": true,
+    "hoverOpacity": 0.8
+  },
+  "blockquote": {
+    "borderWidth": 2,
+    "borderOpacity": 0.3,
+    "contentOpacity": 0.8,
+    "leftPadding": 12
+  },
+  "tables": {
+    "borderOpacity": 0.2,
+    "borderWidth": 1,
+    "cellPadding": 8
+  },
+  "defaults": {
+    "fontSize": 13,
+    "opacity": 0.9
+  }
+}

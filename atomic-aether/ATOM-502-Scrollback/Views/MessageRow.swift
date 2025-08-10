@@ -37,12 +37,11 @@ struct MessageRow: View {
             
             // Message content column
             VStack(alignment: .leading, spacing: 0) {
-                Text(message.content)
-                    .font(.system(size: appearance.message.fontSize))
-                    .foregroundColor(.white.opacity(appearance.message.contentOpacity))
-                    .textSelection(.enabled)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                MarkdownMessageView(
+                    content: message.content,
+                    fontSize: appearance.message.fontSize,
+                    opacity: appearance.message.contentOpacity
+                )
                 
                 // Streaming indicator
                 if message.isStreaming {

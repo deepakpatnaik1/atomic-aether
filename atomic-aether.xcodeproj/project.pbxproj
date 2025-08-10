@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		BD8260B12E487E7500677F63 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = BD8260B02E487E7500677F63 /* MarkdownUI */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		F41B79642E38C5F1008AA28A /* atomic-aether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "atomic-aether.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8260B12E487E7500677F63 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = "atomic-aether";
 			packageProductDependencies = (
+				BD8260B02E487E7500677F63 /* MarkdownUI */,
 			);
 			productName = "atomic-aether";
 			productReference = F41B79642E38C5F1008AA28A /* atomic-aether.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = F41B795B2E38C5F1008AA28A;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				BD8260AF2E487E7500677F63 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F41B79652E38C5F1008AA28A /* Products */;
 			projectDirPath = "";
@@ -335,6 +344,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		BD8260AF2E487E7500677F63 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		BD8260B02E487E7500677F63 /* MarkdownUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD8260AF2E487E7500677F63 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F41B795C2E38C5F1008AA28A /* Project object */;
 }

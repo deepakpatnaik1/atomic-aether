@@ -394,9 +394,9 @@ This system provides 99 slots per series, ensuring plenty of room for growth whi
 **Wire**: Delete ErrorBus folder → errors logged to console only
 
 ### ATOM 103: StateBus
-**Purpose**: Shared state management across atoms  
+**Purpose**: Shared state management across atoms with responsive layout support  
 **Dependencies**: ConfigBus, EventBus  
-**Used by**: Atoms needing to share state  
+**Used by**: Atoms needing to share state, ContentView for layout width  
 **Wire**: Delete StateBus folder → atoms can't share state
 
 ### ATOM 104: ConfigBus
@@ -458,8 +458,8 @@ This system provides 99 slots per series, ensuring plenty of room for growth whi
 ## 300 Series - Input System
 
 ### ATOM 301: InputBar
-**Purpose**: Text input with expandable TextEditor  
-**Dependencies**: Multiple (see detailed docs)  
+**Purpose**: Text input with expandable TextEditor and responsive width  
+**Dependencies**: Multiple (see detailed docs), StateBus for width  
 **Used by**: ContentView  
 **Wire**: Delete InputBar folder → no user input
 
@@ -516,8 +516,8 @@ This system provides 99 slots per series, ensuring plenty of room for growth whi
 **Wire**: Delete ConversationFlow folder → no conversation handling
 
 ### ATOM 502: Scrollback
-**Purpose**: Message display system  
-**Dependencies**: MessageStore, ConfigBus  
+**Purpose**: Message display system with responsive width  
+**Dependencies**: MessageStore, ConfigBus, StateBus for width  
 **Used by**: ContentView  
 **Wire**: Delete Scrollback folder → no message display
 
@@ -713,19 +713,13 @@ ErrorBus provides a single, consistent way to handle errors while remaining comp
  */
 ```
 
-### ATOM 13: StateBus
-**Purpose**: Type-safe key-value storage for shared state  
-**Dependencies**: EventBus, ConfigBus  
-**Used by**: ModelState, PersonaState, and pickers  
-**Wire**: Delete StateBus folder → atoms can't share state but still function
-
-### ATOM 13: StateBus - Type-Safe Shared State
+### ATOM 103: StateBus - Type-Safe Shared State
 
 StateBus provides a type-safe key-value store that allows atoms to share state without direct dependencies. Using strongly-typed keys prevents runtime errors and makes state access compile-time safe.
 
 #### Structure
 ```
-ATOM-13-StateBus/
+ATOM-103-StateBus/
 ├── Core/
 │   └── StateBus.swift              # Main state storage service
 ├── Models/
@@ -784,6 +778,7 @@ eventBus.subscribe(to: StateValueChanged.self) { event in
 ```
 
 #### Common State Keys
+- **`.contentWidth`**: Responsive layout width for InputBar and Scrollback
 - **`.currentPersona`**: Currently active persona ID
 - **`.currentAnthropicModel`**: Selected Anthropic model
 - **`.currentNonAnthropicModel`**: Selected non-Anthropic model
@@ -805,7 +800,7 @@ StateBus provides clean, type-safe state sharing while maintaining loose couplin
 // StateBusWire.swift
 /*
  To remove StateBus completely:
- 1. Delete ATOM-13-StateBus folder
+ 1. Delete ATOM-103-StateBus folder
  2. Remove stateBus from app initialization (line ~96)
  3. Remove stateBus environment object (line ~197)
  4. Replace stateBus.set() with local @State
@@ -4097,3 +4092,106 @@ FileWatcher(path: personaFolder).onChange = {
  Personas limited to base prompts only!
  */
 ```
+
+## Responsive Layout Implementation
+
+The responsive layout system enables InputBar and Scrollback to dynamically adjust their width based on the window size, maintaining a consistent visual relationship while adapting to different screen sizes.
+
+### Architecture Overview
+
+```
+ContentView (GeometryReader)
+      ↓ calculates width
+   StateBus
+      ↓ shares contentWidth
+   ┌──────┴──────┐
+InputBar    Scrollback
+```
+
+### Key Components
+
+#### ContentView Calculation
+```swift
+GeometryReader { geometry in
+    VStack(spacing: 0) {
+        ScrollbackView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        InputBarView()
+    }
+    .onAppear {
+        // Load configuration and calculate width
+        if let inputConfig = configBus.load("InputBarAppearance", as: InputBarAppearance.self) {
+            let width = max(
+                geometry.size.width * inputConfig.dimensions.widthRatio,
+                inputConfig.dimensions.minWidth
+            )
+            stateBus.set(StateKey.contentWidth, value: width)
+        }
+    }
+    .onChange(of: geometry.size.width) {
+        // Recalculate on window resize
+    }
+}
+```
+
+#### StateBus Integration
+```swift
+// StateKey extension for layout
+extension StateKey where T == CGFloat {
+    static let contentWidth = StateKey<CGFloat>("layout.contentWidth")
+}
+```
+
+#### Component Subscription
+```swift
+// InputBar and Scrollback subscribe to width changes
+@State private var contentWidth: CGFloat = 700 // Default fallback
+
+.onAppear {
+    // Get initial width
+    if let width = stateBus.get(StateKey.contentWidth) {
+        contentWidth = width
+    }
+    
+    // Subscribe to changes
+    eventBus.subscribe(to: StateChangedEvent.self) { event in
+        if event.key == StateKey.contentWidth.name,
+           let width = event.newValue as? CGFloat {
+            contentWidth = width
+        }
+    }
+    .store(in: &cancellables)
+}
+```
+
+### Configuration
+
+```json
+// InputBarAppearance.json
+{
+  "dimensions": {
+    "widthRatio": 0.8,      // 80% of window width
+    "minWidth": 500,        // Never smaller than 500px
+    "defaultHeight": 104,
+    "bottomMargin": 16,
+    "textFieldMinHeight": 22,
+    "cornerRadius": 12
+  }
+}
+```
+
+### Why This Approach
+
+1. **GeometryReader at Parent Level**: Avoids layout disruption by calculating at ContentView
+2. **StateBus for Sharing**: Uses existing state management instead of creating new dependencies
+3. **Configuration-Driven**: Width ratio and minimum come from JSON, not hardcoded
+4. **Preserves Layout**: InputBar stays at bottom, only width changes
+5. **Event-Driven Updates**: Components react to width changes automatically
+
+### Benefits
+
+- **Responsive**: Adapts to window size changes in real-time
+- **Consistent**: InputBar and Scrollback always match width
+- **Configurable**: Easy to adjust ratio and minimum via JSON
+- **No Layout Breaks**: InputBar position unchanged
+- **Follows Boss Rules**: Clean separation, configuration-driven, simple solution
