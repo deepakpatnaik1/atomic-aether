@@ -16,20 +16,42 @@ struct ContentView: View {
     @EnvironmentObject var configBus: ConfigBus
     @EnvironmentObject var messageStore: MessageStore
     @EnvironmentObject var errorBus: ErrorBus
+    @EnvironmentObject var stateBus: StateBus
     
     var body: some View {
-        VStack(spacing: 0) {
-            // Scrollback
-            ScrollbackView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
-            // Input Bar
-            InputBarView()
-        }
-        .errorToast() // ATOM 102: ErrorBus toast overlay
-        .onAppear {
-            // Setup services with ConfigBus
-            themeService.setupWithConfigBus(configBus)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // Scrollback
+                ScrollbackView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                
+                // Input Bar
+                InputBarView()
+            }
+            .errorToast() // ATOM 102: ErrorBus toast overlay
+            .onAppear {
+                // Setup services with ConfigBus
+                themeService.setupWithConfigBus(configBus)
+                
+                // Calculate responsive width from configuration
+                if let inputConfig = configBus.load("InputBarAppearance", as: InputBarAppearance.self) {
+                    let width = max(
+                        geometry.size.width * inputConfig.dimensions.widthRatio,
+                        inputConfig.dimensions.minWidth
+                    )
+                    stateBus.set(StateKey.contentWidth, value: width)
+                }
+            }
+            .onChange(of: geometry.size.width) {
+                // Update width when window resizes
+                if let inputConfig = configBus.load("InputBarAppearance", as: InputBarAppearance.self) {
+                    let width = max(
+                        geometry.size.width * inputConfig.dimensions.widthRatio,
+                        inputConfig.dimensions.minWidth
+                    )
+                    stateBus.set(StateKey.contentWidth, value: width)
+                }
+            }
         }
     }
 }

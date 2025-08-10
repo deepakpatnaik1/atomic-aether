@@ -13,7 +13,6 @@
 import Foundation
 
 struct ScrollbackAppearance: Codable {
-    let width: Double
     let padding: Double
     let messageSpacing: Double
     let speakerLabel: SpeakerLabelAppearance

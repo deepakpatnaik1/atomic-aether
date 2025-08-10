@@ -17,8 +17,12 @@ struct ScrollbackView: View {
     @EnvironmentObject var messageStore: MessageStore
     @EnvironmentObject var personaStateService: PersonaStateService
     @EnvironmentObject var configBus: ConfigBus
+    @EnvironmentObject var stateBus: StateBus
+    @EnvironmentObject var eventBus: EventBus
     
     @State private var appearance: ScrollbackAppearance?
+    @State private var contentWidth: CGFloat = 700 // Default fallback
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         if let appearance = appearance {
@@ -38,11 +42,12 @@ struct ScrollbackView: View {
                     .padding(.horizontal, appearance.padding)
                     .padding(.top, appearance.padding)
                 }
-                .frame(width: appearance.width)
+                .frame(width: contentWidth)
                 .scrollIndicators(.hidden)
             }
             .onAppear {
                 setupWithConfigBus()
+                subscribeToContentWidth()
             }
         } else {
             // Minimal fallback if config fails to load
@@ -61,6 +66,22 @@ struct ScrollbackView: View {
         if let config = configBus.load("ScrollbackAppearance", as: ScrollbackAppearance.self) {
             appearance = config
         }
+    }
+    
+    private func subscribeToContentWidth() {
+        // Get initial width
+        if let width = stateBus.get(StateKey.contentWidth) {
+            contentWidth = width
+        }
+        
+        // Subscribe to width changes
+        eventBus.subscribe(to: StateChangedEvent.self) { event in
+            if event.key == StateKey.contentWidth.name,
+               let width = event.newValue as? CGFloat {
+                contentWidth = width
+            }
+        }
+        .store(in: &cancellables)
     }
     
     private func shouldShowSpeakerLabel(at index: Int) -> Bool {

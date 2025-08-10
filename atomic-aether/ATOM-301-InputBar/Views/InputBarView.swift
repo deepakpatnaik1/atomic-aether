@@ -28,12 +28,13 @@ struct InputBarView: View {
     @FocusState private var isTextFieldFocused: Bool
     @State private var text = ""
     @State private var cancellables = Set<AnyCancellable>()
+    @State private var contentWidth: CGFloat = 700 // Default fallback
     
     var body: some View {
         Group {
             if let appearance = appearanceService.appearance {
                 inputBar(appearance: appearance)
-                    .frame(width: appearance.dimensions.width)
+                    .frame(width: contentWidth)
                     .padding(.bottom, appearance.dimensions.bottomMargin)
             } else {
                 // Loading state - appearance will be loaded in onAppear
@@ -52,6 +53,19 @@ struct InputBarView: View {
                 if case .insertText(let newText, _) = event {
                     text = newText
                     isTextFieldFocused = true
+                }
+            }
+            .store(in: &cancellables)
+            
+            // Subscribe to width changes from ContentView
+            if let width = stateBus.get(StateKey.contentWidth) {
+                contentWidth = width
+            }
+            
+            eventBus.subscribe(to: StateChangedEvent.self) { event in
+                if event.key == StateKey.contentWidth.name,
+                   let width = event.newValue as? CGFloat {
+                    contentWidth = width
                 }
             }
             .store(in: &cancellables)

@@ -1,6 +1,7 @@
 {
   "dimensions": {
-    "width": 700,
+    "widthRatio": 0.8,
+    "minWidth": 500,
     "defaultHeight": 104,
     "bottomMargin": 16,
     "textFieldMinHeight": 22,

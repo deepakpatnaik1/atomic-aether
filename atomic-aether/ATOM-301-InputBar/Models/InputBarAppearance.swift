@@ -23,7 +23,8 @@ struct InputBarAppearance: Codable {
     let controls: Controls
     
     struct Dimensions: Codable {
-        let width: Double
+        let widthRatio: Double      // Percentage of window width (0.0 - 1.0)
+        let minWidth: Double        // Minimum width in pixels
         let defaultHeight: Double
         let bottomMargin: Double
         let textFieldMinHeight: Double

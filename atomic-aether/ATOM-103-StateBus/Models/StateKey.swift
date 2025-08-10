@@ -22,14 +22,8 @@ struct StateKey<T> {
 }
 
 // MARK: - Common State Keys
-// These will be defined by consuming atoms, not here
-// Example usage in future atoms:
-//
-// extension StateKey {
-//     static var currentModel: StateKey<String> { 
-//         StateKey("currentModel") 
-//     }
-//     static var currentPersona: StateKey<String> { 
-//         StateKey("currentPersona") 
-//     }
-// }
+
+// Layout state keys
+extension StateKey where T == CGFloat {
+    static let contentWidth = StateKey<CGFloat>("layout.contentWidth")
+}
