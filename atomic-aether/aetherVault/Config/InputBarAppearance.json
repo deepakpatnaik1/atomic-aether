@@ -34,7 +34,7 @@
     }
   },
   "textField": {
-    "textColor": "white",
+    "textColor": "#DCD7C9",
     "fontSize": 14,
     "fontFamily": "System"
   },
