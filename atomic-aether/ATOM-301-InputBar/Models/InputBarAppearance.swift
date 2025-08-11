@@ -99,6 +99,11 @@ struct InputBarAppearance: Codable {
 // MARK: - Color Helper
 extension InputBarAppearance {
     static func color(from string: String) -> Color {
+        // Check for hex color
+        if string.hasPrefix("#") {
+            return Color(hex: string) ?? .white
+        }
+        
         switch string.lowercased() {
         case "black": return .black
         case "white": return .white
@@ -112,8 +117,8 @@ extension InputBarAppearance {
         case "pink": return .pink
         case "clear": return .clear
         default: 
-            // For unknown colors, return clear
-            return .clear
+            // For unknown colors, return white as fallback
+            return .white
         }
     }
 }
