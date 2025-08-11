@@ -5,7 +5,7 @@
     "defaultHeight": 104,
     "bottomMargin": 16,
     "textFieldMinHeight": 22,
-    "cornerRadius": 12
+    "cornerRadius": 9
   },
   "padding": {
     "uniform": 22,
