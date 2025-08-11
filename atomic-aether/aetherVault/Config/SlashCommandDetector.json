@@ -2,7 +2,7 @@
   "commands": [
     {
       "trigger": "/journal",
-      "expandToLines": 34,
+      "expandToLines": 42,
       "description": "Expand input for journal entry"
     },
     {
