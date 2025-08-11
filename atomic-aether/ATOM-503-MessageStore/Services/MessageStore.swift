@@ -33,7 +33,12 @@ class MessageStore: ObservableObject {
         
         // Load persisted messages if enabled
         if configuration.persistMessages && configuration.loadMessagesOnStartup {
-            loadMessagesFromFile()
+            // Delay message loading to ensure personas are loaded first
+            // This prevents the race condition where messages display before personas are ready
+            Task { @MainActor in
+                try? await Task.sleep(nanoseconds: 200_000_000) // 0.2 seconds
+                loadMessagesFromFile()
+            }
         }
     }
     
