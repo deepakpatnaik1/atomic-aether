@@ -20,6 +20,7 @@ struct PersonaPickerView: View {
     
     let fontSize: CGFloat
     let opacity: Double
+    let color: Color?
     var focusState: FocusState<Bool>.Binding
     
     @State private var uiConfig: PersonaUIConfiguration = .default
@@ -30,7 +31,7 @@ struct PersonaPickerView: View {
             if !personaStateService.configuration.functionalExperts.isEmpty {
                 Section(header: Text(uiConfig.labels.functionalExpertsSection.uppercased())
                     .font(font(from: uiConfig.typography.sectionHeader, baseSize: fontSize))
-                    .foregroundColor(.white.opacity(opacity * uiConfig.typography.sectionHeader.opacityMultiplier))
+                    .foregroundColor((color ?? .white).opacity(opacity * uiConfig.typography.sectionHeader.opacityMultiplier))
                 ) {
                     ForEach(personaStateService.configuration.functionalExperts) { persona in
                         personaButton(for: persona)
@@ -42,7 +43,7 @@ struct PersonaPickerView: View {
             if !personaStateService.configuration.cognitiveVoices.isEmpty {
                 Section(header: Text(uiConfig.labels.cognitiveVoicesSection.uppercased())
                     .font(font(from: uiConfig.typography.sectionHeader, baseSize: fontSize))
-                    .foregroundColor(.white.opacity(opacity * uiConfig.typography.sectionHeader.opacityMultiplier))
+                    .foregroundColor((color ?? .white).opacity(opacity * uiConfig.typography.sectionHeader.opacityMultiplier))
                 ) {
                     ForEach(personaStateService.configuration.cognitiveVoices) { persona in
                         personaButton(for: persona)
@@ -54,17 +55,17 @@ struct PersonaPickerView: View {
                 if let currentPersona = personaStateService.currentPersonaDefinition {
                     Text(currentPersona.displayName)
                         .font(.system(size: fontSize))
-                        .foregroundColor(.white.opacity(opacity))
+                        .foregroundColor((color ?? .white).opacity(opacity))
                 } else {
                     Text(uiConfig.labels.selectPersonaPlaceholder)
                         .font(.system(size: fontSize))
-                        .foregroundColor(.white.opacity(opacity * uiConfig.inputBarLayout.placeholderOpacityMultiplier))
+                        .foregroundColor((color ?? .white).opacity(opacity * uiConfig.inputBarLayout.placeholderOpacityMultiplier))
                 }
                 
                 if !uiConfig.chevronIcon.symbolName.isEmpty {
                     Image(systemName: uiConfig.chevronIcon.symbolName)
                         .font(.system(size: fontSize * CGFloat(uiConfig.chevronIcon.sizeMultiplier)))
-                        .foregroundColor(.white.opacity(opacity * uiConfig.chevronIcon.opacityMultiplier))
+                        .foregroundColor((color ?? .white).opacity(opacity * uiConfig.chevronIcon.opacityMultiplier))
                 }
             }
         }
@@ -97,7 +98,7 @@ struct PersonaPickerView: View {
                         .font(.system(size: fontSize))
                     + Text(role)
                         .font(font(from: uiConfig.typography.personaRole, baseSize: fontSize))
-                        .foregroundColor(.white.opacity(opacity * uiConfig.typography.personaRole.opacityMultiplier))
+                        .foregroundColor((color ?? .white).opacity(opacity * uiConfig.typography.personaRole.opacityMultiplier))
                 } else {
                     Text(persona.displayName)
                         .font(.system(size: fontSize))

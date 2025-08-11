@@ -17,6 +17,13 @@ struct SpeakerLabel: View {
     let accentColor: Color
     let appearance: ScrollbackAppearance.SpeakerLabelAppearance
     
+    private var textColor: Color {
+        if let colorHex = appearance.textColor {
+            return Color(hex: colorHex) ?? .white
+        }
+        return .white
+    }
+    
     var body: some View {
         HStack(spacing: 0) {
             // Colored left border
@@ -27,7 +34,7 @@ struct SpeakerLabel: View {
             // Speaker name with background
             Text(displayName)
                 .font(.system(size: appearance.fontSize, weight: .medium))
-                .foregroundColor(.white.opacity(appearance.nameOpacity))
+                .foregroundColor(textColor.opacity(appearance.nameOpacity))
                 .padding(.horizontal, appearance.namePaddingHorizontal)
                 .padding(.vertical, appearance.namePaddingVertical)
                 .frame(maxWidth: .infinity, alignment: .leading)

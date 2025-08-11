@@ -12,7 +12,8 @@
     "cornerRadius": 4,
     "stackSpacing": 0,
     "labelWidth": 120,
-    "verticalSpacing": 4
+    "verticalSpacing": 4,
+    "textColor": "#DFD0B8"
   },
   "message": {
     "fontSize": 13,

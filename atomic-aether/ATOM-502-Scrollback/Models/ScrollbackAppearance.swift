@@ -31,6 +31,7 @@ struct ScrollbackAppearance: Codable {
         let stackSpacing: Double
         let labelWidth: Double
         let verticalSpacing: Double
+        let textColor: String?
     }
     
     struct ColorMeteorAppearance: Codable {

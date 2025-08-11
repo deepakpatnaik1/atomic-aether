@@ -20,6 +20,7 @@ struct ModelPickerView: View {
     @EnvironmentObject var personaStateService: PersonaStateService
     let fontSize: CGFloat
     let opacity: Double
+    let color: Color?
     var focusState: FocusState<Bool>.Binding
     
     @State private var configuration: ModelPickerConfiguration = .default
@@ -30,7 +31,7 @@ struct ModelPickerView: View {
                 if modelPickerService.configuration.showProviderHeaders {
                     Section(header: Text(group.provider.uppercased())
                         .font(.system(size: fontSize * (configuration.typography?.sectionHeader?.sizeMultiplier ?? 0.85), weight: .semibold))
-                        .foregroundColor(.white.opacity(opacity * (configuration.typography?.sectionHeader?.opacityMultiplier ?? 0.7)))
+                        .foregroundColor((color ?? .white).opacity(opacity * (configuration.typography?.sectionHeader?.opacityMultiplier ?? 0.7)))
                     ) {
                         modelItems(for: group)
                     }
@@ -42,11 +43,11 @@ struct ModelPickerView: View {
             HStack(spacing: 4) {
                 Text(modelDisplayService.currentModelDisplay)
                     .font(.system(size: fontSize))
-                    .foregroundColor(.white.opacity(opacity))
+                    .foregroundColor((color ?? .white).opacity(opacity))
                 
                 Image(systemName: "chevron.down")
                     .font(.system(size: fontSize * modelPickerService.configuration.chevronSizeRatio))
-                    .foregroundColor(.white.opacity(opacity * modelPickerService.configuration.chevronSizeRatio))
+                    .foregroundColor((color ?? .white).opacity(opacity * modelPickerService.configuration.chevronSizeRatio))
             }
         }
         .menuStyle(.borderlessButton)

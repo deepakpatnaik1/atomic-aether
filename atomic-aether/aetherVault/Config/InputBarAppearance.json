@@ -48,12 +48,14 @@
     "plusButton": {
       "iconName": "plus",
       "size": 16,
-      "opacity": 0.7
+      "opacity": 0.7,
+      "color": "#DFD0B8"
     },
     "modelPicker": {
       "text": "Claude 3.5 Sonnet",
       "fontSize": 12,
-      "opacity": 0.7
+      "opacity": 0.7,
+      "color": "#DFD0B8"
     },
     "greenIndicator": {
       "size": 8,

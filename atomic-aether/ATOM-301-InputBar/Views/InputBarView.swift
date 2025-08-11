@@ -86,13 +86,14 @@ struct InputBarView: View {
             HStack(spacing: appearance.controls.spacing) {
                 Image(systemName: appearance.controls.plusButton.iconName)
                     .font(.system(size: appearance.controls.plusButton.size, weight: .medium))
-                    .foregroundColor(.white.opacity(appearance.controls.plusButton.opacity))
+                    .foregroundColor(plusButtonColor(appearance).opacity(appearance.controls.plusButton.opacity))
                 
                 ModelPickerView(
                     modelPickerService: modelPickerService,
                     modelDisplayService: modelDisplayService,
                     fontSize: appearance.controls.modelPicker.fontSize,
                     opacity: appearance.controls.modelPicker.opacity,
+                    color: modelPickerColor(appearance),
                     focusState: $isTextFieldFocused
                 )
                 .fixedSize()
@@ -100,6 +101,7 @@ struct InputBarView: View {
                 PersonaPickerView(
                     fontSize: appearance.controls.modelPicker.fontSize,
                     opacity: appearance.controls.modelPicker.opacity,
+                    color: modelPickerColor(appearance),
                     focusState: $isTextFieldFocused
                 )
                 .fixedSize()
@@ -276,6 +278,20 @@ struct InputBarView: View {
                 x: appearance.shadows.inner.x,
                 y: appearance.shadows.inner.y
             )
+    }
+    
+    private func plusButtonColor(_ appearance: InputBarAppearance) -> Color {
+        if let colorString = appearance.controls.plusButton.color {
+            return InputBarAppearance.color(from: colorString)
+        }
+        return .white
+    }
+    
+    private func modelPickerColor(_ appearance: InputBarAppearance) -> Color? {
+        if let colorString = appearance.controls.modelPicker.color {
+            return InputBarAppearance.color(from: colorString)
+        }
+        return nil
     }
 }
 

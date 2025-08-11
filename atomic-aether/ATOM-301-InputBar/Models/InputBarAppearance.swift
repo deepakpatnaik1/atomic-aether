@@ -78,12 +78,14 @@ struct InputBarAppearance: Codable {
             let iconName: String
             let size: Double
             let opacity: Double
+            let color: String?
         }
         
         struct ModelPicker: Codable {
             let text: String
             let fontSize: Double
             let opacity: Double
+            let color: String?
         }
         
         struct GreenIndicator: Codable {
