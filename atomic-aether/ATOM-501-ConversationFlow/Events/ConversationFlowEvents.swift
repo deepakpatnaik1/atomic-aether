@@ -64,3 +64,11 @@ struct ConversationCompletedEvent: AetherEvent, ConversationEventType {
     let contentLength: Int
     let source: String = "StreamProcessor"
 }
+
+struct SessionRestoredEvent: AetherEvent, ConversationEventType {
+    let sessionId: UUID
+    let persona: String
+    let model: String
+    let messageCount: Int
+    let source: String = "ConversationOrchestrator"
+}

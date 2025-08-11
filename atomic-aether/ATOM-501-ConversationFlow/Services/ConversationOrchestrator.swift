@@ -28,6 +28,7 @@ final class ConversationOrchestrator: ObservableObject {
     private let configBus: ConfigBus
     private let eventBus: EventBus
     private let errorBus: ErrorBus
+    private let stateBus: StateBus
     private let personaStateService: PersonaStateService
     private let llmRouter: LLMRouter
     private let messageStore: MessageStore
@@ -41,6 +42,7 @@ final class ConversationOrchestrator: ObservableObject {
         configBus: ConfigBus,
         eventBus: EventBus,
         errorBus: ErrorBus,
+        stateBus: StateBus,
         personaStateService: PersonaStateService,
         llmRouter: LLMRouter,
         messageStore: MessageStore
@@ -48,6 +50,7 @@ final class ConversationOrchestrator: ObservableObject {
         self.configBus = configBus
         self.eventBus = eventBus
         self.errorBus = errorBus
+        self.stateBus = stateBus
         self.personaStateService = personaStateService
         self.llmRouter = llmRouter
         self.messageStore = messageStore
@@ -66,6 +69,20 @@ final class ConversationOrchestrator: ObservableObject {
             messageStore: messageStore,
             eventBus: eventBus
         )
+        
+        // Restore conversation context if available
+        if let savedContext = stateBus.get(StateKey.currentConversationContext) {
+            // Check if context is still active
+            if savedContext.isActive(timeoutSeconds: configuration.sessionActiveTimeoutSeconds) {
+                self.currentContext = savedContext
+                eventBus.publish(SessionRestoredEvent(
+                    sessionId: savedContext.sessionId,
+                    persona: savedContext.currentPersona,
+                    model: savedContext.currentModel,
+                    messageCount: savedContext.messageCount
+                ))
+            }
+        }
     }
     
     // MARK: - Public Methods
@@ -99,6 +116,11 @@ final class ConversationOrchestrator: ObservableObject {
             }
             
             currentContext?.recordActivity()
+            
+            // Save context to StateBus for persistence
+            if let context = currentContext {
+                stateBus.set(StateKey.currentConversationContext, value: context)
+            }
             
             // 3. Add user message to store
             let userMessage = Message(

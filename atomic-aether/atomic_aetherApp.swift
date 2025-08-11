@@ -142,6 +142,7 @@ struct atomic_aetherApp: App {
             configBus: configBus,
             eventBus: eventBus,
             errorBus: errorBus,
+            stateBus: stateBus,
             personaStateService: personaStateService,
             llmRouter: llmRouter,
             messageStore: messageStore

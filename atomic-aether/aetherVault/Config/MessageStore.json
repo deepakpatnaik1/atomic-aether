@@ -1,5 +1,7 @@
 {
   "maxMessages": 1000,
-  "persistMessages": false,
-  "publishEvents": true
+  "persistMessages": true,
+  "publishEvents": true,
+  "persistenceFileName": "conversation-history.json",
+  "loadMessagesOnStartup": true
 }

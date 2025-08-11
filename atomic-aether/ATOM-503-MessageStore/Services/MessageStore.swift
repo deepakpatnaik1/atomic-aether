@@ -30,6 +30,11 @@ class MessageStore: ObservableObject {
         if let config = configBus.load("MessageStore", as: MessageStoreConfiguration.self) {
             self.configuration = config
         }
+        
+        // Load persisted messages if enabled
+        if configuration.persistMessages && configuration.loadMessagesOnStartup {
+            loadMessagesFromFile()
+        }
     }
     
     /// Add a new message to the store
@@ -45,6 +50,9 @@ class MessageStore: ObservableObject {
         if configuration.publishEvents {
             eventBus?.publish(MessageAddedEvent(message: message))
         }
+        
+        // Save to file if persistence is enabled
+        saveMessagesToFile()
     }
     
     /// Update an existing message (for streaming updates)
@@ -70,6 +78,11 @@ class MessageStore: ObservableObject {
             // Publish event if enabled
             if configuration.publishEvents {
                 eventBus?.publish(MessageUpdatedEvent(message: updatedMessage))
+            }
+            
+            // Save to file only when streaming completes
+            if !isStreaming {
+                saveMessagesToFile()
             }
         }
     }
@@ -108,6 +121,77 @@ class MessageStore: ObservableObject {
         // Publish event for historical load
         if configuration.publishEvents {
             eventBus?.publish(HistoricalMessagesLoadedEvent(count: newMessages.count))
+        }
+    }
+    
+    // MARK: - Persistence Methods
+    
+    /// Save messages to file
+    private func saveMessagesToFile() {
+        guard configuration.persistMessages,
+              let fileName = configuration.persistenceFileName else { return }
+        
+        do {
+            // Get documents directory
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, 
+                                                       in: .userDomainMask).first!
+            let fileURL = documentsPath.appendingPathComponent(fileName)
+            
+            // Encode messages to JSON
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .iso8601
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            
+            let data = try encoder.encode(messages)
+            try data.write(to: fileURL)
+            
+            if configuration.publishEvents {
+                eventBus?.publish(MessagesPersisted(count: messages.count))
+            }
+        } catch {
+            // Report error via ErrorBus if available
+            print("Failed to save messages: \(error)")
+        }
+    }
+    
+    /// Load messages from file
+    private func loadMessagesFromFile() {
+        guard configuration.persistMessages,
+              let fileName = configuration.persistenceFileName else { return }
+        
+        do {
+            // Get documents directory
+            let documentsPath = FileManager.default.urls(for: .documentDirectory,
+                                                       in: .userDomainMask).first!
+            let fileURL = documentsPath.appendingPathComponent(fileName)
+            
+            // Check if file exists
+            guard FileManager.default.fileExists(atPath: fileURL.path) else {
+                print("No persisted messages found")
+                return
+            }
+            
+            // Decode messages from JSON
+            let data = try Data(contentsOf: fileURL)
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .iso8601
+            
+            let loadedMessages = try decoder.decode([Message].self, from: data)
+            
+            // Replace messages array
+            self.messages = loadedMessages
+            
+            // Enforce max limit
+            if messages.count > configuration.maxMessages {
+                messages = Array(messages.suffix(configuration.maxMessages))
+            }
+            
+            if configuration.publishEvents {
+                eventBus?.publish(MessagesLoaded(count: messages.count))
+            }
+        } catch {
+            // Report error via ErrorBus if available
+            print("Failed to load messages: \(error)")
         }
     }
 }

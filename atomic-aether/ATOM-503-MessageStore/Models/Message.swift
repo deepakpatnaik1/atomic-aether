@@ -12,8 +12,8 @@
 
 import Foundation
 
-struct Message: Identifiable, Equatable {
-    let id = UUID()
+struct Message: Identifiable, Equatable, Codable {
+    let id: UUID
     let speaker: String        // Persona ID from configuration
     var content: String
     let timestamp: Date
@@ -21,12 +21,14 @@ struct Message: Identifiable, Equatable {
     let modelUsed: String?     // Which LLM model was used
     
     init(
+        id: UUID = UUID(),
         speaker: String,
         content: String,
         timestamp: Date = Date(),
         isStreaming: Bool = false,
         modelUsed: String? = nil
     ) {
+        self.id = id
         self.speaker = speaker
         self.content = content
         self.timestamp = timestamp

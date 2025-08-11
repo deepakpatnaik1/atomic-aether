@@ -37,6 +37,7 @@ struct ScrollbackView: View {
                                 personaStateService: personaStateService,
                                 appearance: appearance
                             )
+                            .id(message.id)
                         }
                     }
                     .padding(.horizontal, appearance.padding)
@@ -44,10 +45,18 @@ struct ScrollbackView: View {
                 }
                 .frame(width: contentWidth)
                 .scrollIndicators(.hidden)
-            }
-            .onAppear {
-                setupWithConfigBus()
-                subscribeToContentWidth()
+                .onAppear {
+                    setupWithConfigBus()
+                    subscribeToContentWidth()
+                    subscribeToMessagesLoaded(proxy: proxy)
+                    
+                    // Auto-scroll to latest message if messages exist
+                    if let lastMessage = messageStore.messages.last {
+                        withAnimation {
+                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                        }
+                    }
+                }
             }
         } else {
             // Minimal fallback if config fails to load
@@ -79,6 +88,28 @@ struct ScrollbackView: View {
             if event.key == StateKey.contentWidth.name,
                let width = event.newValue as? CGFloat {
                 contentWidth = width
+            }
+        }
+        .store(in: &cancellables)
+    }
+    
+    private func subscribeToMessagesLoaded(proxy: ScrollViewProxy) {
+        // Subscribe to MessagesLoaded event to auto-scroll when messages are restored
+        eventBus.subscribe(to: MessagesLoaded.self) { event in
+            // Small delay to ensure layout is complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let lastMessage = messageStore.messages.last {
+                    proxy.scrollTo(lastMessage.id, anchor: .bottom)
+                }
+            }
+        }
+        .store(in: &cancellables)
+        
+        // Also subscribe to MessageAddedEvent for new messages
+        eventBus.subscribe(to: MessageAddedEvent.self) { event in
+            // Small delay to ensure layout is complete
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                proxy.scrollTo(event.message.id, anchor: .bottom)
             }
         }
         .store(in: &cancellables)

@@ -32,3 +32,13 @@ struct HistoricalMessagesLoadedEvent: AetherEvent, SystemEventType {
     let count: Int
     let source: String = "MessageStore"
 }
+
+struct MessagesPersisted: AetherEvent, SystemEventType {
+    let count: Int
+    let source: String = "MessageStore"
+}
+
+struct MessagesLoaded: AetherEvent, SystemEventType {
+    let count: Int
+    let source: String = "MessageStore"
+}

@@ -12,7 +12,7 @@
 
 import Foundation
 
-struct ConversationContext {
+struct ConversationContext: Codable {
     let sessionId: UUID
     let startTime: Date
     var currentPersona: String
@@ -27,6 +27,15 @@ struct ConversationContext {
         self.currentModel = model
         self.messageCount = 0
         self.lastActivity = Date()
+    }
+    
+    init(sessionId: UUID, startTime: Date, currentPersona: String, currentModel: String, messageCount: Int, lastActivity: Date) {
+        self.sessionId = sessionId
+        self.startTime = startTime
+        self.currentPersona = currentPersona
+        self.currentModel = currentModel
+        self.messageCount = messageCount
+        self.lastActivity = lastActivity
     }
     
     mutating func recordActivity() {
