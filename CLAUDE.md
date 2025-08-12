@@ -34,6 +34,7 @@ Foundation buses that everything depends on:
 - **400 Series**: Personas (PersonaSystem, PersonaPicker, Profiles)
 - **500 Series**: Conversations (ConversationFlow, Scrollback, MessageStore)
 - **600 Series**: Theme system
+- **800 Series**: Memory & persistence (Superjournal)
 
 ### 5. Configuration Files
 All in `aetherVault/Config/`:
@@ -42,10 +43,11 @@ All in `aetherVault/Config/`:
 - `Personas.json` - Persona definitions
 - `LLMProviders.json` - AI provider settings
 
-### 6. User Context
+### 6. User Context & Memory
 - `aetherVault/Boss/Boss.md` - User identity and context
 - `aetherVault/Boss/Boss's expectations.md` - Development expectations
 - `aetherVault/Personas/*/` - Individual persona definitions
+- `aetherVault/Superjournal/` - Timestamped conversation logs (ATOM-801)
 
 ## Quick Commands for Claude
 

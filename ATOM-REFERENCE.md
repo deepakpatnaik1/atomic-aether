@@ -56,6 +56,11 @@ Quick reference for all atoms and bus usage. For philosophy, see [BOSS-RULES.md]
 ### 700 Series - Developer Tools
 *Reserved for future development utilities*
 
+### 800 Series - Memory & Persistence
+| ATOM | Name | Purpose | Wire Removal Steps |
+|------|------|---------|-------------------|
+| 801 | Superjournal | Conversation logging | Delete folder → no conversation history saved |
+
 ## Quick Bus Reference
 
 ### EventBus (ATOM 101)
@@ -170,6 +175,10 @@ StateKey.devModeEnabled        // Developer mode toggle
 - `MessageUpdatedEvent(id, content)`
 - `MessagesCleared()`
 
+### Memory Events
+- `ConversationEvent.memoryUpdated(type, source)`
+- `MemoryUpdateType.superjournalUpdated(path)`
+
 ### Input Events
 - `InputEvent.insertText(text, source)`
 - `SlashCommandEvent.commandDetected(command)`
@@ -214,6 +223,7 @@ DesignTokens.json     # Theme tokens
 - **AI not working?** Check 200s (LLM/Models)
 - **Events not firing?** Start with 100s (Buses)
 - **Personas acting up?** See 400s (Personas)
+- **Need conversation history?** Check 800s (Superjournal)
 
 ### By Technology
 - **SwiftUI Views**: Look for `UI/` folders

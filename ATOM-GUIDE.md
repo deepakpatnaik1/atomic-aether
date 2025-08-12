@@ -62,6 +62,7 @@ Follow this template when adding a new atom to the system:
 - **500s**: Conversations and messaging
 - **600s**: Visual theme and appearance
 - **700s**: Developer tools
+- **800s**: Memory and persistence
 
 ### 2. Standard Folder Structure
 ```
