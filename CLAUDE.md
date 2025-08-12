@@ -30,7 +30,7 @@ Foundation buses that everything depends on:
 
 ### 4. Key Feature Areas
 - **200 Series**: LLM/AI functionality
-- **300 Series**: Input system (InputBar, SlashCommands, Keyboard)
+- **300 Series**: Input system (InputBar, SlashCommands, Keyboard, JournalCommand)
 - **400 Series**: Personas (PersonaSystem, PersonaPicker, Profiles)
 - **500 Series**: Conversations (ConversationFlow, Scrollback, MessageStore)
 - **600 Series**: Theme system

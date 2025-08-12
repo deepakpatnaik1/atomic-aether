@@ -28,9 +28,9 @@ Quick reference for all atoms and bus usage. For philosophy, see [BOSS-RULES.md]
 | ATOM | Name | Purpose | Wire Removal Steps |
 |------|------|---------|-------------------|
 | 301 | InputBar | Text input with pickers | Delete folder → no user input |
-| 302 | SlashCommandDetector | Command detection | Delete folder → no slash commands |
+| 302 | SlashCommandDetector | Universal command detection | Delete folder → no slash commands |
 | 303 | KeyboardBehavior | Smart return keys | Delete folder → Enter = submit only |
-| 304 | JournalCommand | Enhanced /journal | Delete folder → /journal just expands |
+| 304 | JournalCommand | /journal command handler | Delete folder → /journal uses basic expansion |
 
 ### 400 Series - Personas
 | ATOM | Name | Purpose | Wire Removal Steps |
@@ -203,7 +203,7 @@ DevKeys.json          # Dev key settings
 EnvLoader.json        # Key loading config
 SlashCommandDetector.json # Command definitions
 KeyboardBehavior.json  # Keyboard shortcuts
-JournalCommand.json    # Journal settings
+JournalCommand.json    # Journal command settings
 PersonaUI.json        # Persona UI config
 PersonaState.json     # Persona defaults
 PersonaFolders.json   # Folder watching
