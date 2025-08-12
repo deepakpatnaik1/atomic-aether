@@ -65,6 +65,9 @@ struct atomic_aetherApp: App {
     // ATOM 304: Journal Command Service  
     @StateObject private var journalCommandService: JournalCommandService
     
+    // ATOM 505: Message Turn Grouping Service
+    @StateObject private var messageTurnService: MessageTurnService
+    
     init() {
         // Create EventBus first (no dependencies)
         let eventBus = EventBus()
@@ -182,6 +185,9 @@ struct atomic_aetherApp: App {
             eventBus: eventBus,
             stateBus: stateBus
         ))
+        
+        // Create MessageTurnService
+        _messageTurnService = StateObject(wrappedValue: MessageTurnService())
     }
     
     var body: some Scene {
@@ -207,6 +213,7 @@ struct atomic_aetherApp: App {
             .environmentObject(personaProfileService)
             .environmentObject(devKeysService)
             .environmentObject(journalCommandService)
+            .environmentObject(messageTurnService)
             .onAppear {
                 // Setup DevKeys service
                 devKeysService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus, stateBus: stateBus)
@@ -254,6 +261,9 @@ struct atomic_aetherApp: App {
                 
                 // Setup JournalCommandService
                 journalCommandService.setup()
+                
+                // Setup MessageTurnService
+                messageTurnService.setup(configBus: configBus, eventBus: eventBus, messageStore: messageStore)
             }
         }
         .commands {

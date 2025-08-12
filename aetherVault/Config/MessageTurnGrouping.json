@@ -1,0 +1,6 @@
+{
+  "turnDelimiter": "Boss",
+  "includeSingleMessageTurns": true,
+  "maxMessagesPerTurn": 100,
+  "publishEvents": true
+}
