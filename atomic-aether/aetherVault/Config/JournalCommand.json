@@ -1,10 +1,5 @@
 {
-  "expandToLines": 34,
-  "clearTextOnExpand": true,
-  "autoInsertPrefix": true,
-  "prefixTemplate": "## Journal Entry - {date}",
-  "dateFormat": "EEEE, MMMM d, yyyy",
-  "insertCursorPosition": "newLine",
-  "enableTimestamp": true,
-  "timestampFormat": "HH:mm"
+  "trigger": "/journal",
+  "expandToLines": 42,
+  "clearTextOnExpand": true
 }
