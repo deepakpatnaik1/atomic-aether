@@ -62,6 +62,8 @@ struct atomic_aetherApp: App {
     // ATOM 404: Persona Profile Service
     @StateObject private var personaProfileService: PersonaProfileService
     
+    // ATOM 304: Journal Command Service  
+    @StateObject private var journalCommandService: JournalCommandService
     
     init() {
         // Create EventBus first (no dependencies)
@@ -174,6 +176,12 @@ struct atomic_aetherApp: App {
         // Create PersonaProfileService (Phase II)
         _personaProfileService = StateObject(wrappedValue: PersonaProfileService())
         
+        // Create JournalCommandService
+        _journalCommandService = StateObject(wrappedValue: JournalCommandService(
+            configBus: configBus,
+            eventBus: eventBus,
+            stateBus: stateBus
+        ))
     }
     
     var body: some Scene {
@@ -198,6 +206,7 @@ struct atomic_aetherApp: App {
             .environmentObject(bossProfileService)
             .environmentObject(personaProfileService)
             .environmentObject(devKeysService)
+            .environmentObject(journalCommandService)
             .onAppear {
                 // Setup DevKeys service
                 devKeysService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus, stateBus: stateBus)
@@ -243,7 +252,8 @@ struct atomic_aetherApp: App {
                 // Setup PersonaProfileService (Phase II)
                 personaProfileService.setup(configBus: configBus, eventBus: eventBus, errorBus: errorBus)
                 
-                
+                // Setup JournalCommandService
+                journalCommandService.setup()
             }
         }
         .commands {

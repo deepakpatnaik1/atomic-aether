@@ -11,39 +11,30 @@
  REMOVAL INSTRUCTIONS:
  To remove JournalCommand completely:
  1. Delete ATOM-304-JournalCommand folder
- 2. Remove journalCommandService initialization from atomic_aetherApp.swift
- 3. Remove journalCommandService environment object from atomic_aetherApp.swift
- 4. Remove "/journal" command from SlashCommandDetector.json
- 5. Delete aetherVault/Config/JournalCommand.json
+ 2. Remove journalCommandService initialization from atomic_aetherApp.swift (line ~180)
+ 3. Remove journalCommandService environment object from atomic_aetherApp.swift (line ~209)
+ 4. Delete aetherVault/Config/JournalCommand.json
  
- The app will continue to work but /journal will have no special behavior.
+ The app will continue to work with basic /journal expansion from SlashCommandDetector.
  
  INTEGRATION POINTS:
  - SlashCommandDetector: Detects "/journal" and publishes event
  - JournalCommandService: Listens for slash command events
- - InputBar: Expands based on StateBus values
  - EventBus: Coordinates command detection and execution
- - StateBus: Shares expansion state with InputBar
+ - StateBus: Sets expandedLines for InputBar
  
  ARCHITECTURE:
- JournalCommand enhances the /journal slash command with:
- 1. Configurable text expansion (default: 34 lines)
- 2. Auto-insert journal entry prefix
- 3. Date/time stamp insertion
- 4. Cursor positioning control
- 5. Event notifications for tracking
+ JournalCommand handles the /journal slash command with:
+ 1. Text expansion to 42 lines
+ 2. Esc key handling (via InputBar)
+ 3. Event notifications for tracking
  
  CONFIGURATION (JournalCommand.json):
  ```json
  {
-   "expandToLines": 34,
-   "clearTextOnExpand": true,
-   "autoInsertPrefix": true,
-   "prefixTemplate": "## Journal Entry - {date}",
-   "dateFormat": "EEEE, MMMM d, yyyy",
-   "insertCursorPosition": "newLine",
-   "enableTimestamp": true,
-   "timestampFormat": "HH:mm"
+   "trigger": "/journal",
+   "expandToLines": 42,
+   "clearTextOnExpand": true
  }
  ```
  
@@ -57,46 +48,23 @@
         ↓
  JournalCommandService receives event
         ↓
- Expands input via StateBus
+ Sets expandedLines in StateBus
         ↓
- Inserts prefix via InputEvent
+ InputBar expands
         ↓
  User writes journal entry
+        ↓
+ Esc key collapses (handled by InputBar)
  ```
- 
- PREFIX TEMPLATES:
- - "{date}" → Replaced with formatted date
- - "## Journal Entry" → Static header
- - Custom templates supported
- 
- CURSOR POSITIONS:
- - afterPrefix: Right after prefix text
- - newLine: On new line after prefix
- - end: Multiple lines after prefix
  
  EVENTS PUBLISHED:
  - JournalCommandTriggered: Command detected
  - JournalCommandExpanded: Input expanded
- - JournalCommandCompleted: Entry submitted
- 
- EXAMPLE OUTPUT:
- ```
- ## Journal Entry - Thursday, August 10, 2025 - 14:30
- 
- [cursor here]
- ```
- 
- FUTURE ENHANCEMENTS:
- - Journal entry templates
- - Mood/category selection
- - Auto-save to journal file
- - Entry preview formatting
- - Voice dictation trigger
  
  WHY SEPARATE FROM DETECTOR:
- - SlashCommandDetector: Generic detection
- - JournalCommand: Specific behavior
- - Allows other commands without coupling
- - Each command can have own atom
+ - SlashCommandDetector: Universal detection for all commands
+ - JournalCommand: Specific behavior for /journal
+ - Allows future commands to have their own atoms
  - Clean separation of concerns
+ - Follows atomic LEGO architecture
  */
